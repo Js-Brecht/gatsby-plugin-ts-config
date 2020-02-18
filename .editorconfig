@@ -1,0 +1,13 @@
+root = true
+
+[*]
+end_of_line = lf
+indent_style = space
+indent_size = 4
+insert_final_newline = false
+trim_trailing_whitespace = true
+
+[*.{yml,json,md}]
+indent_size = 2
+indent_style = space
+
