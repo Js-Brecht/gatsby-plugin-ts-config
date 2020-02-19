@@ -38,9 +38,10 @@ export default ({
 
     const gatsbyConfigMatch = gatsbyConfigs.filter((nm) => !ignore.includes(nm)).join('|');
 
-    const isProjectConfig = (fPath: string) => {
-        const checkPath = new RegExp(`^${path.join(configDir, `gatsby-(${gatsbyConfigMatch}).[jt]sx?`).replace(/([/\\.])/g, '\\$1')}$`);
-        return checkPath.test(fPath);
+    const isIgnored = new RegExp(`^${path.join(configDir, `gatsby-(${ignore}).[jt]sx?`).replace(/([/\\.])/g, '\\$1')}$`);
+    const isProjectSrc = (fPath: string) => {
+        if (isIgnored.test(fPath)) return false;
+        return /\.tsx?$/.test(fPath);
     };
 
     if (tsNodeOpts.project) {
@@ -66,8 +67,8 @@ export default ({
         ...tsNodeOpts,
     });
     tsNodeService.ignored = (fPath: string) => {
-        if (isProjectConfig(fPath)) return false;
-        /** This would match ALL typescript files.  We only want to match the user's gatsby config files */
+        if (isProjectSrc(fPath)) return false;
+        /** This would match ALL typescript files.  We only want to match the user's gatsby src files */
         // return !(/\.tsx?$/.test(fPath));
         return true;
     };
