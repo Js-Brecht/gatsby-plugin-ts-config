@@ -28,6 +28,8 @@ export default ({
         ignoreConfigs.push(...ignore);
     }
 
+    if (configDir === projectRoot) ignore.push(...ignoreConfigs.filter((nm) => !ignore.includes(nm)));
+
     // @ts-ignore
     global[namespace] = {
         configDir,
