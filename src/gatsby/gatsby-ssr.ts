@@ -1,4 +1,5 @@
 let gatsbySsr = {};
+export const onPreRenderHTML = () => null;
 if (!__TS_CONFIG_IGNORE_SSR) {
     try {
         gatsbySsr = require(`${__TS_CONFIG_DIR}/gatsby-ssr`);
@@ -7,4 +8,5 @@ if (!__TS_CONFIG_IGNORE_SSR) {
     }
 }
 
+// @ts-ignore
 export = gatsbySsr;
