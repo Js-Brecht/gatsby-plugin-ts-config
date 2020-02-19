@@ -2,7 +2,8 @@
 	"name": "gatsby-plugin-ts-config",
 	"version": "0.0.3",
 	"description": "Configure Gatsby to use Typescript configuration files",
-	"main": "./dist/index.js",
+  "main": "index.js",
+  "types": "./dist/index.js",
 	"author": "Jeremy Albright",
 	"license": "MIT",
 	"keywords": [
