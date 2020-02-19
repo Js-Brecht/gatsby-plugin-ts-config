@@ -3,11 +3,11 @@ import { ITsConfigArgs } from './gatsby/gatsby-config';
 import { getAbsoluteRelativeTo } from './utils/tools';
 
 type IGeneratedGatsbyConfig = Pick<GatsbyConfig, 'plugins'>;
-export interface IGenerateConfig {
+interface IGenerateConfig {
     (args: ITsConfigArgs): IGeneratedGatsbyConfig;
 }
 
-export const generateConfig: IGenerateConfig = ({
+const generateConfig: IGenerateConfig = ({
     projectRoot = process.cwd(),
     configDir = '',
     tsNode = {},
@@ -28,3 +28,12 @@ export const generateConfig: IGenerateConfig = ({
     };
     return config;
 };
+
+export {
+    IGenerateConfig,
+    ITsConfigArgs,
+    IGeneratedGatsbyConfig,
+    generateConfig,
+}
+
+export { default as namespace } from './utils/namespace';
