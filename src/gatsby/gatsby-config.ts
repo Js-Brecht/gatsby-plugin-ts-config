@@ -48,7 +48,7 @@ export default ({
     const compilerOptions = {
         module: "commonjs",
         target: "es2015",
-        allowJs: true,
+        allowJs: false,
         noEmit: true,
         declaration: false,
         importHelpers: true,
