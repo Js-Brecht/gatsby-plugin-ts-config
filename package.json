@@ -1,52 +1,52 @@
 {
-  "name": "gatsby-plugin-ts-config",
-  "version": "0.0.2",
-  "description": "Configure Gatsby to use Typescript configuration files",
-  "main": "./dist/index.js",
-  "author": "Jeremy Albright",
-  "license": "MIT",
-  "keywords": [
-    "gatsby-plugin",
-    "gatsby",
-    "typescript"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://Js-Brecht/gatsby-plugin-ts-config"
-  },
-  "homepage": "https://Js-Brecht/gatsby-plugin-ts-config",
-  "bugs": {
-    "url": "https://github.com/Js-Brecht/gatsby-plugin-ts-config/issues"
-  },
-  "files": [
-    "dist",
-    "gatsby-node.js",
-    "gatsby-config.js",
-    "gatsby-browser.js",
-    "gatsby-ssr.js",
-    "README.md",
-    "LICENSE"
-  ],
-  "scripts": {
-    "purge": "rimraf node_modules && npm run clean",
-    "clean": "rimraf ./dist",
-    "prebuild": "npm run clean",
-    "build": "tsc",
-    "build:watch": "run-s \"build -- -w\""
-  },
-  "peerDependencies": {
-    "gatsby": "~2.x.x"
-  },
-  "dependencies": {
-    "ts-node": "^8.6.2",
-    "webpack": "^4.41.6"
-  },
-  "devDependencies": {
-    "@jtechsvcs/eslint-config-typescript": "^2.0.3",
-    "@types/node": "^13.7.2",
-    "@types/webpack": "^4.41.6",
-    "gatsby": "^2.19.18",
-    "npm-run-all": "^4.1.5",
-    "rimraf": "^3.0.2"
-  }
+	"name": "gatsby-plugin-ts-config",
+	"version": "0.0.3",
+	"description": "Configure Gatsby to use Typescript configuration files",
+	"main": "./dist/index.js",
+	"author": "Jeremy Albright",
+	"license": "MIT",
+	"keywords": [
+		"gatsby-plugin",
+		"gatsby",
+		"typescript"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Js-Brecht/gatsby-plugin-ts-config"
+	},
+	"homepage": "https://github.com/Js-Brecht/gatsby-plugin-ts-config",
+	"bugs": {
+		"url": "https://github.com/Js-Brecht/gatsby-plugin-ts-config/issues"
+	},
+	"files": [
+		"dist",
+		"gatsby-node.js",
+		"gatsby-config.js",
+		"gatsby-browser.js",
+		"gatsby-ssr.js",
+		"README.md",
+		"LICENSE"
+	],
+	"scripts": {
+		"purge": "rimraf node_modules && npm run clean",
+		"clean": "rimraf ./dist",
+		"prebuild": "npm run clean",
+		"build": "tsc",
+		"build:watch": "run-s \"build -- -w\""
+	},
+	"peerDependencies": {
+		"gatsby": "~2.x.x"
+	},
+	"dependencies": {
+		"ts-node": "^8.6.2",
+		"webpack": "^4.41.6"
+	},
+	"devDependencies": {
+		"@jtechsvcs/eslint-config-typescript": "^2.0.3",
+		"@types/node": "^13.7.2",
+		"@types/webpack": "^4.41.6",
+		"gatsby": "^2.19.18",
+		"npm-run-all": "^4.1.5",
+		"rimraf": "^3.0.2"
+	}
 }
