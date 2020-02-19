@@ -1,6 +1,6 @@
 {
   "name": "gatsby-plugin-ts-config",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Configure Gatsby to use Typescript configuration files",
   "main": "./dist/index.js",
   "author": "Jeremy Albright",
@@ -10,6 +10,11 @@
     "gatsby",
     "typescript"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://Js-Brecht/gatsby-plugin-ts-config"
+  },
+  "homepage": "https://Js-Brecht/gatsby-plugin-ts-config",
   "bugs": {
     "url": "https://github.com/Js-Brecht/gatsby-plugin-ts-config/issues"
   },
