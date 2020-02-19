@@ -1,6 +1,5 @@
 import { GatsbyConfig } from 'gatsby';
 import { ITsConfigArgs } from './gatsby/gatsby-config';
-import { getAbsoluteRelativeTo } from './utils/tools';
 
 type IGeneratedGatsbyConfig = Pick<GatsbyConfig, 'plugins'>;
 interface IGenerateConfig {
@@ -12,7 +11,7 @@ const generateConfig: IGenerateConfig = ({
     configDir = '',
     ignore = [],
     tsNode = {},
-}) => {
+} = {}) => {
     const config: IGeneratedGatsbyConfig = {
         plugins: [
             {
