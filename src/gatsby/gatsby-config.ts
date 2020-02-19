@@ -73,6 +73,7 @@ export default ({
         return true;
     };
 
+    if (ignore.includes('config')) return;
     const ext = configDir === projectRoot ? '.ts' : '';
 
     try {
