@@ -2,7 +2,7 @@ import * as path from 'path';
 import { PluginOptions } from 'gatsby';
 import { register, RegisterOptions } from 'ts-node';
 import namespace from '../utils/namespace';
-import { getAbsoluteRelativeTo } from '../utils/tools';
+import { getAbsoluteRelativeTo, setupGatsbyEndpoints } from '../utils/tools';
 
 export type IGatsbyConfigs = 'config' | 'node' | 'browser' | 'ssr';
 
@@ -76,6 +76,12 @@ export default ({
         // return !(/\.tsx?$/.test(fPath));
         return true;
     };
+
+    setupGatsbyEndpoints({
+        apiEndpoints: browserSsr.filter((api) => !ignore.includes(api)),
+        configDir,
+        distDir: __dirname,
+    });
 
     if (ignore.includes('config')) return;
     const ext = configDir === projectRoot ? '.ts' : '';
