@@ -10,10 +10,9 @@ interface IGenerateConfig {
 const generateConfig: IGenerateConfig = ({
     projectRoot = process.cwd(),
     configDir = '',
+    ignore = [],
     tsNode = {},
 }) => {
-    projectRoot = getAbsoluteRelativeTo(projectRoot);
-    configDir = getAbsoluteRelativeTo(projectRoot, configDir);
     const config: IGeneratedGatsbyConfig = {
         plugins: [
             {
@@ -21,6 +20,7 @@ const generateConfig: IGenerateConfig = ({
                 options: {
                     projectRoot,
                     configDir,
+                    ignore,
                     tsNode,
                 },
             },

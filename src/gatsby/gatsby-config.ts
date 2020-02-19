@@ -4,29 +4,42 @@ import { register, RegisterOptions } from 'ts-node';
 import namespace from '../utils/namespace';
 import { getAbsoluteRelativeTo } from '../utils/tools';
 
-const gatsbyConfigs = ['config', 'node', 'browser', 'ssr'].join('|');
+export type IGatsbyConfigs = 'config' | 'node' | 'browser' | 'ssr';
+
+const gatsbyConfigs: IGatsbyConfigs[] = ['config', 'node', 'browser', 'ssr'];
+const ignoreInRoot: IGatsbyConfigs[] = ['browser', 'ssr'];
 
 export interface ITsConfigArgs extends Omit<PluginOptions, 'plugins'> {
     configDir?: string;
     projectRoot?: string;
+    ignore?: IGatsbyConfigs[];
     tsNode?: RegisterOptions;
 }
 
 export default ({
     configDir = process.cwd(),
     projectRoot = process.cwd(),
+    ignore = [],
     tsNode: tsNodeOpts = {},
 }: ITsConfigArgs) => {
     projectRoot = getAbsoluteRelativeTo(projectRoot);
     configDir = getAbsoluteRelativeTo(projectRoot, configDir);
+
+    if (configDir === projectRoot) {
+        ignore.push(...ignoreInRoot);
+    }
+
     // @ts-ignore
     global[namespace] = {
         configDir,
         projectRoot,
-    };
+        ignore,
+    } as ITsConfigArgs;
+
+    const gatsbyConfigMatch = gatsbyConfigs.filter((nm) => !ignore.includes(nm)).join('|');
 
     const isProjectConfig = (fPath: string) => {
-        const checkPath = new RegExp(`^${path.join(configDir, `gatsby-(${gatsbyConfigs}).[jt]sx?`).replace(/([/\\.])/g, '\\$1')}$`);
+        const checkPath = new RegExp(`^${path.join(configDir, `gatsby-(${gatsbyConfigMatch}).[jt]sx?`).replace(/([/\\.])/g, '\\$1')}$`);
         return checkPath.test(fPath);
     };
 

@@ -34,9 +34,7 @@ plugin array the way it needs to be.
 ```js
 // ./gatsby-config.js
 const { generateConfig } = require('gatsby-plugin-ts-config');
-module.exports = generateConfig({
-    projectRoot: __dirname,
-});
+module.exports = generateConfig();
 ```
 
 * The common way
@@ -46,12 +44,7 @@ module.exports = generateConfig({
 ```js
 module.exports = {
   plugins: [
-    {
-      resolve: `gatsby-plugin-ts-config`,
-      options: {
-        projectRoot: __dirname,
-      }
-    }
+    `gatsby-plugin-ts-config`,
   ]
 }
 ```
@@ -75,6 +68,7 @@ See below for additional options and extended usage.
 |:---|:------|:----------|
 |**`projectRoot`**|`process.cwd()`|This defines your project's root directory for the plugin.  All folder/file resolutions will be performed relative to this directory.|
 |**`configDir`**|`process.cwd()`|You can define a folder, relative to `projectRoot`, that will store your Typescript configuration files, if you want.  If you do not define this option, then it will automatically use `projectRoot`.|
+|**`ignore`**|`[]`|Configuration files you don't want to be processed by this plugin.  Must be one of `ssr`, `browser`, `config`, or `node`.|
 |**`tsNode`**|`{}`|These are options that will be passed to `ts-node`'s `register()` utility.  Valid options can be found [here](https://github.com/TypeStrong/ts-node#cli-and-programmatic-options)|
 
 ---
@@ -86,8 +80,6 @@ By default, `gatsby-plugin-ts-config` will make `ts-node` use the `tsconfig.json
 ```js
 const { generateConfig } = require('gatsby-plugin-ts-config');
 module.exports = generateConfig({
-    projectRoot: __dirname,
-    configDir: '.gatsby',
     tsNode: {
         project: 'tsconfig.build.json'
     },
@@ -96,7 +88,20 @@ module.exports = generateConfig({
 
 Note: if you define this file, it will be resolved relative to the defined `projectRoot` (which is your `process.cwd()` by default), unless it is an absolute path.
 
+### `gatsby-browser` and `gatsby-ssr`
+
+If these files are located in your `projectRoot`, then they will be skipped by this plugin automatically, because Gatsby is able to process them by default, via Webpack.
+
 ### Extended Usage
+
+If, for some reason, you need to force this plugin to resolve files relative to a different directory than your process' current working directory, then you can define the `projectRoot` option:
+
+```js
+const { generateConfig } = require('gatsby-plugin-ts-config');
+module.exports = generateConfig({
+    projectRoot: __dirname,
+});
+```
 
 I prefer to keep my configuration files out of my project root, so I usually define a subdirectory:
 
