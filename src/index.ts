@@ -2,14 +2,17 @@ import * as path from 'path';
 import { GatsbyConfig } from 'gatsby';
 import { ITsConfigArgs } from './gatsby-config';
 
-export type IGenerateConfig = (args: ITsConfigArgs) => Pick<GatsbyConfig, 'plugins'>;
+type IGeneratedGatsbyConfig = Pick<GatsbyConfig, 'plugins'>;
+export interface IGenerateConfig {
+    (args: ITsConfigArgs): IGeneratedGatsbyConfig;
+}
 
 export const generateConfig: IGenerateConfig = ({
     projectRoot = process.cwd(),
     configDir = '',
     tsNode = {},
 }) => {
-    const config = {
+    const config: IGeneratedGatsbyConfig = {
         plugins: [
             {
                 resolve: `gatsby-plugin-ts-config`,
