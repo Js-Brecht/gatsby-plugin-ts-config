@@ -8,7 +8,7 @@ export const generateConfig: IGenerateConfig = ({
     projectRoot = process.cwd(),
     configDir = '',
     tsNode = {},
-}): GatsbyConfig => {
+}) => {
     const config = {
         plugins: [
             {
