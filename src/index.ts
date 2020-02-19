@@ -1,6 +1,6 @@
-import * as path from 'path';
 import { GatsbyConfig } from 'gatsby';
-import { ITsConfigArgs } from './gatsby-config';
+import { ITsConfigArgs } from './gatsby/gatsby-config';
+import { getAbsoluteRelativeTo } from './utils/tools';
 
 type IGeneratedGatsbyConfig = Pick<GatsbyConfig, 'plugins'>;
 export interface IGenerateConfig {
@@ -12,13 +12,15 @@ export const generateConfig: IGenerateConfig = ({
     configDir = '',
     tsNode = {},
 }) => {
+    projectRoot = getAbsoluteRelativeTo(projectRoot);
+    configDir = getAbsoluteRelativeTo(projectRoot, configDir);
     const config: IGeneratedGatsbyConfig = {
         plugins: [
             {
                 resolve: `gatsby-plugin-ts-config`,
                 options: {
                     projectRoot,
-                    configDir: path.isAbsolute(configDir) ? configDir : path.resolve(path.relative(projectRoot, configDir)),
+                    configDir,
                     tsNode,
                 },
             },
