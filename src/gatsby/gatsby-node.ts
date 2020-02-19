@@ -8,11 +8,13 @@ import { ITsConfigArgs } from './gatsby-config';
 const { configDir, projectRoot, ignore }: Required<ITsConfigArgs> = global[namespace];
 
 let gatsbyNode: GatsbyNode = {};
-try {
-    const userGatsbyNode = require(path.join(configDir, 'gatsby-node'));
-    gatsbyNode = typeof userGatsbyNode === 'function' ? userGatsbyNode(projectRoot) : userGatsbyNode;
-} catch (err) { // gatsby-node didn't exist, so move on without it.
-    // noop
+if (!ignore.includes('node')) {
+    try {
+        const userGatsbyNode = require(path.join(configDir, 'gatsby-node'));
+        gatsbyNode = typeof userGatsbyNode === 'function' ? userGatsbyNode(projectRoot) : userGatsbyNode;
+    } catch (err) { // gatsby-node didn't exist, so move on without it.
+        // noop
+    }
 }
 
 const onCreateWebpackConfig: GatsbyNode['onCreateWebpackConfig'] = (args, options) => {
