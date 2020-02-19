@@ -6,8 +6,7 @@ import { getAbsoluteRelativeTo } from '../utils/tools';
 
 export type IGatsbyConfigs = 'config' | 'node' | 'browser' | 'ssr';
 
-const gatsbyConfigs: IGatsbyConfigs[] = ['config', 'node', 'browser', 'ssr'];
-const ignoreInRoot: IGatsbyConfigs[] = ['browser', 'ssr'];
+const ignoreConfigs: IGatsbyConfigs[] = ['browser', 'ssr'];
 
 export interface ITsConfigArgs extends Omit<PluginOptions, 'plugins'> {
     configDir?: string;
@@ -25,8 +24,8 @@ export default ({
     projectRoot = getAbsoluteRelativeTo(projectRoot);
     configDir = getAbsoluteRelativeTo(projectRoot, configDir);
 
-    if (configDir === projectRoot) {
-        ignore.push(...ignoreInRoot);
+    if (ignore.length > 0) {
+        ignoreConfigs.push(...ignore);
     }
 
     // @ts-ignore
@@ -36,9 +35,7 @@ export default ({
         ignore,
     } as ITsConfigArgs;
 
-    const gatsbyConfigMatch = gatsbyConfigs.filter((nm) => !ignore.includes(nm)).join('|');
-
-    const isIgnored = new RegExp(`^${path.join(configDir, `gatsby-(${ignore}).[jt]sx?`).replace(/([/\\.])/g, '\\$1')}$`);
+    const isIgnored = new RegExp(`^${path.join(configDir, `gatsby-(${ignoreConfigs}).[jt]sx?`).replace(/([/\\.])/g, '\\$1')}$`);
     const isProjectSrc = (fPath: string) => {
         if (isIgnored.test(fPath)) return false;
         return /\.tsx?$/.test(fPath);
