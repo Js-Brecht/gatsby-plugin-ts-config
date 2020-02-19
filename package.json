@@ -6,7 +6,8 @@
 	"author": "Jeremy Albright",
 	"license": "MIT",
 	"keywords": [
-		"gatsby-plugin",
+    "gatsby-plugin",
+    "gatsby-config",
 		"gatsby",
 		"typescript"
 	],
