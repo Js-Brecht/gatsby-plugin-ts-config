@@ -1,16 +1,15 @@
-import * as path from 'path';
 import { DefinePlugin } from 'webpack';
 import { GatsbyNode } from 'gatsby';
-import namespace from '../utils/namespace';
+import OptionsHandler from '../utils/options-handler';
 import { IGlobalOpts } from '../types';
 
 // @ts-ignore
-const { configDir, projectRoot, ignore, opts }: IGlobalOpts = global[namespace];
+const { endpoints, projectRoot }: IGlobalOpts = OptionsHandler.get();
 
 let gatsbyNode: GatsbyNode = {};
-if (!ignore.includes('node')) {
+if (endpoints.node) {
     try {
-        const userGatsbyNode = require(path.join(configDir, 'gatsby-node'));
+        const userGatsbyNode = require(endpoints.node);
         gatsbyNode = typeof userGatsbyNode === 'function' ? userGatsbyNode(projectRoot) : userGatsbyNode;
     } catch (err) { // gatsby-node didn't exist, so move on without it.
         // noop
@@ -19,14 +18,15 @@ if (!ignore.includes('node')) {
 
 const onCreateWebpackConfig: GatsbyNode['onCreateWebpackConfig'] = (args, options) => {
     const { setWebpackConfig } = args.actions;
+
+    const definePaths = {
+        __TS_CONFIG_SSR: JSON.stringify(endpoints.ssr || ''),
+        __TS_CONFIG_BROWSER: JSON.stringify(endpoints.browser || ''),
+    };
+
     setWebpackConfig({
         plugins: [
-            new DefinePlugin({
-                __TS_CONFIG_DIR: JSON.stringify(configDir),
-                __TS_CONFIG_PROJECT_DIR: JSON.stringify(projectRoot),
-                __TS_CONFIG_IGNORE_SSR: ignore.includes('ssr'),
-                __TS_CONFIG_IGNORE_BROWSER: ignore.includes('browser'),
-            }),
+            new DefinePlugin(definePaths),
         ],
     });
     if (gatsbyNode.onCreateWebpackConfig) {

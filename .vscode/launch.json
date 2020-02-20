@@ -7,7 +7,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Launch Program | Linux",
             "skipFiles": [
                 "<node_internals>/**"
             ],
@@ -20,6 +20,24 @@
                 "${workspaceFolder}/dist/**/*.js"
             ],
             "sourceMaps": true
-        }
+        },
+        {
+          "type": "node",
+          "request": "launch",
+          "name": "Launch Program | Windows",
+          "skipFiles": [
+              "<node_internals>/**"
+          ],
+          "runtimeArgs": [
+            "--nolazy"
+          ],
+          "cwd": "D:/dev/source/node/babel-ts-config",
+          "program": "D:/dev/source/node/babel-ts-config/index.js",
+          "outFiles": [
+              "${workspaceFolder}/dist/**/*.js"
+          ],
+          "sourceMaps": true,
+          "console": "integratedTerminal"
+      }
     ]
 }

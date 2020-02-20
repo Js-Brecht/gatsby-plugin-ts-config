@@ -1,4 +1,3 @@
-declare const __TS_CONFIG_DIR: string;
-declare const __TS_CONFIG_PROJECT_DIR: string;
-declare const __TS_CONFIG_IGNORE_SSR: boolean;
-declare const __TS_CONFIG_IGNORE_BROWSER: boolean;
+declare const __TS_CONFIG_SSR: string;
+declare const __TS_CONFIG_BROWSER: string;
+declare const __TS_CONFIG_ENDPOINT_PATH: string;

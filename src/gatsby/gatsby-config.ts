@@ -1,13 +1,15 @@
 import * as path from 'path';
-import { createConfigItem, TransformOptions, loadPartialConfig } from '@babel/core';
+import { createConfigItem, TransformOptions } from '@babel/core';
+import { ITsConfigArgs, IConfigTypes, IGlobalOpts, IEndpointResolutionSpec, IGatsbyEndpoints } from '../types';
+import OptionsHandler from '../utils/options-handler';
+import { getAbsoluteRelativeTo } from '../utils/fs-tools';
+import { setupGatsbyEndpoints, resolveGatsbyEndpoints, transformGatsbyEndpoints } from '../utils/endpoints';
+import { preferDefault } from '../utils/node';
+import { createPresets } from '../utils/babel';
 
-import { ITsConfigArgs, IGatsbyConfigTypes, IGlobalOpts } from '../types';
-import namespace from '../utils/namespace';
-import { getAbsoluteRelativeTo, setupGatsbyEndpoints, resolveGatsbyEndpoints } from '../utils/tools';
-
-const gatsbyEndpoints: IGatsbyConfigTypes[] = ['browser', 'ssr', 'config', 'node'];
-const browserSsr: IGatsbyConfigTypes[] = ['browser', 'ssr'];
-const ignoreRootConfigs: IGatsbyConfigTypes[] = [
+const gatsbyEndpoints: IConfigTypes[] = ['browser', 'ssr', 'config', 'node'];
+const browserSsr: IConfigTypes[] = ['browser', 'ssr'];
+const ignoreRootConfigs: IConfigTypes[] = [
     ...browserSsr,
 ];
 
@@ -18,50 +20,88 @@ export default ({
     projectRoot = getAbsoluteRelativeTo(projectRoot);
     configDir = getAbsoluteRelativeTo(projectRoot, configDir);
 
-    const typescriptPreset = createConfigItem([require.resolve('@babel/preset-typescript')],{
-        dirname: projectRoot,
-        type: "preset",
-    })
+    const pluginRoot = path.resolve(__dirname, '..', '..');
+    const cacheDir = path.join(pluginRoot, '.cache');
+
+    const presets = createPresets(
+        [
+            {
+                name: '@babel/preset-typescript',
+            },
+            {
+                name: '@babel/preset-env',
+                options: {
+                    modules: [
+                        'commonjs',
+                    ],
+                },
+            },
+        ],
+        {
+            dirname: projectRoot,
+        },
+    );
     const opts: TransformOptions = {
         cwd: projectRoot,
-        babelrc: true,
-        presets: [
-            typescriptPreset,
-        ]
-    }
-
-    const ignore: IGatsbyConfigTypes[] = [];
-    if (configDir === projectRoot) ignore.push(...ignoreRootConfigs.filter((nm) => !ignore.includes(nm)));
-
-    const endpoints = resolveGatsbyEndpoints({
-        apiEndpoints: gatsbyEndpoints.filter((nm) => !ignore.includes(nm)),
-        configDir,
-    })
-
-    const globalOpts: IGlobalOpts = {
-        endpoints,
-        ignore,
-        opts,
+        babelrc: false,
+        presets,
     };
 
-    // @ts-ignore
-    global[namespace] = globalOpts;
+    const ignore: IConfigTypes[] = [];
+    const configEndpoint: IEndpointResolutionSpec = {
+        type: 'config',
+        ext: ['.js', '.ts'],
+    };
+    if (configDir === projectRoot) {
+        ignore.push(...ignoreRootConfigs.filter((nm) => !ignore.includes(nm)));
+        configEndpoint.ext = ['.js'];
+    }
 
+    const endpoints = resolveGatsbyEndpoints({
+        endpointSpecs: [
+            ...gatsbyEndpoints.filter((nm) => !ignore.includes(nm) && nm !== 'config'),
+            ...(!ignore.includes('config') && [configEndpoint] || []),
+        ],
+        configDir,
+    });
+
+    Object.assign(endpoints, transformGatsbyEndpoints({
+        endpoints: Object.entries(endpoints).reduce<IGatsbyEndpoints>((acc, [key, path]) => {
+            const thisEndpoint = key as IConfigTypes;
+            if (!browserSsr.includes(thisEndpoint) && path) {
+                acc[thisEndpoint] = path;
+            }
+            return acc;
+        }, {}),
+        projectRoot,
+        configDir,
+        cacheDir,
+        opts,
+    }));
 
     setupGatsbyEndpoints({
         apiEndpoints: browserSsr.filter((api) => !ignore.includes(api)),
-        configDir,
+        resolvedEndpoints: endpoints,
         distDir: __dirname,
     });
 
-    const ext = configDir === projectRoot ? '.ts' : '';
+    OptionsHandler.set({
+        projectRoot,
+        cacheDir,
+        configDir,
+        endpoints,
+        ignore,
+        opts,
+    });
 
-    try {
-        const userGatsbyConfig = require(path.join(configDir, `gatsby-config${ext}`));
-        const gatsbyConfig = typeof userGatsbyConfig === 'function' ? userGatsbyConfig(projectRoot) : userGatsbyConfig;
-        return gatsbyConfig;
-    } catch (err) {
-        // No typescript config found, return nothing.
-        return;
+    if (endpoints.config) {
+        try {
+            const userGatsbyConfig = preferDefault(require(endpoints.config));
+            const gatsbyConfig = typeof userGatsbyConfig === 'function' ? userGatsbyConfig(projectRoot) : userGatsbyConfig;
+            return gatsbyConfig;
+        } catch (err) {
+            // No typescript config found, return nothing.
+        }
     }
+    return;
 };

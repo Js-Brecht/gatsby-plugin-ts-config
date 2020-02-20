@@ -1,4 +1,4 @@
-import { PluginOptions, GatsbyConfig } from 'gatsby';
+import { PluginOptions } from 'gatsby';
 import { TransformOptions } from '@babel/core';
 
 export interface ITsConfigArgs extends Omit<PluginOptions, 'plugins'> {
@@ -6,30 +6,22 @@ export interface ITsConfigArgs extends Omit<PluginOptions, 'plugins'> {
     projectRoot?: string;
 }
 
-export type IGatsbyConfigTypes = 'config' | 'node' | 'browser' | 'ssr';
+export type IValidExts = '.js' | '.ts' | '.jsx' | '.tsx';
+export type IConfigTypes = 'config' | 'node' | 'browser' | 'ssr';
+export type IEndpointResolutionSpec = IConfigTypes | {
+    type: IConfigTypes;
+    ext: IValidExts[];
+}
 
 export interface IGlobalOpts {
+    projectRoot: string;
+    configDir: string;
+    cacheDir: string;
     endpoints: IGatsbyEndpoints;
-    ignore: IGatsbyConfigTypes[];
+    ignore: IConfigTypes[];
     opts: TransformOptions;
 }
 
 export type IGatsbyEndpoints = {
-    [k in IGatsbyConfigTypes]?: string;
-}
-
-export interface IMakeGatsbyEndpointProps {
-    apiEndpoints: IGatsbyConfigTypes[];
-    resolvedEndpoints: IGatsbyEndpoints;
-    distDir: string;
-}
-
-export interface IResolveEndpointProps {
-    apiEndpoints: IGatsbyConfigTypes[];
-    configDir: string;
-}
-
-export type IGeneratedGatsbyConfig = Pick<GatsbyConfig, 'plugins'>;
-export interface IGenerateConfig {
-    (args: ITsConfigArgs): IGeneratedGatsbyConfig;
+    [k in IConfigTypes]?: string;
 }

@@ -1,5 +1,10 @@
-import { ITsConfigArgs, IGenerateConfig, IGeneratedGatsbyConfig } from './types';
+import { GatsbyConfig } from 'gatsby';
+import { ITsConfigArgs } from './types';
 
+type IGeneratedGatsbyConfig = Pick<GatsbyConfig, 'plugins'>;
+interface IGenerateConfig {
+    (args: ITsConfigArgs): IGeneratedGatsbyConfig;
+}
 
 const generateConfig: IGenerateConfig = ({
     projectRoot = process.cwd(),
@@ -24,6 +29,6 @@ export {
     ITsConfigArgs,
     IGeneratedGatsbyConfig,
     generateConfig,
-}
+};
 
-export { default as namespace } from './utils/namespace';
+export * from './types';
