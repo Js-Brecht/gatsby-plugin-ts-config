@@ -23,28 +23,27 @@ export default ({
     const pluginRoot = path.resolve(__dirname, '..', '..');
     const cacheDir = path.join(pluginRoot, '.cache');
 
-    const presets = createPresets(
-        [
-            {
-                name: '@babel/preset-typescript',
-            },
-            {
-                name: '@babel/preset-env',
-                options: {
-                    modules: [
-                        'commonjs',
-                    ],
-                },
-            },
-        ],
-        {
-            dirname: projectRoot,
-        },
-    );
     const opts: TransformOptions = {
         cwd: projectRoot,
         babelrc: false,
-        presets,
+        presets: createPresets(
+            [
+                {
+                    name: '@babel/preset-typescript',
+                },
+                {
+                    name: '@babel/preset-env',
+                    options: {
+                        modules: [
+                            'commonjs',
+                        ],
+                    },
+                },
+            ],
+            {
+                dirname: projectRoot,
+            },
+        ),
     };
 
     const ignore: IConfigTypes[] = [];
