@@ -2,10 +2,10 @@ import * as path from 'path';
 import { DefinePlugin } from 'webpack';
 import { GatsbyNode } from 'gatsby';
 import namespace from '../utils/namespace';
-import { ITsConfigArgs } from './gatsby-config';
+import { IGlobalOpts } from '../types';
 
 // @ts-ignore
-const { configDir, projectRoot, ignore }: Required<ITsConfigArgs> = global[namespace];
+const { configDir, projectRoot, ignore, opts }: IGlobalOpts = global[namespace];
 
 let gatsbyNode: GatsbyNode = {};
 if (!ignore.includes('node')) {
