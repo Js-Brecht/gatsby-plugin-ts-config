@@ -23,7 +23,7 @@ export default ({
     projectRoot = process.cwd(),
     ignore = [],
     tsNode: tsNodeOpts = {},
-}: ITsConfigArgs) => {
+}: ITsConfigArgs = {}) => {
     projectRoot = getAbsoluteRelativeTo(projectRoot);
     configDir = getAbsoluteRelativeTo(projectRoot, configDir);
 
