@@ -29,6 +29,8 @@ class RequireRegistrar<T extends IRegisterType> {
     }
 
     public start(): void {
+        if (!this.type)
+            throw new Error('[gatsby-plugin-ts-config] Compiler registration was started before it was initialized!');
         this.active = true;
         if (!this.registered) this.register();
     }
