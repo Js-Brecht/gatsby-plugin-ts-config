@@ -1,6 +1,4 @@
-## `gatsby-plugin-ts-config`
-
-### Configure Gatsby to use Typescript for configuration files
+## Configure Gatsby to use Typescript for configuration files
 
 This plugin will set up `ts-node` to be used for interpreting Gatsby configuration files
 that are written in Typescript. (i.e. `gatsby-*` files)
@@ -68,7 +66,6 @@ See below for additional options and extended usage.
 |:---|:------|:----------|
 |**`projectRoot`**|`process.cwd()`|This defines your project's root directory for the plugin.  All folder/file resolutions will be performed relative to this directory.|
 |**`configDir`**|`process.cwd()`|You can define a folder, relative to `projectRoot`, that will store your Typescript configuration files, if you want.  If you do not define this option, then it will automatically use `projectRoot`.|
-|**`ignore`**|`[]`|Configuration files you don't want to be processed by this plugin.  Must be one of `ssr`, `browser`, `config`, or `node`.|
 |**`tsNode`**|`{}`|These are options that will be passed to `ts-node`'s `register()` utility.  Valid options can be found [here](https://github.com/TypeStrong/ts-node#cli-and-programmatic-options)|
 
 ---
