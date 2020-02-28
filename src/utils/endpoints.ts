@@ -92,7 +92,6 @@ export const setupGatsbyEndpoints = ({
             });
         } else if (fileExists(pluginFile)) {
             // Endpoint doesn't exist, so remove it from this plugin's root
-            console.log(`delete ${pluginFile}\n\n`);
             fs.unlinkSync(pluginFile);
         }
     }
