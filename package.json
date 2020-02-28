@@ -33,7 +33,7 @@
 	"scripts": {
 		"purge": "rimraf node_modules && npm run clean",
 		"clean": "rimraf ./dist",
-		"prebuild": "npm run clean",
+		"prebuild": "yarn clean",
 		"build": "tsc",
 		"build:watch": "run-s \"build -- -w\"",
 		"lint": "eslint -c .eslintrc ./src/**/*"
