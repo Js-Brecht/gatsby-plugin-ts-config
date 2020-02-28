@@ -1,8 +1,5 @@
 import * as path from 'path';
-import { PluginOptions } from 'gatsby';
-import { register, RegisterOptions } from 'ts-node';
-import namespace from '../utils/namespace';
-import { getAbsoluteRelativeTo, setupGatsbyEndpoints } from '../utils/tools';
+import { getAbsoluteRelativeTo } from '../utils/fs-tools';
 
 export type IGatsbyConfigs = 'config' | 'node' | 'browser' | 'ssr';
 
