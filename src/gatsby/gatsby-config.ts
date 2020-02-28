@@ -4,6 +4,7 @@ import { getAbsoluteRelativeTo } from '../utils/fs-tools';
 import { setupGatsbyEndpoints, resolveGatsbyEndpoints } from '../utils/endpoints';
 import { ITsConfigArgs, IConfigTypes, IEndpointResolutionSpec } from '../types';
 import { preferDefault } from '../utils/node';
+import RequireRegistrar from '../utils/register';
 import OptionsHandler from '../utils/options-handler';
 
 const gatsbyEndpoints: IConfigTypes[] = ['browser', 'ssr', 'config', 'node'];
@@ -59,53 +60,26 @@ export default ({
         tsNodeOpts.project = getAbsoluteRelativeTo(projectRoot, tsNodeOpts.project);
     }
 
-    const compilerOptions = {
-        module: "commonjs",
-        target: "es2015",
-        allowJs: false,
-        noEmit: true,
-        declaration: false,
-        importHelpers: true,
-        resolveJsonModule: true,
-        jsx: "preserve",
-        ...tsNodeOpts.compilerOptions || {}
-    }
-
-    const tsNodeService = register({
-        project: path.join(projectRoot, 'tsconfig.json'),
-        compilerOptions,
-        files: true,
-        ...tsNodeOpts,
-    });
-
-    const isIgnored = new RegExp(`^${path.join(configDir, `gatsby-(${ignoreRootConfigs}).[jt]sx?`).replace(/([/\\.])/g, '\\$1')}$`);
-    const isProjectSrc = (fPath: string) => {
-        if (isIgnored.test(fPath)) return false;
-        return /\.tsx?$/.test(fPath);
-    };
-
-
-    tsNodeService.ignored = (fPath: string) => {
-        if (isProjectSrc(fPath)) return false;
-        /** This would match ALL typescript files.  We only want to match the user's gatsby src files */
-        // return !(/\.tsx?$/.test(fPath));
-        return true;
-    };
-
-    setupGatsbyEndpoints({
-        apiEndpoints: browserSsr.filter((api) => !ignore.includes(api)),
-        configDir,
-        distDir: __dirname,
+    RequireRegistrar.init('ts-node', {
+        registerOpts: tsNodeOpts,
+        programOpts: {
+            projectRoot,
+            configDir,
+            cacheDir,
+        },
     });
 
     let gatsbyConfig = {} as GatsbyConfig;
     if (endpoints.config) {
         try {
+            RequireRegistrar.start();
             const gatsbyConfigModule = require(endpoints.config);
             const gatsbyConfigEntry = preferDefault(gatsbyConfigModule);
             gatsbyConfig = typeof gatsbyConfigEntry === 'function' ? gatsbyConfigEntry(projectRoot) : gatsbyConfigEntry;
         } catch (err) {
             throw new Error(`[gatsby-plugin-ts-config] Unable to read your 'gatsby-config'!\n${err.stack}`);
+        } finally {
+            RequireRegistrar.stop();
         }
     }
     return gatsbyConfig;
