@@ -77,9 +77,8 @@ export default ({
     if (endpoints.config) {
         try {
             RequireRegistrar.start();
-            const gatsbyConfigModule = require(endpoints.config);
-            const gatsbyConfigEntry = preferDefault(gatsbyConfigModule);
-            gatsbyConfig = typeof gatsbyConfigEntry === 'function' ? gatsbyConfigEntry(projectRoot) : gatsbyConfigEntry;
+            const gatsbyConfigModule = preferDefault(require(endpoints.config));
+            gatsbyConfig = typeof gatsbyConfigModule === 'function' ? gatsbyConfigModule(projectRoot) : gatsbyConfigModule;
         } catch (err) {
             throw new Error(`[gatsby-plugin-ts-config] Unable to read your 'gatsby-config'!\n${err.stack}`);
         } finally {
