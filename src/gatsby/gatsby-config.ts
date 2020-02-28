@@ -1,7 +1,10 @@
 import * as path from 'path';
+import { GatsbyConfig } from 'gatsby';
 import { getAbsoluteRelativeTo } from '../utils/fs-tools';
 import { setupGatsbyEndpoints, resolveGatsbyEndpoints } from '../utils/endpoints';
 import { ITsConfigArgs, IConfigTypes, IEndpointResolutionSpec } from '../types';
+import { preferDefault } from '../utils/node';
+import OptionsHandler from '../utils/options-handler';
 
 const gatsbyEndpoints: IConfigTypes[] = ['browser', 'ssr', 'config', 'node'];
 const browserSsr: IConfigTypes[] = ['browser', 'ssr'];
@@ -95,15 +98,15 @@ export default ({
         distDir: __dirname,
     });
 
-    if (ignore.includes('config')) return;
-    const ext = configDir === projectRoot ? '.ts' : '';
-
-    try {
-        const userGatsbyConfig = require(path.join(configDir, `gatsby-config${ext}`));
-        const gatsbyConfig = typeof userGatsbyConfig === 'function' ? userGatsbyConfig(projectRoot) : userGatsbyConfig;
-        return gatsbyConfig;
-    } catch (err) {
-        // No typescript config found, return nothing.
-        return;
+    let gatsbyConfig = {} as GatsbyConfig;
+    if (endpoints.config) {
+        try {
+            const gatsbyConfigModule = require(endpoints.config);
+            const gatsbyConfigEntry = preferDefault(gatsbyConfigModule);
+            gatsbyConfig = typeof gatsbyConfigEntry === 'function' ? gatsbyConfigEntry(projectRoot) : gatsbyConfigEntry;
+        } catch (err) {
+            throw new Error(`[gatsby-plugin-ts-config] Unable to read your 'gatsby-config'!\n${err.stack}`);
+        }
     }
+    return gatsbyConfig;
 };
