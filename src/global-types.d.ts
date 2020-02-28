@@ -1,0 +1,1 @@
+declare const __TS_CONFIG_ENDPOINT_PATH: string;
