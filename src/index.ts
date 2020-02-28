@@ -1,5 +1,5 @@
 import { GatsbyConfig } from 'gatsby';
-import { ITsConfigArgs } from './gatsby/gatsby-config';
+import { ITsConfigArgs } from './types';
 
 type IGeneratedGatsbyConfig = Pick<GatsbyConfig, 'plugins'>;
 interface IGenerateConfig {
@@ -9,7 +9,6 @@ interface IGenerateConfig {
 const generateConfig: IGenerateConfig = ({
     projectRoot = process.cwd(),
     configDir = '',
-    ignore = [],
     tsNode = {},
 } = {}) => {
     const config: IGeneratedGatsbyConfig = {
@@ -19,7 +18,6 @@ const generateConfig: IGenerateConfig = ({
                 options: {
                     projectRoot,
                     configDir,
-                    ignore,
                     tsNode,
                 },
             },
@@ -33,6 +31,6 @@ export {
     ITsConfigArgs,
     IGeneratedGatsbyConfig,
     generateConfig,
-}
+};
 
-export { default as namespace } from './utils/namespace';
+export * from './types';
