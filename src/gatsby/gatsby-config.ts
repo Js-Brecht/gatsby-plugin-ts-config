@@ -1,39 +1,43 @@
 import * as path from 'path';
 import { getAbsoluteRelativeTo } from '../utils/fs-tools';
+import { setupGatsbyEndpoints, resolveGatsbyEndpoints } from '../utils/endpoints';
 import { ITsConfigArgs, IConfigTypes, IEndpointResolutionSpec } from '../types';
 
-export type IGatsbyConfigs = 'config' | 'node' | 'browser' | 'ssr';
-
-const browserSsr: IGatsbyConfigs[] = ['browser', 'ssr'];
-const ignoreRootConfigs: IGatsbyConfigs[] = [
+const gatsbyEndpoints: IConfigTypes[] = ['browser', 'ssr', 'config', 'node'];
+const browserSsr: IConfigTypes[] = ['browser', 'ssr'];
+const ignoreRootConfigs: IConfigTypes[] = [
     ...browserSsr,
 ];
-
-export interface ITsConfigArgs extends Omit<PluginOptions, 'plugins'> {
-    configDir?: string;
-    projectRoot?: string;
-    ignore?: IGatsbyConfigs[];
-    tsNode?: RegisterOptions;
-}
 
 export default ({
     configDir = process.cwd(),
     projectRoot = process.cwd(),
-    ignore = [],
     tsNode: tsNodeOpts = {},
 }: ITsConfigArgs = {}) => {
     projectRoot = getAbsoluteRelativeTo(projectRoot);
     configDir = getAbsoluteRelativeTo(projectRoot, configDir);
 
-    if (ignore.length > 0) {
-        ignoreRootConfigs.push(...ignore);
+    const pluginRoot = path.resolve(__dirname, '..', '..');
+    const cacheDir = path.join(pluginRoot, '.cache');
+
+    const ignore: IConfigTypes[] = [];
+    const configEndpoint: IEndpointResolutionSpec = {
+        type: 'config',
+        ext: ['.js', '.ts'],
+    };
+    if (configDir === projectRoot) {
+        ignore.push(...ignoreRootConfigs.filter((nm) => !ignore.includes(nm)));
+        configEndpoint.ext = ['.ts'];
     }
 
-    if (configDir === projectRoot) ignore.push(...ignoreRootConfigs.filter((nm) => !ignore.includes(nm)));
-
-    // @ts-ignore
-    global[namespace] = {
+    const endpoints = resolveGatsbyEndpoints({
+        endpointSpecs: [
+            ...gatsbyEndpoints.filter((nm) => !ignore.includes(nm) && nm !== 'config'),
+            ...(!ignore.includes('config') && [configEndpoint] || []),
+        ],
         configDir,
+    });
+
     setupGatsbyEndpoints({
         apiEndpoints: browserSsr,
         resolvedEndpoints: endpoints,
