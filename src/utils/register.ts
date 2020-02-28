@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { register } from 'ts-node';
+import { register, TsConfigOptions } from 'ts-node';
 import { IRegisterOptions, IRegisterType, ICommonDirectories } from '../types';
 
 export type IRegistrarProgramOpts = ICommonDirectories;
@@ -10,6 +10,7 @@ export interface IRequireRegistrarProps<T extends IRegisterType> {
 }
 
 class RequireRegistrar<T extends IRegisterType> {
+    private initialized = false;
     private registered = false;
     private active = false;
     private type!: T;
@@ -26,10 +27,11 @@ class RequireRegistrar<T extends IRegisterType> {
         this.type = type;
         this.registerOpts = props.registerOpts;
         this.programOpts = props.programOpts;
+        this.initialized = true;
     }
 
     public start(): void {
-        if (!this.type)
+        if (!this.initialized)
             throw new Error('[gatsby-plugin-ts-config] Compiler registration was started before it was initialized!');
         this.active = true;
         if (!this.registered) this.register();
@@ -43,7 +45,7 @@ class RequireRegistrar<T extends IRegisterType> {
         if (!this.active) return true;
         switch (this.type) {
             case 'ts-node': {
-                if (this.extensions.includes(path.extname(filename))) return true;
+                if (!this.extensions.includes(path.extname(filename))) return true;
                 break;
             }
             case 'babel': {
@@ -65,7 +67,7 @@ class RequireRegistrar<T extends IRegisterType> {
         switch (this.type) {
             case 'ts-node': {
                 const tsNodeOpts = this.registerOpts as IRegisterOptions<'ts-node'>;
-                const compilerOptions = {
+                const compilerOptions: TsConfigOptions['compilerOptions'] = {
                     module: "commonjs",
                     target: "es2015",
                     allowJs: false,
