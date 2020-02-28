@@ -32,19 +32,33 @@
 		"clean": "rimraf ./dist",
 		"prebuild": "npm run clean",
 		"build": "tsc",
-		"build:watch": "run-s \"build -- -w\""
+    "build:watch": "run-s \"build -- -w\"",
+    "lint": "eslint -c .eslintrc ./src/**/*"
 	},
 	"peerDependencies": {
 		"gatsby": "~2.x.x"
 	},
 	"dependencies": {
-		"ts-node": "^8.6.2",
-		"webpack": "^4.41.6"
+		"@babel/core": "^7.8.6",
+		"@babel/generator": "^7.8.6",
+		"@babel/template": "^7.8.6",
+		"@babel/types": "^7.8.6",
+		"fs-extra": "^8.1.0",
+		"ts-node": "^8.6.2"
 	},
 	"devDependencies": {
 		"@jtechsvcs/eslint-config-typescript": "^2.0.3",
+		"@types/babel__core": "^7.1.6",
+		"@types/babel__generator": "^7.6.1",
+		"@types/babel__template": "^7.0.2",
+		"@types/fs-extra": "^8.1.0",
 		"@types/node": "^13.7.2",
+		"@types/rimraf": "^2.0.3",
 		"@types/webpack": "^4.41.6",
+		"@typescript-eslint/eslint-plugin": "^2.21.0",
+		"@typescript-eslint/parser": "^2.21.0",
+		"@typescript-eslint/typescript-estree": "^2.21.0",
+		"eslint": "^6.8.0",
 		"gatsby": "^2.19.18",
 		"npm-run-all": "^4.1.5",
 		"rimraf": "^3.0.2",
