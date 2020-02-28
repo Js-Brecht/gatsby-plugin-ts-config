@@ -1,6 +1,6 @@
 {
 	"name": "gatsby-plugin-ts-config",
-	"version": "0.0.11",
+	"version": "0.0.12",
 	"description": "Configure Gatsby to use Typescript configuration files",
 	"main": "index.js",
 	"types": "./dist/index.js",
