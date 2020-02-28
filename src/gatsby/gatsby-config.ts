@@ -7,8 +7,12 @@ import { preferDefault } from '../utils/node';
 import RequireRegistrar from '../utils/register';
 import OptionsHandler from '../utils/options-handler';
 
-const gatsbyEndpoints: IConfigTypes[] = ['browser', 'ssr', 'config', 'node'];
 const browserSsr: IConfigTypes[] = ['browser', 'ssr'];
+const gatsbyEndpoints: IConfigTypes[] = [
+    ...browserSsr,
+    'config',
+    'node',
+];
 const ignoreRootConfigs: IConfigTypes[] = [
     ...browserSsr,
 ];
