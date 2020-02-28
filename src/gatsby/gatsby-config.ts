@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { getAbsoluteRelativeTo } from '../utils/fs-tools';
+import { ITsConfigArgs, IConfigTypes, IEndpointResolutionSpec } from '../types';
 
 export type IGatsbyConfigs = 'config' | 'node' | 'browser' | 'ssr';
 
