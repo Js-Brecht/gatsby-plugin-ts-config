@@ -41,7 +41,7 @@ class RequireRegistrar<T extends IRegisterType> {
         if (!this.active) return true;
         switch (this.type) {
             case 'ts-node': {
-                if (!(/\.tsx?$/.test(path.extname(filename)))) return true;
+                if (this.extensions.includes(path.extname(filename))) return true;
                 break;
             }
             case 'babel': {
@@ -53,9 +53,7 @@ class RequireRegistrar<T extends IRegisterType> {
     }
 
     private only(filename: string): boolean {
-        if (!this.active) return false;
-        if (filename.indexOf('node_modules') > -1) return false;
-        return true;
+        return !this.ignore(filename);
     }
 
     private register(): void {
