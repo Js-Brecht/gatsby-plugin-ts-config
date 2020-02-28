@@ -36,6 +36,11 @@ export default ({
     // @ts-ignore
     global[namespace] = {
         configDir,
+    setupGatsbyEndpoints({
+        apiEndpoints: browserSsr,
+        resolvedEndpoints: endpoints,
+        distDir: __dirname,
+    });
         projectRoot,
         ignore,
     } as ITsConfigArgs;
