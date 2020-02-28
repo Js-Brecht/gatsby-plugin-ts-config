@@ -43,9 +43,14 @@ export default ({
         resolvedEndpoints: endpoints,
         distDir: __dirname,
     });
+
+    OptionsHandler.set({
         projectRoot,
+        cacheDir,
+        configDir,
+        endpoints,
         ignore,
-    } as ITsConfigArgs;
+    });
 
     if (tsNodeOpts.project) {
         tsNodeOpts.project = getAbsoluteRelativeTo(projectRoot, tsNodeOpts.project);
