@@ -32,8 +32,8 @@
 		"clean": "rimraf ./dist",
 		"prebuild": "npm run clean",
 		"build": "tsc",
-    "build:watch": "run-s \"build -- -w\"",
-    "lint": "eslint -c .eslintrc ./src/**/*"
+		"build:watch": "run-s \"build -- -w\"",
+		"lint": "eslint -c .eslintrc ./src/**/*"
 	},
 	"peerDependencies": {
 		"gatsby": "~2.x.x"
