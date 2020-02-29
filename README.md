@@ -185,6 +185,73 @@ module.exports = generateConfig({
   |`cacheDir`|<p>The cache folder location that the plugin will use to store any of the files that it needs to.</p>|
   |`endpoints`|<p>A collection of the fully qualified paths for all of the Gatsby configuration files that have been resolved, and that will be called, by this plugin.  This will be equal to any of the endpoints that you have in your `configDir`, with two exceptions:<p> If your `configDir` is the same as the `projectRoot`, then `gatsby-ssr` and `gastby-browser` will **not** be included in these resolved endpoints, because they will not be called by this plugin.
 
+  A couple of utility interfaces are exported by this plugin to make it easier to create
+  type-safe functions in `gatsby-node` and `gatsby-config`:
+
+  * `ITSConfigFn`: Interface that describes the shape of the `gatsby-config` or `gatsby-node`
+    default function exports.  Accepts two parameters:
+    * The string parameter for the function type ('config' | 'node')
+    * In the case of 'config', a union of plugin option interfaces, to allow you to design a
+      strongly typed object export.
+  * `IMergePluginOptions`: Utility type that makes it easy to merge a plugin's defined types
+    into your plugins object array.  Accepts two parameters:
+    * The name of the plugin, which will be used in the `resolve` property
+    * The interface for the plugin's options
+
+  For example, the plugin [`gatsby-plugin-pnpm`](https://github.com/Js-Brecht/gatsby-plugin-pnpm) exports the interface for the options that are valid for it, and
+  they could be used like this:
+
+  ```ts
+  import { IPluginOptions as IPnpmPluginOptions } from 'gatsby-plugin-pnpm';
+  import { ITSConfigFn, IMergePluginOptions } from 'gatsby-plugin-ts-config';
+
+  const gatsbyConfig: ITSConfigFn<'config',
+    | IMergePluginOptions<'gatsby-plugin-pnpm', IPnpmPluginOptions>
+    | /* Add more merged types here */
+  > = ({
+    projectRoot
+  }) => ({
+    siteMetadata: {
+      title: `Some site title`,
+      description: `This is a description of your site`,
+      author: `@Js-Brecht`,
+    },
+    plugins: [
+      {
+        resolve: `gatsby-plugin-pnpm`, // <-- This will have intellisense
+        options: { // <-- These will have intellisense, and will be type-checked
+          projectPath: projectRoot
+        }
+      }
+    ]
+  });
+
+  export default gatsbyConfig;
+  ```
+
+  Something similar can be done for `gatsby-node`, but it is even simpler:
+
+  ```ts
+  import { SourceNodesArgs } from 'gatsby';
+  import { ITSConfigFn } from 'gatsby-plugin-ts-config';
+
+  const gatsbyNode: ITSConfigFn<'node'> = ({
+    projectRoot
+  }) => ({
+    sourceNodes: async ({
+      actions,
+      createNodeId,
+      createContentDigest
+    }: SourceNodesArgs): Promise<void> => {
+      const { createNode } = actions;
+      /* Create your nodes here */
+      return;
+    }
+  })
+
+  export default gatsbyNode;
+  ```
+
 ---
 
 ### Contributing / Issues
