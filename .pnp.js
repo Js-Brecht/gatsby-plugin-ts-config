@@ -1452,7 +1452,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ]],
       ["@jtechsvcs/eslint-config-typescript", [
         ["virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:2.0.3", {
-          "packageLocation": "./.yarn/$$virtual/@jtechsvcs-eslint-config-typescript-virtual-d0a2d39069/4/.yarncache/berry/cache/@jtechsvcs-eslint-config-typescript-npm-2.0.3-12e3f22086-2.zip/node_modules/@jtechsvcs/eslint-config-typescript/",
+          "packageLocation": "./.yarn/unplugged/@jtechsvcs-eslint-config-typescript-virtual-d0a2d39069/node_modules/@jtechsvcs/eslint-config-typescript/",
           "packageDependencies": [
             ["@jtechsvcs/eslint-config-typescript", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:2.0.3"],
             ["@jtechsvcs/eslint-config-standard", "virtual:d0a2d39069a3b26be739577807142278a4247b58ce5aab0ae4560680a0fec4342bf406f23388773c7012cebe5d71dd240eb40cb6bd6b3cb00fb35b1856010247#npm:2.0.0"],
@@ -5871,7 +5871,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ]],
       ["eslint", [
         ["npm:6.8.0", {
-          "packageLocation": "../../../.yarncache/berry/cache/eslint-npm-6.8.0-d27045f313-2.zip/node_modules/eslint/",
+          "packageLocation": "./.yarn/unplugged/eslint-npm-6.8.0-d27045f313/node_modules/eslint/",
           "packageDependencies": [
             ["eslint", "npm:6.8.0"],
             ["@babel/code-frame", "npm:7.8.3"],

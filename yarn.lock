@@ -6112,6 +6112,11 @@ fsevents@~2.1.1:
   peerDependencies:
     gatsby: ~2.x.x
     typescript: ~3.x.x
+  dependenciesMeta:
+    "@jtechsvcs/eslint-config-typescript":
+      unplugged: true
+    eslint:
+      unplugged: true
   peerDependenciesMeta:
     typescript:
       optional: true
