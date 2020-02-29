@@ -1,4 +1,5 @@
-import * as fs from 'fs';
+import * as path from 'path';
+import * as fs from 'fs-extra';
 import template from '@babel/template';
 import generate from '@babel/generator';
 import { StringLiteral } from '@babel/types';
@@ -15,16 +16,11 @@ export const transformCodeToTemplate = ({
     srcFile,
     targetFile,
     templateSpec,
-}: ITransformCodeToTemplateProps): boolean => {
-    try {
-        const code = fs.readFileSync(srcFile).toString();
-        const buildTemplate = template.program(code);
-        const ast = buildTemplate(templateSpec);
-        const output = generate(ast).code;
-        fs.writeFileSync(targetFile, output);
-        return true;
-    } catch (err) {
-        // noop
-    }
-    return false;
+}: ITransformCodeToTemplateProps): void => {
+    const code = fs.readFileSync(srcFile).toString();
+    const buildTemplate = template.program(code);
+    const ast = buildTemplate(templateSpec);
+    const output = generate(ast).code;
+    fs.ensureDirSync(path.dirname(targetFile));
+    fs.writeFileSync(targetFile, output);
 };

@@ -104,5 +104,3 @@ dist
 .tern-port
 
 .npmrc
-/gatsby-browser.js
-/gatsby-ssr.js

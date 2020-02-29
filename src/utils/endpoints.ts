@@ -48,51 +48,49 @@ export const resolveGatsbyEndpoints = ({
 // ***************************************
 
 export interface IMakeGatsbyEndpointProps {
-    apiEndpoints: IConfigTypes[];
     resolvedEndpoints: IGatsbyEndpoints;
     distDir: string;
+    cacheDir: string;
 }
+export const browserSsr: IConfigTypes[] = ['browser', 'ssr'];
 
 /**
- * If defined `apiEndpoints` exist in the config storage directory,
- * then copy this plugin's `dist` version to its root directory so
- * that they will be picked up by Gatsby.
- *
- * If the defined `apiEndpoints` don't exist in the config storage
- * directory, and it exists in this plugin's root, then the copy in
- * this plugin's root will be deleted
+ * If defined `apiEndpoints` exist in the user's config directory,
+ * then copy this plugin's `dist` version to the user's cache directory
+ * so that they can proxy the request from this plugin to the user's
+ * endpoints.
  *
  * @param {IMakeGatsbyEndpointProps} setupEndpointProps
  *
- * * `apiEndpoints`: The specific endpoint types to look for and process
  * * `resolvedEndpoints`: The collection of endpoints that have been resolved
  * in the user's configuration directory
- * * `distDir`: The location of files that can be copied to this plugin's root
+ * * `distDir`: The location of files that can be copied to this user's cache
+ * * `cacheDir`: The location to write the proxy module
  */
 export const setupGatsbyEndpoints = ({
-    apiEndpoints,
     resolvedEndpoints,
     distDir,
+    cacheDir,
 }: IMakeGatsbyEndpointProps): void => {
-    const pluginRoot = path.resolve(__dirname, '..', '..');
-    for (const setupApi of apiEndpoints) {
+    for (const setupApi of browserSsr) {
         const endpointFile = `gatsby-${setupApi}.js`;
-        const distFile = path.join(distDir, endpointFile);
-        const pluginFile = path.join(pluginRoot, endpointFile);
+        const srcFile = path.join(distDir, endpointFile);
+        const targetFile = path.join(cacheDir, endpointFile);
 
-        // Only copy if this endpoint has been resolved already, so we know it exists
         if (setupApi in resolvedEndpoints) {
+            // If User endpoint was resolved, then write out the proxy
+            // module that will point to the user's
             const resolvedPath = resolvedEndpoints[setupApi] as string;
             transformCodeToTemplate({
-                srcFile: distFile,
-                targetFile: pluginFile,
+                srcFile,
+                targetFile,
                 templateSpec: {
                     __TS_CONFIG_ENDPOINT_PATH: stringLiteral(resolvedPath),
                 },
             });
-        } else if (fileExists(pluginFile)) {
-            // Endpoint doesn't exist, so remove it from this plugin's root
-            fs.unlinkSync(pluginFile);
+        } else {
+            // User endpoint was not resolved, so just write an empty module
+            fs.writeFileSync(targetFile, `module.exports = {}`);
         }
     }
 };
