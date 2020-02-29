@@ -1,13 +1,12 @@
 ## Configure Gatsby to use Typescript for configuration files
 
-This plugin will set up `ts-node` to be used for interpreting Gatsby configuration files
-that are written in Typescript. (i.e. `gatsby-*` files)
+This plugin will allow you to write your `gatsby-*` configuration files in Typescript.
 
 ---
 
 ### Installation
 
-* Install via your project manager
+* Install using your project manager
 
 ```shell
 npm install -D gatsby-plugin-ts-config
@@ -15,11 +14,24 @@ npm install -D gatsby-plugin-ts-config
 
 ---
 
+> ## **IMPORTANT:**
+>
+> Before reading below, please note that it is recommended for you to define a `configDir` in
+> the plugin options.
+>
+> Because of the process this plugin has to follow so that it can interpret your
+> typescript configuration files, some conflicts may occur regarding node ownership if you
+> keep your `gatsby-node.ts` in the project root.  In order to place that file in a sub-
+> directory, you will need to define a `configDir`, and you will also need to put the rest of
+> your configurations in the same place.
+
+---
+
 ### Usage
 
-You will still need to define, at minimum, one `.js` Gatsby configuration, `gatsby-config.js`,
-and it needs to be in the root of your project, as usual.  You will then use _**it**_ to call this
-plugin, and the rest of your configuration will be in Typescript files.
+You will still need to define, at minimum, one `.js` Gatsby configuration: `gatsby-config.js`.
+It also needs to be in the root of your project, as usual.  You will then use _**it**_ to call
+this plugin, and the rest of your configuration will be in Typescript files.
 
 * The easy way
 
@@ -30,7 +42,7 @@ plugin array the way it needs to be.
   while defining the plugin options.
 
 ```js
-// ./gatsby-config.js
+// gatsby-config.js
 const { generateConfig } = require('gatsby-plugin-ts-config');
 module.exports = generateConfig();
 ```
@@ -40,6 +52,7 @@ module.exports = generateConfig();
   * _This can also be done the normal way.  The utility above just makes it easy_
 
 ```js
+// gatsby-config.js
 module.exports = {
   plugins: [
     `gatsby-plugin-ts-config`,
@@ -56,11 +69,9 @@ module.exports = {
     * gatsby-node.ts
     * gatsby-ssr.ts
 
-See below for additional options and extended usage.
-
 ---
 
-### Options
+### Plugin Options
 
 |Name|Default|Description|
 |:---|:------|:----------|
@@ -75,6 +86,7 @@ See below for additional options and extended usage.
 By default, `gatsby-plugin-ts-config` will make `ts-node` use the `tsconfig.json` found in the `projectRoot`.  If you want to define a different one, include it as one of the `tsNode` options:
 
 ```js
+// gatsby-config.js
 const { generateConfig } = require('gatsby-plugin-ts-config');
 module.exports = generateConfig({
     tsNode: {
@@ -85,15 +97,12 @@ module.exports = generateConfig({
 
 Note: if you define this file, it will be resolved relative to the defined `projectRoot` (which is your `process.cwd()` by default), unless it is an absolute path.
 
-### `gatsby-browser` and `gatsby-ssr`
-
-If these files are located in your `projectRoot`, then they will be skipped by this plugin automatically, because Gatsby is able to process them by default, via Webpack.
-
 ### Extended Usage
 
 If, for some reason, you need to force this plugin to resolve files relative to a different directory than your process' current working directory, then you can define the `projectRoot` option:
 
 ```js
+// gatsby-config.js
 const { generateConfig } = require('gatsby-plugin-ts-config');
 module.exports = generateConfig({
     projectRoot: __dirname,
@@ -102,7 +111,10 @@ module.exports = generateConfig({
 
 I prefer to keep my configuration files out of my project root, so I usually define a subdirectory:
 
+> It is recommended that you define a `configDir`.
+
 ```js
+// gatsby-config.js
 const { generateConfig } = require('gatsby-plugin-ts-config');
 module.exports = generateConfig({
     projectRoot: __dirname,
@@ -125,6 +137,7 @@ This will make it look in my `.gatsby` subdirectory for all configuration files.
 I also like to use aliases in my Typescript, so I prefer to configure a custom paths transformer for `ts-node`:
 
 ```js
+// gatsby-config.js
 const TsPathsTransformer = require('@zerollup/ts-transform-paths');
 const { generateConfig } = require('gatsby-plugin-ts-config');
 module.exports = generateConfig({
@@ -145,6 +158,32 @@ module.exports = generateConfig({
     },
 });
 ```
+
+---
+
+### Writing Gatsby API Endpoints
+
+* #### `gatsby-browser` and `gatsby-ssr`
+
+  If these files are located in your `projectRoot`, then they will be skipped by this plugin
+  because Gatsby is able to process them by default, through Webpack.
+
+* #### `gatsby-config` and `gatsby-node`
+
+  These files can be created two ways.  The first is by exporting a single object or series of
+  named exports, the same way you normally would.  You may also export this object as the default
+  export, if you wish.  It is supported.
+
+  The second method allows you to export a single function as the default export.  This function
+  will receive a single object as the first and only parameter.  The object properties are
+  defined as follows:
+
+  |Property|Description|
+  |:------|:----------|
+  |`projectRoot`|<p>The resolved pathname that you either defined in the plugin options, or that was calculated automatically.</p>|
+  |`configDir`|<p>The location of your configuration files.  If you do not define one in the plugin options, then this will be the same as your `projectRoot`.</p>|
+  |`cacheDir`|<p>The cache folder location that the plugin will use to store any of the files that it needs to.</p>|
+  |`endpoints`|<p>A collection of the fully qualified paths for all of the Gatsby configuration files that have been resolved, and that will be called, by this plugin.  This will be equal to any of the endpoints that you have in your `configDir`, with two exceptions:<p> If your `configDir` is the same as the `projectRoot`, then `gatsby-ssr` and `gastby-browser` will **not** be included in these resolved endpoints, because they will not be called by this plugin.
 
 ---
 
