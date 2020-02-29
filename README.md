@@ -14,10 +14,10 @@ npm install -D gatsby-plugin-ts-config
 
 ---
 
-<<table style="border: 5px double gray">
+<table style="border: 5px double gray">
 <tr><th><h2>IMPORTANT:</h2></th></tr>
 <tr><td>
-<p>Before reading below, please note that it is recommended for you to define a `configDir` in the plugin options.</p><p>Because of the process this plugin has to follow so that it can interpret your typescript configuration files, some conflicts may occur regarding node ownership if you keep your `gatsby-node.ts` in the project root.  In order to place that file in a sub-directory, you will need to define a `configDir`, and you will also need to put the rest of your configurations in the same place.</p>
+<p>Before reading below, please note that it is recommended for you to define a <code>configDir</code> in the plugin options.</p><p>Because of the process this plugin has to follow so that it can interpret your typescript configuration files, some conflicts may occur regarding node ownership if you keep your `gatsby-node.ts` in the project root.  In order to place that file in a sub-directory, you will need to define a `configDir`, and you will also need to put the rest of your configurations in the same place.</p>
 </td></tr>
 </table>
 
