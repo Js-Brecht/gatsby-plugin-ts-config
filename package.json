@@ -1,6 +1,6 @@
 {
 	"name": "gatsby-plugin-ts-config",
-	"version": "0.0.12",
+	"version": "0.1.0",
 	"description": "Configure Gatsby to use Typescript configuration files",
 	"main": "index.js",
 	"types": "./dist/index.js",
@@ -26,9 +26,9 @@
 	"files": [
 		"dist",
 		"gatsby-node.js",
-    "gatsby-config.js",
-    "gatsby-browser.js",
-    "gatsby-ssr.js",
+		"gatsby-config.js",
+		"gatsby-browser.js",
+		"gatsby-ssr.js",
 		"README.md",
 		"LICENSE"
 	],
@@ -72,6 +72,7 @@
 		"eslint": "^6.8.0",
 		"gatsby": "^2.19.18",
 		"rimraf": "^3.0.2",
+		"ts-transformer-keys": "^0.4.1",
 		"ttypescript": "^1.5.10",
 		"typescript": "^3.7.5"
 	},
