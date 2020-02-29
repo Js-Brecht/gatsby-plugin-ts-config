@@ -14,8 +14,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
-    "esModuleInterop": true,
-    "sourceMap": true
+    "esModuleInterop": true
   },
   "include": [
     "./src/**/*"
