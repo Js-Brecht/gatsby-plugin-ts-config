@@ -1,13 +1,12 @@
 import * as path from 'path';
 import { GatsbyConfig } from 'gatsby';
 import { getAbsoluteRelativeTo } from '../utils/fs-tools';
-import { setupGatsbyEndpoints, resolveGatsbyEndpoints } from '../utils/endpoints';
+import { resolveGatsbyEndpoints, browserSsr } from '../utils/endpoints';
 import { ITsConfigArgs, IConfigTypes, IEndpointResolutionSpec } from '../types';
 import { preferDefault } from '../utils/node';
 import RequireRegistrar from '../utils/register';
 import OptionsHandler from '../utils/options-handler';
 
-const browserSsr: IConfigTypes[] = ['browser', 'ssr'];
 const gatsbyEndpoints: IConfigTypes[] = [
     ...browserSsr,
     'config',
@@ -25,8 +24,7 @@ export default ({
     projectRoot = getAbsoluteRelativeTo(projectRoot);
     configDir = getAbsoluteRelativeTo(projectRoot, configDir);
 
-    const pluginRoot = path.resolve(__dirname, '..', '..');
-    const cacheDir = path.join(pluginRoot, '.cache');
+    const cacheDir = path.join(projectRoot, '.cache', 'caches', 'gatsby-plugin-ts-config');
 
     const ignore: IConfigTypes[] = [];
     const configEndpoint: IEndpointResolutionSpec = {
@@ -46,18 +44,11 @@ export default ({
         configDir,
     });
 
-    setupGatsbyEndpoints({
-        apiEndpoints: browserSsr,
-        resolvedEndpoints: endpoints,
-        distDir: __dirname,
-    });
-
     OptionsHandler.set({
         projectRoot,
         cacheDir,
         configDir,
         endpoints,
-        ignore,
     });
 
     if (tsNodeOpts.project) {
@@ -78,7 +69,7 @@ export default ({
         try {
             RequireRegistrar.start();
             const gatsbyConfigModule = preferDefault(require(endpoints.config));
-            gatsbyConfig = typeof gatsbyConfigModule === 'function' ? gatsbyConfigModule(projectRoot) : gatsbyConfigModule;
+            gatsbyConfig = typeof gatsbyConfigModule === 'function' ? gatsbyConfigModule(OptionsHandler.public()) : gatsbyConfigModule;
         } catch (err) {
             throw new Error(`[gatsby-plugin-ts-config] Unable to read your 'gatsby-config'!\n${err.stack}`);
         } finally {

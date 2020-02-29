@@ -6108,6 +6108,8 @@ fsevents@~2.1.1:
     gatsby: ^2.19.18
     rimraf: ^3.0.2
     ts-node: ^8.6.2
+    ts-transformer-keys: ^0.4.1
+    ttypescript: ^1.5.10
     typescript: ^3.7.5
   peerDependencies:
     gatsby: ~2.x.x
@@ -11492,7 +11494,7 @@ fsevents@~2.1.1:
   languageName: node
   linkType: hard
 
-"resolve@^1.10.0, resolve@^1.12.0, resolve@^1.13.1, resolve@^1.14.2, resolve@^1.3.2, resolve@^1.8.1":
+"resolve@^1.10.0, resolve@^1.12.0, resolve@^1.13.1, resolve@^1.14.2, resolve@^1.3.2, resolve@^1.8.1, resolve@^1.9.0":
   version: 1.15.1
   resolution: "resolve@npm:1.15.1"
   dependencies:
@@ -11501,7 +11503,7 @@ fsevents@~2.1.1:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@^1.10.0#builtin<compat/resolve>, resolve@patch:resolve@^1.12.0#builtin<compat/resolve>, resolve@patch:resolve@^1.13.1#builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#builtin<compat/resolve>, resolve@patch:resolve@^1.3.2#builtin<compat/resolve>, resolve@patch:resolve@^1.8.1#builtin<compat/resolve>":
+"resolve@patch:resolve@^1.10.0#builtin<compat/resolve>, resolve@patch:resolve@^1.12.0#builtin<compat/resolve>, resolve@patch:resolve@^1.13.1#builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#builtin<compat/resolve>, resolve@patch:resolve@^1.3.2#builtin<compat/resolve>, resolve@patch:resolve@^1.8.1#builtin<compat/resolve>, resolve@patch:resolve@^1.9.0#builtin<compat/resolve>":
   version: 1.15.1
   resolution: "resolve@patch:resolve@npm%3A1.15.1#builtin<compat/resolve>::version=1.15.1&hash=8fccd0"
   dependencies:
@@ -13025,6 +13027,15 @@ fsevents@~2.1.1:
   languageName: node
   linkType: hard
 
+"ts-transformer-keys@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "ts-transformer-keys@npm:0.4.1"
+  peerDependencies:
+    typescript: ">=2.4.1"
+  checksum: 2/2ccface23319bd1fbad5bb8ded090a366abe0466f1bcd7275b08261c87d8850066a2f220425ad5bf065fab5f43d115e25f3b725cd56094b52317e0c9c9457434
+  languageName: node
+  linkType: hard
+
 "tslib@npm:^1.6.0, tslib@npm:^1.8.1, tslib@npm:^1.9.0":
   version: 1.11.1
   resolution: "tslib@npm:1.11.1"
@@ -13047,6 +13058,21 @@ fsevents@~2.1.1:
   version: 0.0.0
   resolution: "tty-browserify@npm:0.0.0"
   checksum: 2/ef28fe256a17bac17d094e0120a042aee441efca0a44734082caa697b8326cc9888a8042b754cb6830205b65fe716960ba159597fdbcb8b53abf08ae5c9acd7f
+  languageName: node
+  linkType: hard
+
+"ttypescript@npm:^1.5.10":
+  version: 1.5.10
+  resolution: "ttypescript@npm:1.5.10"
+  dependencies:
+    resolve: ^1.9.0
+  peerDependencies:
+    ts-node: ^8.0.2
+    typescript: ^3.2.2
+  bin:
+    ttsc: ./bin/tsc
+    ttsserver: ./bin/tsserver
+  checksum: 2/b21a1ce14fc5334e41fb0a2238e5803799e460b5144172b3f346080538b7676c4e2618b21bd414c37a75c3cb57ec152b7a75231a4eb171e285dc905aa37cfbf9
   languageName: node
   linkType: hard
 
