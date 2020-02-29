@@ -1,13 +1,15 @@
 import { GatsbyConfig, GatsbyNode } from 'gatsby';
 import { IGlobalOpts } from './index';
 
+export type IPublicOpts = Omit<IGlobalOpts, 'transformOpts'>
+
 type ITSConfigFnTypes = 'config' | 'node';
 type ITSConfigFnReturn<T extends ITSConfigFnTypes, TMergeConfigs extends IMergePluginOptions = any> = T extends 'config'
     ? IGatsbyConfiguration<TMergeConfigs>
     : GatsbyNode;
 
 export interface ITSConfigFn<TConfigType extends ITSConfigFnTypes, TMergeConfigs extends IMergePluginOptions = any> {
-    (args: IGlobalOpts): ITSConfigFnReturn<TConfigType, TMergeConfigs>;
+    (args: IPublicOpts): ITSConfigFnReturn<TConfigType, TMergeConfigs>;
 }
 
 /**
@@ -31,5 +33,3 @@ export type IMergePluginOptions<TName extends string = string, TOptions extends 
     resolve: TName;
     options: TOptions;
 }
-
-export type IPublicOpts = Omit<IGlobalOpts, 'transformOpts'>
