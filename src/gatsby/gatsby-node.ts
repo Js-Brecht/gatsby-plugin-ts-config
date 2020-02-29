@@ -5,8 +5,7 @@ import { setupGatsbyEndpoints } from '../utils/endpoints';
 import OptionsHandler from '../utils/options-handler';
 import RequireRegistrar from '../utils/register';
 
-const globalOpts = OptionsHandler.get();
-const { endpoints, cacheDir } = globalOpts;
+const { endpoints, cacheDir } = OptionsHandler.get();
 
 type IGatsbyNode = Required<GatsbyNode>;
 let gatsbyNode = {} as IGatsbyNode;
@@ -14,7 +13,7 @@ if (endpoints.node) {
     try {
         RequireRegistrar.start();
         const userGatsbyNode = preferDefault(require(endpoints.node));
-        gatsbyNode = typeof userGatsbyNode === 'function' ? userGatsbyNode(globalOpts) : userGatsbyNode;
+        gatsbyNode = typeof userGatsbyNode === 'function' ? userGatsbyNode(OptionsHandler.public()) : userGatsbyNode;
     } catch (err) { // gatsby-node didn't exist, so move on without it.
         throw new Error(`[gatsby-plugin-ts-config] Unable to read your 'gatsby-node'!\n${err.stack}`);
     } finally {

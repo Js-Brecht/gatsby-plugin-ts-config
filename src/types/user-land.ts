@@ -31,3 +31,5 @@ export type IMergePluginOptions<TName extends string = string, TOptions extends 
     resolve: TName;
     options: TOptions;
 }
+
+export type IPublicOpts = Omit<IGlobalOpts, 'transformOpts'>
