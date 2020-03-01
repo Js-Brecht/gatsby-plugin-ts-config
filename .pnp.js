@@ -38,6 +38,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@babel/core", "npm:7.8.6"],
             ["@babel/preset-typescript", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:7.8.3"],
             ["@babel/register", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:7.8.6"],
+            ["@babel/runtime", "npm:7.8.4"],
             ["@jtechsvcs/eslint-config-typescript", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:2.0.3"],
             ["@types/babel__core", "npm:7.1.6"],
             ["@types/fs-extra", "npm:8.1.0"],
@@ -52,7 +53,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint", "npm:6.8.0"],
             ["fs-extra", "npm:8.1.0"],
             ["gatsby", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:2.19.23"],
-            ["gatsby-cli", "npm:2.9.0"],
             ["lodash.mergewith", "npm:4.6.2"],
             ["rimraf", "npm:3.0.2"],
             ["ts-node", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:8.6.2"],
@@ -62,7 +62,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "packagePeers": [
             "gatsby",
-            "gatsby-cli",
             "typescript"
           ],
           "linkType": "SOFT",
@@ -8170,6 +8169,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@babel/core", "npm:7.8.6"],
             ["@babel/preset-typescript", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:7.8.3"],
             ["@babel/register", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:7.8.6"],
+            ["@babel/runtime", "npm:7.8.4"],
             ["@jtechsvcs/eslint-config-typescript", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:2.0.3"],
             ["@types/babel__core", "npm:7.1.6"],
             ["@types/fs-extra", "npm:8.1.0"],
@@ -8184,7 +8184,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint", "npm:6.8.0"],
             ["fs-extra", "npm:8.1.0"],
             ["gatsby", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:2.19.23"],
-            ["gatsby-cli", "npm:2.9.0"],
             ["lodash.mergewith", "npm:4.6.2"],
             ["rimraf", "npm:3.0.2"],
             ["ts-node", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:8.6.2"],
@@ -8194,7 +8193,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "packagePeers": [
             "gatsby",
-            "gatsby-cli",
             "typescript"
           ],
           "linkType": "SOFT",

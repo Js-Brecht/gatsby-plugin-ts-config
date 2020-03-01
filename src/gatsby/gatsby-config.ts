@@ -1,6 +1,5 @@
 import * as path from 'path';
 import { GatsbyConfig } from 'gatsby';
-import reporter from 'gatsby-cli/lib/reporter';
 import { RegisterOptions } from 'ts-node';
 import { TransformOptions } from '@babel/core';
 import { getAbsoluteRelativeTo } from '../utils/fs-tools';
@@ -9,6 +8,7 @@ import { ITSConfigArgs, IConfigTypes, IEndpointResolutionSpec } from '../types';
 import { preferDefault } from '../utils/node';
 import RequireRegistrar from '../utils/register';
 import OptionsHandler from '../utils/options-handler';
+import { throwError } from '../utils/errors';
 
 const gatsbyEndpoints: IConfigTypes[] = [
     ...browserSsr,
@@ -89,8 +89,7 @@ export default (args = {} as ITSConfigArgs) => {
             const gatsbyConfigModule = preferDefault(require(endpoints.config));
             gatsbyConfig = typeof gatsbyConfigModule === 'function' ? gatsbyConfigModule(OptionsHandler.public()) : gatsbyConfigModule;
         } catch (err) {
-            if (err instanceof Error) err.message = `[gatsby-plugin-ts-config] An error occurred while reading your gatsby-config!\n${err.message}`;
-            reporter.panic(err);
+            throwError(`[gatsby-plugin-ts-config] An error occurred while reading your gatsby-config!`, err);
         } finally {
             RequireRegistrar.stop();
         }

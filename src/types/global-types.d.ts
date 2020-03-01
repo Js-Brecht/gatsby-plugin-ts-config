@@ -16,9 +16,3 @@ declare module '@babel/register' {
     export declare const revert: () => void;
     export default register;
 }
-
-declare module "gatsby-cli/lib/reporter" {
-    import { Reporter } from 'gatsby';
-    const reporter: Reporter;
-    export default reporter;
-}

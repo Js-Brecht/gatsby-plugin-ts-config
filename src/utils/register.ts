@@ -1,8 +1,8 @@
 import * as path from 'path';
-import reporter from 'gatsby-cli/lib/reporter';
 import { register, TsConfigOptions } from 'ts-node';
 import babelRegister, { revert } from '@babel/register';
 import { IRegisterOptions, IRegisterType, ICommonDirectories } from '../types';
+import { throwError } from './errors';
 
 export type IRegistrarProgramOpts = ICommonDirectories;
 
@@ -38,7 +38,7 @@ class RequireRegistrar<T extends IRegisterType> {
 
     public start(): void {
         if (!this.initialized)
-            reporter.panic(new Error('[gatsby-plugin-ts-config] Compiler registration was started before it was initialized!'));
+            throwError('[gatsby-plugin-ts-config] Compiler registration was started before it was initialized!', new Error());
         this.active = true;
         if (!this.registered) this.register();
     }
@@ -101,6 +101,7 @@ class RequireRegistrar<T extends IRegisterType> {
             }
             case 'babel': {
                 const opts = this.registerOpts as IRegisterOptions<'babel'>;
+                require('@babel/runtime/helpers/interopRequireDefault');
                 babelRegister({
                     ...opts,
                     extensions: this.extensions,

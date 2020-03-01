@@ -1,6 +1,6 @@
 {
 	"name": "gatsby-plugin-ts-config",
-	"version": "0.1.1",
+	"version": "0.2.0-pre.01",
 	"description": "Configure Gatsby to use Typescript configuration files",
 	"main": "index.js",
 	"types": "./dist/index.js",
@@ -41,7 +41,6 @@
 	},
 	"peerDependencies": {
 		"gatsby": "~2.x.x",
-		"gatsby-cli": "~2.x.x",
 		"typescript": "~3.x.x"
 	},
 	"peerDependenciesMeta": {
@@ -53,6 +52,7 @@
 		"@babel/core": "^7.8.6",
 		"@babel/preset-typescript": "^7.8.3",
 		"@babel/register": "^7.8.6",
+		"@babel/runtime": "^7.8.4",
 		"babel-preset-gatsby-package": "^0.2.16",
 		"fs-extra": "^8.1.0",
 		"lodash.mergewith": "^4.6.2",
@@ -71,7 +71,6 @@
 		"@yarnpkg/pnpify": "^2.0.0-rc.18",
 		"eslint": "^6.8.0",
 		"gatsby": "^2.19.18",
-		"gatsby-cli": "^2.9.0",
 		"rimraf": "^3.0.2",
 		"ts-transformer-keys": "^0.4.1",
 		"ttypescript": "^1.5.10",
