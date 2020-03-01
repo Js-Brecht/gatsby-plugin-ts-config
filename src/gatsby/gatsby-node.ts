@@ -1,5 +1,6 @@
 import * as path from 'path';
-import { GatsbyNode, CreateWebpackConfigArgs, ParentSpanPluginArgs } from 'gatsby';
+import { GatsbyNode, CreateWebpackConfigArgs, Reporter } from 'gatsby';
+import reporter from 'gatsby-cli/lib/reporter';
 import { preferDefault } from '../utils/node';
 import { setupGatsbyEndpoints } from '../utils/endpoints';
 import OptionsHandler from '../utils/options-handler';
@@ -14,8 +15,9 @@ if (endpoints.node) {
         RequireRegistrar.start();
         const userGatsbyNode = preferDefault(require(endpoints.node));
         gatsbyNode = typeof userGatsbyNode === 'function' ? userGatsbyNode(OptionsHandler.public()) : userGatsbyNode;
-    } catch (err) { // gatsby-node didn't exist, so move on without it.
-        throw new Error(`[gatsby-plugin-ts-config] Unable to read your 'gatsby-node'!\n${err.stack}`);
+    } catch (err) {
+        if (err instanceof Error) err.message = `[gatsby-plugin-ts-config] An error occurred while reading your gatsby-node!\n${err.message}`;
+        reporter.panic(err);
     } finally {
         RequireRegistrar.stop();
     }
