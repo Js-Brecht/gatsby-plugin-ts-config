@@ -62,6 +62,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "packagePeers": [
             "gatsby",
+            "@babel/runtime",
             "typescript"
           ],
           "linkType": "SOFT",
@@ -8193,6 +8194,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "packagePeers": [
             "gatsby",
+            "@babel/runtime",
             "typescript"
           ],
           "linkType": "SOFT",

@@ -6224,6 +6224,7 @@ fsevents@~2.1.1:
     ttypescript: ^1.5.10
     typescript: 3.8.3
   peerDependencies:
+    "@babel/runtime": ^7.8.4
     gatsby: ~2.x.x
     typescript: ~3.x.x
   dependenciesMeta:
@@ -6232,6 +6233,8 @@ fsevents@~2.1.1:
     eslint:
       unplugged: true
   peerDependenciesMeta:
+    "@babel/runtime":
+      optional: false
     typescript:
       optional: true
   languageName: unknown
