@@ -1,5 +1,7 @@
 import * as path from 'path';
+import reporter from 'gatsby-cli/lib/reporter';
 import { register, TsConfigOptions } from 'ts-node';
+import babelRegister, { revert } from '@babel/register';
 import { IRegisterOptions, IRegisterType, ICommonDirectories } from '../types';
 
 export type IRegistrarProgramOpts = ICommonDirectories;
@@ -23,6 +25,10 @@ class RequireRegistrar<T extends IRegisterType> {
         this.only = this.only.bind(this);
     }
 
+    public get ext(): string[] {
+        return this.extensions;
+    }
+
     public init(type: T, props: IRequireRegistrarProps<T>): void {
         this.type = type;
         this.registerOpts = props.registerOpts;
@@ -32,13 +38,17 @@ class RequireRegistrar<T extends IRegisterType> {
 
     public start(): void {
         if (!this.initialized)
-            throw new Error('[gatsby-plugin-ts-config] Compiler registration was started before it was initialized!');
+            reporter.panic(new Error('[gatsby-plugin-ts-config] Compiler registration was started before it was initialized!'));
         this.active = true;
         if (!this.registered) this.register();
     }
 
     public stop(): void {
         this.active = false;
+        if (this.type === 'babel') {
+            revert();
+            this.registered = false;
+        }
     }
 
     private ignore(filename: string): boolean {
@@ -87,6 +97,15 @@ class RequireRegistrar<T extends IRegisterType> {
                 });
 
                 tsNodeService.ignored = this.ignore;
+                break;
+            }
+            case 'babel': {
+                const opts = this.registerOpts as IRegisterOptions<'babel'>;
+                babelRegister({
+                    ...opts,
+                    extensions: this.extensions,
+                    only: [this.only],
+                });
                 break;
             }
         }
