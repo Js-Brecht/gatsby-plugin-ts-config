@@ -17,15 +17,11 @@ const ignoreRootConfigs: IConfigTypes[] = [
     ...browserSsr,
 ];
 
-export default ({
-    configDir = process.cwd(),
-    projectRoot = process.cwd(),
-    tsNode: tsNodeOpts = {},
-}: ITsConfigArgs = {}) => {
-    projectRoot = getAbsoluteRelativeTo(projectRoot);
-    configDir = getAbsoluteRelativeTo(projectRoot, configDir);
-
+export default (args = {} as ITSConfigArgs) => {
+    const projectRoot = getAbsoluteRelativeTo(args.projectRoot || process.cwd());
+    const configDir = getAbsoluteRelativeTo(projectRoot, args.configDir);
     const cacheDir = path.join(projectRoot, '.cache', 'caches', 'gatsby-plugin-ts-config');
+    const pluginDir = path.resolve(path.join(__dirname, '..', '..'));
 
     const ignore: IConfigTypes[] = [];
     const configEndpoint: IEndpointResolutionSpec = {
@@ -45,10 +41,15 @@ export default ({
         configDir,
     });
 
-    OptionsHandler.set({
+    const programOpts = {
         projectRoot,
-        cacheDir,
         configDir,
+        cacheDir,
+        pluginDir,
+    };
+
+    OptionsHandler.set({
+        ...programOpts,
         endpoints,
     });
 
