@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { GatsbyConfig } from 'gatsby';
+import reporter from 'gatsby-cli/lib/reporter';
 import { getAbsoluteRelativeTo } from '../utils/fs-tools';
 import { resolveGatsbyEndpoints, browserSsr } from '../utils/endpoints';
 import { ITsConfigArgs, IConfigTypes, IEndpointResolutionSpec } from '../types';
@@ -71,7 +72,8 @@ export default ({
             const gatsbyConfigModule = preferDefault(require(endpoints.config));
             gatsbyConfig = typeof gatsbyConfigModule === 'function' ? gatsbyConfigModule(OptionsHandler.public()) : gatsbyConfigModule;
         } catch (err) {
-            throw new Error(`[gatsby-plugin-ts-config] Unable to read your 'gatsby-config'!\n${err.stack}`);
+            if (err instanceof Error) err.message = `[gatsby-plugin-ts-config] An error occurred while reading your gatsby-config!\n${err.message}`;
+            reporter.panic(err);
         } finally {
             RequireRegistrar.stop();
         }
