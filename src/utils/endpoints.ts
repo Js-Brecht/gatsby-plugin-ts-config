@@ -1,13 +1,11 @@
 import * as path from 'path';
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import {
     IGatsbyEndpoints,
     IConfigTypes,
     IEndpointResolutionSpec,
 } from '../types';
-import { stringLiteral } from '@babel/types';
-import { transformCodeToTemplate } from './babel';
-import { checkFileWithExts, fileExists, allExt } from './fs-tools';
+import { checkFileWithExts, allExt } from './fs-tools';
 
 // *************************************
 
@@ -69,28 +67,25 @@ export const browserSsr: IConfigTypes[] = ['browser', 'ssr'];
  */
 export const setupGatsbyEndpoints = ({
     resolvedEndpoints,
-    distDir,
     cacheDir,
 }: IMakeGatsbyEndpointProps): void => {
     for (const setupApi of browserSsr) {
         const endpointFile = `gatsby-${setupApi}.js`;
-        const srcFile = path.join(distDir, endpointFile);
         const targetFile = path.join(cacheDir, endpointFile);
 
+        let moduleSrc;
         if (setupApi in resolvedEndpoints) {
             // If User endpoint was resolved, then write out the proxy
             // module that will point to the user's
             const resolvedPath = resolvedEndpoints[setupApi] as string;
-            transformCodeToTemplate({
-                srcFile,
-                targetFile,
-                templateSpec: {
-                    __TS_CONFIG_ENDPOINT_PATH: stringLiteral(resolvedPath),
-                },
-            });
+            moduleSrc = `module.exports = require("${
+                resolvedPath.replace(/\\/g, '\\\\')
+            }");`;
         } else {
             // User endpoint was not resolved, so just write an empty module
-            fs.writeFileSync(targetFile, `module.exports = {}`);
+            moduleSrc = `module.exports = {};`;
         }
+        fs.ensureDirSync(path.dirname(targetFile));
+        fs.writeFileSync(targetFile, moduleSrc);
     }
 };
