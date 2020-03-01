@@ -1,9 +1,11 @@
 import * as path from 'path';
 import { GatsbyConfig } from 'gatsby';
 import reporter from 'gatsby-cli/lib/reporter';
+import { RegisterOptions } from 'ts-node';
+import { TransformOptions } from '@babel/core';
 import { getAbsoluteRelativeTo } from '../utils/fs-tools';
 import { resolveGatsbyEndpoints, browserSsr } from '../utils/endpoints';
-import { ITsConfigArgs, IConfigTypes, IEndpointResolutionSpec } from '../types';
+import { ITSConfigArgs, IConfigTypes, IEndpointResolutionSpec } from '../types';
 import { preferDefault } from '../utils/node';
 import RequireRegistrar from '../utils/register';
 import OptionsHandler from '../utils/options-handler';
@@ -53,18 +55,32 @@ export default (args = {} as ITSConfigArgs) => {
         endpoints,
     });
 
-    if (tsNodeOpts.project) {
-        tsNodeOpts.project = getAbsoluteRelativeTo(projectRoot, tsNodeOpts.project);
+    if (args.JIT) {
+        if (args.tsNode) {
+            const tsNodeOpts: RegisterOptions = typeof args.tsNode === 'boolean' ? {} : args.tsNode;
+
+            if (tsNodeOpts.project) {
+                tsNodeOpts.project = getAbsoluteRelativeTo(projectRoot, tsNodeOpts.project);
+            }
+
+            RequireRegistrar.init('ts-node', {
+                registerOpts: tsNodeOpts,
+                programOpts,
+            });
+        } else {
+            const babelOpts: TransformOptions = OptionsHandler.setBabelOpts(
+                typeof args.babel === 'object'
+                    ? args.babel
+                    : undefined,
+            );
+
+            RequireRegistrar.init('babel', {
+                registerOpts: babelOpts,
+                programOpts,
+            });
+        }
     }
 
-    RequireRegistrar.init('ts-node', {
-        registerOpts: tsNodeOpts,
-        programOpts: {
-            projectRoot,
-            configDir,
-            cacheDir,
-        },
-    });
 
     let gatsbyConfig = {} as GatsbyConfig;
     if (endpoints.config) {
