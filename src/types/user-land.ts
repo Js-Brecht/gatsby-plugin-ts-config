@@ -1,7 +1,24 @@
-import { GatsbyConfig, GatsbyNode } from 'gatsby';
+import { GatsbyConfig, GatsbyNode, PluginOptions } from 'gatsby';
+import { RegisterOptions as TSNodeRegisterOptions } from 'ts-node';
+import { TransformOptions } from '@babel/core';
 import { IGlobalOpts } from './index';
 
-export type IPublicOpts = Omit<IGlobalOpts, 'transformOpts'>
+interface ITSConfigArgsBase extends Omit<PluginOptions, 'plugins'> {
+    configDir?: string;
+    projectRoot?: string;
+}
+interface ITSConfigArgsJIT extends ITSConfigArgsBase {
+    JIT: true;
+    babel?: TransformOptions | boolean;
+    tsNode?: TSNodeRegisterOptions | boolean;
+}
+interface ITSConfigArgsAOT extends ITSConfigArgsBase {
+    JIT?: false;
+    babel: TransformOptions | true;
+}
+export type ITSConfigArgs = ITSConfigArgsAOT | ITSConfigArgsJIT;
+
+export type IPublicOpts = Omit<IGlobalOpts, 'transformOpts' | 'pluginDir'>
 
 type ITSConfigFnTypes = 'config' | 'node';
 type ITSConfigFnReturn<T extends ITSConfigFnTypes, TMergeConfigs extends IMergePluginOptions = any> = T extends 'config'
