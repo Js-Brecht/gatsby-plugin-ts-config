@@ -2,12 +2,6 @@ import { PluginOptions } from 'gatsby';
 import { TransformOptions } from '@babel/core';
 import { RegisterOptions } from 'ts-node';
 
-export interface ITsConfigArgs extends Omit<PluginOptions, 'plugins'> {
-    configDir?: string;
-    projectRoot?: string;
-    tsNode?: RegisterOptions;
-}
-
 export type IRegisterType = 'ts-node' | 'babel';
 export type IValidExts = '.js' | '.ts' | '.jsx' | '.tsx';
 export type IConfigTypes = 'config' | 'node' | 'browser' | 'ssr';
