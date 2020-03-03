@@ -55,31 +55,31 @@ export default (args = {} as ITSConfigArgs) => {
         endpoints,
     });
 
-    if (args.JIT) {
-        if (args.tsNode) {
-            const tsNodeOpts: RegisterOptions = typeof args.tsNode === 'boolean' ? {} : args.tsNode;
+    // if (args.JIT) {
+    if (args.babel || !args.tsNode) {
+        const babelOpts: TransformOptions = OptionsHandler.setBabelOpts(
+            typeof args.babel === 'object'
+                ? args.babel
+                : undefined,
+        );
 
-            if (tsNodeOpts.project) {
-                tsNodeOpts.project = getAbsoluteRelativeTo(projectRoot, tsNodeOpts.project);
-            }
+        RequireRegistrar.init('babel', {
+            registerOpts: babelOpts,
+            programOpts,
+        });
+    } else {
+        const tsNodeOpts: RegisterOptions = typeof args.tsNode === 'boolean' ? {} : args.tsNode;
 
-            RequireRegistrar.init('ts-node', {
-                registerOpts: tsNodeOpts,
-                programOpts,
-            });
-        } else {
-            const babelOpts: TransformOptions = OptionsHandler.setBabelOpts(
-                typeof args.babel === 'object'
-                    ? args.babel
-                    : undefined,
-            );
-
-            RequireRegistrar.init('babel', {
-                registerOpts: babelOpts,
-                programOpts,
-            });
+        if (tsNodeOpts.project) {
+            tsNodeOpts.project = getAbsoluteRelativeTo(projectRoot, tsNodeOpts.project);
         }
+
+        RequireRegistrar.init('ts-node', {
+            registerOpts: tsNodeOpts,
+            programOpts,
+        });
     }
+    // }
 
 
     let gatsbyConfig = {} as GatsbyConfig;
