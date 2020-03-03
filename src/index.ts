@@ -22,4 +22,4 @@ export {
     generateConfig,
 };
 
-export * from './types';
+export * from './types/user-land';
