@@ -3,6 +3,9 @@ import {
     ConfigItem,
     CreateConfigItemOptions,
     createConfigItem,
+    ConfigAPI,
+    TransformOptions,
+    PluginItem,
 } from '@babel/core';
 
 type ICreatePresetProps = string | {
@@ -40,4 +43,32 @@ export const createPresets: (
         );
     });
     return configItems;
+};
+
+type PresetFn = (context: ConfigAPI, options: object) => TransformOptions;
+type IAddOptsToPresetPlugin = (preset: PresetFn, pluginName: string, opts: object) => PresetFn;
+export const addOptsToPreset: IAddOptsToPresetPlugin = (preset, name, opts) => {
+    const checkItemPath = (item: PluginItem): boolean => {
+        if (!(typeof item === 'string')) return false;
+        const checkPath = name.replace(/^[/\\]+|[/\\]+$/g, '');
+        const pattern = new RegExp(`[/]${checkPath.replace(/[/]/g, '\\/')}[/]`, 'i');
+        return pattern.test(item.replace(/\\/g, '/'));
+    };
+
+    return (context, options = {}) => {
+        const presetResult = preset(context, options);
+        for (const collection of [presetResult.plugins, presetResult.presets]) {
+            if (collection) {
+                collection.forEach((item, idx) => {
+                    if (checkItemPath(item)) {
+                        collection![idx] = [
+                            item,
+                            opts,
+                        ];
+                    }
+                });
+            }
+        }
+        return presetResult;
+    };
 };

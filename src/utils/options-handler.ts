@@ -2,6 +2,7 @@ import { keys } from 'ts-transformer-keys';
 import mergeWith from 'lodash.mergewith';
 import { TransformOptions } from '@babel/core';
 import { IGlobalOpts, IPublicOpts } from "../types";
+import { addOptsToPreset } from './babel';
 
 const publicProps = keys<IPublicOpts>();
 
@@ -44,7 +45,13 @@ class OptionsHandler {
                 cwd: this.opts.projectRoot,
                 presets: [
                     require.resolve('@babel/preset-typescript'),
-                    require.resolve('babel-preset-gatsby-package'),
+                    addOptsToPreset(
+                        require('babel-preset-gatsby-package'),
+                        '@babel/plugin-transform-runtime',
+                        {
+                            absoluteRuntime: this.opts.pluginDir,
+                        },
+                    ),
                 ],
             },
             opts,
