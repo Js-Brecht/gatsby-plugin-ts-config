@@ -35,30 +35,30 @@ this plugin, and the rest of your configuration will be in Typescript files.
 
 * The easy way
 
-  * You can use the `generateConfig` utility that is exported by `gatsby-plugin-ts-config` to set up the
-plugin array the way it needs to be.
+  * You can use the `generateConfig` utility that is exported by `gatsby-plugin-ts-config` to set
+    up the plugin array the way it needs to be.
 
-  * Doing it this way allows your IDE to read the type interface for the options, so you can use intellisense
-  while defining the plugin options.
+  * Doing it this way allows your IDE to read the type interface for the options, so you can use
+    intellisense while defining the plugin options.
 
-```js
-// gatsby-config.js
-const { generateConfig } = require('gatsby-plugin-ts-config');
-module.exports = generateConfig();
-```
+  ```js
+  // gatsby-config.js
+  const { generateConfig } = require('gatsby-plugin-ts-config');
+  module.exports = generateConfig();
+  ```
 
 * The common way
 
   * _This can also be done the normal way.  The utility above just makes it easy_
 
-```js
-// gatsby-config.js
-module.exports = {
-  plugins: [
-    `gatsby-plugin-ts-config`,
-  ]
-}
-```
+  ```js
+  // gatsby-config.js
+  module.exports = {
+    plugins: [
+      `gatsby-plugin-ts-config`,
+    ]
+  }
+  ```
 
 * Configuration complete
 
@@ -73,33 +73,49 @@ module.exports = {
 
 ### Plugin Options
 
-|Name|Default|Description|
-|:---|:------|:----------|
-|**`projectRoot`**|`process.cwd()`|This defines your project's root directory for the plugin.  All folder/file resolutions will be performed relative to this directory.|
-|**`configDir`**|`process.cwd()`|You can define a folder, relative to `projectRoot`, that will store your Typescript configuration files, if you want.  If you do not define this option, then it will automatically use `projectRoot`.|
-|**`tsNode`**|`{}`|These are options that will be passed to `ts-node`'s `register()` utility.  Valid options can be found [here](https://github.com/TypeStrong/ts-node#cli-and-programmatic-options)|
+* `projectRoot`: `{string}`
+  * Default: `process.cwd()`
+  * This defines your project's root directory for the plugin.  All folder/file resolutions will be performed
+    relative to this directory.
+
+* `configDir`: `{string}`
+  * Default: `projectRoot`
+  * You can define a folder, relative to `projectRoot`, that will store your Typescript configuration files.
+    If you do not define this option, then it will automatically use `projectRoot`.
+
+* `babel`: `{boolean|TransformOptions}`
+  * Default: `true`
+  * Setting this to `true`, or an object, will cause the plugin to use `babel` for transforming
+    typescript configurations.
+  * If an object is defined, it must contain options valid for `babel`.  See the
+    [babel options documentation](https://babeljs.io/docs/en/options#config-loading-options) for
+    a description of the available options.  Anything you can put in `.babelrc` can be put here.
+  * See [Determining the interpreter](#determining-the-interpreter) below for details on how
+    the interpeter is chosen
+
+* `tsNode`: `{boolean|RegisterOptions}`
+  * Default: `false`
+  * Setting this to `true` or an object will cause `ts-node` to be used, so long as `babel` is
+    a falsy value.
+  * If an object, you may use any options that are valid for `ts-node`'s `register()` function.
+    See the [ts-node options documentation here](https://github.com/TypeStrong/ts-node#cli-and-programmatic-options)
+  * See [Determining the interpreter](#determining-the-interpreter) below for details on how
+    the interpeter is chosen
 
 ---
 
-### tsconfig.json
+### Determining the interpreter
 
-By default, `gatsby-plugin-ts-config` will make `ts-node` use the `tsconfig.json` found in the `projectRoot`.  If you want to define a different one, include it as one of the `tsNode` options:
+> Babel takes priority, so will be the default interpreter.
 
-```js
-// gatsby-config.js
-const { generateConfig } = require('gatsby-plugin-ts-config');
-module.exports = generateConfig({
-    tsNode: {
-        project: 'tsconfig.build.json'
-    },
-});
-```
+1. If `babel` is a truthy value, or `tsNode` is a falsy value, then `babel` will be chosen.
 
-Note: if you define this file, it will be resolved relative to the defined `projectRoot` (which is your `process.cwd()` by default), unless it is an absolute path.
+2. If `babel` is a falsy value, and `tsNode` is a truthy value, then `ts-node` will be chosen.
 
 ### Extended Usage
 
-If, for some reason, you need to force this plugin to resolve files relative to a different directory than your process' current working directory, then you can define the `projectRoot` option:
+If, for some reason, you need to force this plugin to resolve files relative to a different directory than
+your process' current working directory, then you can define the `projectRoot` option:
 
 ```js
 // gatsby-config.js
@@ -122,7 +138,8 @@ module.exports = generateConfig({
 });
 ```
 
-This will make it look in my `.gatsby` subdirectory for all configuration files.  So I might have the following:
+This will make it look in my `.gatsby` subdirectory for all configuration files.  So I might have the
+following:
 
 ```text
 .
@@ -134,28 +151,54 @@ This will make it look in my `.gatsby` subdirectory for all configuration files.
 └── gatsby-config.js
 ```
 
-I also like to use aliases in my Typescript, so I prefer to configure a custom paths transformer for `ts-node`:
+---
+
+### ts-node specific usage details
+
+#### tsconfig.json
+
+By default, `gatsby-plugin-ts-config` will make `ts-node` use the `tsconfig.json` found in the
+`projectRoot`.  If you want to define a different one, include it as one of the `tsNode` options:
+
+```js
+// gatsby-config.js
+const { generateConfig } = require('gatsby-plugin-ts-config');
+module.exports = generateConfig({
+  tsNode: {
+    project: 'tsconfig.build.json'
+  },
+});
+```
+
+Note: if you define this file, it will be resolved relative to the defined `projectRoot` (which is your
+`process.cwd()` by default), unless it is an absolute path.
+
+---
+
+#### Typescript Aliases
+
+I like to use aliases in my Typescript, so I prefer to configure a custom paths transformer for `ts-node`:
 
 ```js
 // gatsby-config.js
 const TsPathsTransformer = require('@zerollup/ts-transform-paths');
 const { generateConfig } = require('gatsby-plugin-ts-config');
 module.exports = generateConfig({
-    projectRoot: __dirname,
-    configDir: '.gatsby',
-    tsNode: {
-        transformers: (program) => {
-            const tsTransformPaths = TsPathsTransformer(program);
-            return {
-                before: [
-                    tsTransformPaths.before,
-                ],
-                afterDeclarations: [
-                    tsTransformPaths.afterDeclarations,
-                ],
-            };
-        },
+  projectRoot: __dirname,
+  configDir: '.gatsby',
+  tsNode: {
+    transformers: (program) => {
+      const tsTransformPaths = TsPathsTransformer(program);
+      return {
+        before: [
+          tsTransformPaths.before,
+        ],
+        afterDeclarations: [
+          tsTransformPaths.afterDeclarations,
+        ],
+      };
     },
+  },
 });
 ```
 
@@ -170,92 +213,111 @@ module.exports = generateConfig({
 
 #### `gatsby-config` and `gatsby-node`
 
-  These files can be created two ways.  The first is by exporting a single object or series of
-  named exports, the same way you normally would.  You may also export this object as the default
-  export, if you wish.  It is supported.
+These files can be created two ways.
 
-  The second method allows you to export a single function as the default export.  This function
-  will receive a single object as the first and only parameter.  The object properties are
-  defined as follows:
+1. The first is by exporting a single object or series of
+named exports, the same way you normally would.  You may also export this object as the
+_**default export**_, if you wish.  It is supported by this plugin, and is has better support
+in Typescript itself.
 
-  |Property|Description|
-  |:------|:----------|
-  |`projectRoot`|<p>The resolved pathname that you either defined in the plugin options, or that was calculated automatically.</p>|
-  |`configDir`|<p>The location of your configuration files.  If you do not define one in the plugin options, then this will be the same as your `projectRoot`.</p>|
-  |`cacheDir`|<p>The cache folder location that the plugin will use to store any of the files that it needs to.</p>|
-  |`endpoints`|<p>A collection of the fully qualified paths for all of the Gatsby configuration files that have been resolved, and that will be called, by this plugin.  This will be equal to any of the endpoints that you have in your `configDir`, with two exceptions:<p> If your `configDir` is the same as the `projectRoot`, then `gatsby-ssr` and `gastby-browser` will **not** be included in these resolved endpoints, because they will not be called by this plugin.
+2. The second method allows you to export a single function as the default export.  This function
+will receive a single object as the first and only parameter.  The object properties are
+defined as follows:
 
-  A couple of utility interfaces are exported by this plugin to make it easier to create
-  type-safe functions in `gatsby-node` and `gatsby-config`:
+    * `projectRoot`: `{string}`
+      * The resolved pathname that you either defined in the plugin options, or that was calculated
+        automatically.
 
-  * `ITSConfigFn`: Interface that describes the shape of the `gatsby-config` or `gatsby-node`
-    default function exports.  Accepts two parameters:
-    * The string parameter for the function type ('config' | 'node')
-    * In the case of 'config', a union of plugin option interfaces, to allow you to design a
-      strongly typed object export.
-  * `IMergePluginOptions`: Utility type that makes it easy to merge a plugin's defined types
-    into your plugins object array.  Accepts two parameters:
-    * The name of the plugin, which will be used in the `resolve` property
-    * The interface for the plugin's options
+    * `configDir`: `{string}`
+      * The location of your configuration files.  If you do not define one in the plugin options, then
+        this will be the same as your `projectRoot`.
 
-  For example, the plugin [`gatsby-plugin-pnpm`](https://github.com/Js-Brecht/gatsby-plugin-pnpm) exports the interface for the options that are valid for it, and
-  they could be used like this:
+    * `cacheDir`: `{string}`
+      * The cache folder location that the plugin will use to store any of the files that it needs to.
+    * `endpoints`: `{string[]}`
+      * A collection of the fully qualified paths for all of the Gatsby configuration files that have been
+        resolved, and that will be called, by this plugin.  This will be equal to any of the endpoints that
+        you have in your `configDir`, with two exceptions:
+        * If your `configDir` is the same as the `projectRoot`, then `gatsby-ssr` and `gastby-browser` will
+          **not** be included in these resolved endpoints, because they will not be called by this plugin.
+        * Files that are imported by your `gatsby-*` files will be included in this collection
+          as well.
 
-  ```ts
-  import { IPluginOptions as IPnpmPluginOptions } from 'gatsby-plugin-pnpm';
-  import { ITSConfigFn, IMergePluginOptions } from 'gatsby-plugin-ts-config';
+#### Utilities
 
-  const gatsbyConfig: ITSConfigFn<'config',
-    | IMergePluginOptions<'gatsby-plugin-pnpm', IPnpmPluginOptions>
-    | /* Add more merged types here */
-  > = ({
-    projectRoot
-  }) => ({
-    siteMetadata: {
-      title: `Some site title`,
-      description: `This is a description of your site`,
-      author: `@Js-Brecht`,
-    },
-    plugins: [
-      {
-        resolve: `gatsby-plugin-pnpm`, // <-- This will have intellisense
-        options: { // <-- These will have intellisense, and will be type-checked
-          projectPath: projectRoot
-        }
+A couple of utility interfaces are exported by this plugin to make it easier to create
+type-safe functions in `gatsby-node` and `gatsby-config`:
+
+* `ITSConfigFn`: Interface that describes the shape of the `gatsby-config` or `gatsby-node`
+  default function exports.  Accepts two parameters:
+  * The string parameter for the function type ('config' | 'node')
+  * In the case of 'config', a union of plugin option interfaces, to allow you to design a
+    strongly typed object export.
+
+* `IMergePluginOptions`: Utility type that makes it easy to merge a plugin's defined types
+  into your plugins object array.  Accepts two parameters:
+  * The name of the plugin, which will be used in the `resolve` property
+  * The interface for the plugin's options
+
+For example, the plugin [`gatsby-plugin-pnpm`](https://github.com/Js-Brecht/gatsby-plugin-pnpm) exports
+the interface for the options that are valid for it, and they could be used like this:
+
+```ts
+import { IPluginOptions as IPnpmPluginOptions } from 'gatsby-plugin-pnpm';
+import { ITSConfigFn, IMergePluginOptions } from 'gatsby-plugin-ts-config';
+
+const gatsbyConfig: ITSConfigFn<'config',
+  | IMergePluginOptions<'gatsby-plugin-pnpm', IPnpmPluginOptions>
+  | /* Add more merged types here */
+> = ({
+  projectRoot
+}) => ({
+  siteMetadata: {
+    title: `Some site title`,
+    description: `This is a description of your site`,
+    author: `@Js-Brecht`,
+  },
+  plugins: [
+    {
+      resolve: `gatsby-plugin-pnpm`, // <-- This will have intellisense
+      options: { // <-- These will have intellisense, and will be type-checked
+        projectPath: projectRoot
       }
-    ]
-  });
-
-  export default gatsbyConfig;
-  ```
-
-  Something similar can be done for `gatsby-node`, but it is even simpler:
-
-  ```ts
-  import { SourceNodesArgs } from 'gatsby';
-  import { ITSConfigFn } from 'gatsby-plugin-ts-config';
-
-  const gatsbyNode: ITSConfigFn<'node'> = ({
-    projectRoot
-  }) => ({
-    sourceNodes: async ({
-      actions,
-      createNodeId,
-      createContentDigest
-    }: SourceNodesArgs): Promise<void> => {
-      const { createNode } = actions;
-      /* Create your nodes here */
-      return;
     }
-  })
+  ]
+});
 
-  export default gatsbyNode;
-  ```
+export default gatsbyConfig;
+```
+
+Something similar can be done for `gatsby-node`, but it is even simpler:
+
+```ts
+import { SourceNodesArgs } from 'gatsby';
+import { ITSConfigFn } from 'gatsby-plugin-ts-config';
+
+const gatsbyNode: ITSConfigFn<'node'> = ({
+  projectRoot
+}) => ({
+  sourceNodes: async ({
+    actions,
+    createNodeId,
+    createContentDigest
+  }: SourceNodesArgs): Promise<void> => {
+    const { createNode } = actions;
+    /* Create your nodes here */
+    return;
+  }
+})
+
+export default gatsbyNode;
+```
 
 ---
 
 ### Contributing / Issues
 
-If you feel a feature is missing, or you find a bug, please feel free to file an issue at <https://github.com/Js-Brecht/gatsby-plugin-ts-config/issues>.
+If you feel a feature is missing, or you find a bug, please feel free to file an issue
+at <https://github.com/Js-Brecht/gatsby-plugin-ts-config/issues>.
 
 I would also welcome any additions anybody would like to make.
