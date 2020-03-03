@@ -1,6 +1,6 @@
 ## Configure Gatsby to use Typescript for configuration files
 
-This plugin will allow you to write your `gatsby-*` configuration files in Typescript.
+> This plugin will allow you to write your `gatsby-*` configuration files in Typescript.
 
 ---
 
