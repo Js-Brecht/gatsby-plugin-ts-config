@@ -35,7 +35,7 @@
 	"scripts": {
 		"purge": "rimraf node_modules && yarn clean",
 		"clean": "rimraf ./dist",
-		"prebuild": "yarn clean",
+		"prebuild": "npm run clean",
 		"build": "ttsc",
 		"lint": "eslint -c .eslintrc ./src/**/*"
 	},
