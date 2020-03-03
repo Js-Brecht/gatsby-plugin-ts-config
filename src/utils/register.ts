@@ -101,7 +101,6 @@ class RequireRegistrar<T extends IRegisterType> {
             }
             case 'babel': {
                 const opts = this.registerOpts as IRegisterOptions<'babel'>;
-                require('@babel/runtime/helpers/interopRequireDefault');
                 babelRegister({
                     ...opts,
                     extensions: this.extensions,
