@@ -8,15 +8,15 @@ interface ITSConfigArgsBase extends Omit<PluginOptions, 'plugins'> {
     projectRoot?: string;
 }
 interface ITSConfigArgsJIT extends ITSConfigArgsBase {
-    JIT: true;
+    // JIT: true;
     babel?: TransformOptions | boolean;
     tsNode?: TSNodeRegisterOptions | boolean;
 }
-interface ITSConfigArgsAOT extends ITSConfigArgsBase {
-    JIT?: false;
-    babel: TransformOptions | true;
-}
-export type ITSConfigArgs = ITSConfigArgsAOT | ITSConfigArgsJIT;
+// interface ITSConfigArgsAOT extends ITSConfigArgsBase {
+//     JIT?: false;
+//     babel: TransformOptions | true;
+// }
+export interface ITSConfigArgs extends ITSConfigArgsJIT /* | ITSConfigArgsAOT */ {}
 
 export type IPublicOpts = Omit<IGlobalOpts, 'transformOpts' | 'pluginDir'>
 
