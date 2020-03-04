@@ -123,26 +123,34 @@ this plugin, and the rest of your configuration will be in Typescript files.
 For example:
 ```js
 // Picks babel
-{
-  babel: true,
-}
+const { generateConfig } = require('gatsby-plugin-ts-config');
+module.exports = generateConfig();
 
 // Picks babel
-{
+const { generateConfig } = require('gatsby-plugin-ts-config');
+module.exports = generateConfig({
+  babel: true,
+});
+
+// Picks babel
+const { generateConfig } = require('gatsby-plugin-ts-config');
+module.exports = generateConfig({
   babel: true,
   tsNode: true,
-}
+});
 
 // Picks ts-node
-{
+const { generateConfig } = require('gatsby-plugin-ts-config');
+module.exports = generateConfig({
   tsNode: true,
-}
+});
 
 // Picks ts-node
-{
+const { generateConfig } = require('gatsby-plugin-ts-config');
+module.exports = generateConfig({
   babel: false,
   tsNode: true,
-}
+});
 ```
 
 ### Extended Usage
