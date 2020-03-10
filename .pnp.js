@@ -38,7 +38,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@babel/core", "npm:7.8.6"],
             ["@babel/preset-typescript", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:7.8.3"],
             ["@babel/register", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:7.8.6"],
-            ["@babel/runtime", "npm:7.8.4"],
+            ["@babel/runtime", "npm:7.8.7"],
             ["@jtechsvcs/eslint-config-typescript", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:2.0.3"],
             ["@types/babel__core", "npm:7.1.6"],
             ["@types/fs-extra", "npm:8.1.0"],
@@ -61,6 +61,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["typescript", "patch:typescript@npm%3A3.8.3#builtin<compat/typescript>::version=3.8.3&hash=273569"]
           ],
           "packagePeers": [
+            "@babel/core",
             "gatsby",
             "@babel/runtime",
             "typescript"
@@ -2274,6 +2275,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "../../../.yarncache/berry/cache/@babel-runtime-npm-7.8.4-e3028a5d42-2.zip/node_modules/@babel/runtime/",
           "packageDependencies": [
             ["@babel/runtime", "npm:7.8.4"],
+            ["regenerator-runtime", "npm:0.13.4"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:7.8.7", {
+          "packageLocation": "../../../.yarncache/berry/cache/@babel-runtime-npm-7.8.7-1172cbe3dd-2.zip/node_modules/@babel/runtime/",
+          "packageDependencies": [
+            ["@babel/runtime", "npm:7.8.7"],
             ["regenerator-runtime", "npm:0.13.4"]
           ],
           "linkType": "HARD",
@@ -8170,7 +8179,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@babel/core", "npm:7.8.6"],
             ["@babel/preset-typescript", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:7.8.3"],
             ["@babel/register", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:7.8.6"],
-            ["@babel/runtime", "npm:7.8.4"],
+            ["@babel/runtime", "npm:7.8.7"],
             ["@jtechsvcs/eslint-config-typescript", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:2.0.3"],
             ["@types/babel__core", "npm:7.1.6"],
             ["@types/fs-extra", "npm:8.1.0"],
@@ -8193,6 +8202,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["typescript", "patch:typescript@npm%3A3.8.3#builtin<compat/typescript>::version=3.8.3&hash=273569"]
           ],
           "packagePeers": [
+            "@babel/core",
             "gatsby",
             "@babel/runtime",
             "typescript"
