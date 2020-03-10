@@ -1,8 +1,9 @@
 import * as path from 'path';
 import { register } from 'ts-node';
 import babelRegister, { revert } from '@babel/register';
-import { IRegisterOptions, IRegisterType, ICommonDirectories } from '../types';
+import { IRegisterOptions, IRegisterType, ICommonDirectories, IConfigTypes } from '../types';
 import { throwError } from './errors';
+import optionsHandler from './options-handler';
 
 export type IRegistrarProgramOpts = ICommonDirectories;
 
@@ -16,8 +17,8 @@ class RequireRegistrar<T extends IRegisterType> {
     private active = false;
     private type!: T;
     private registerOpts!: IRegisterOptions<T>;
-    private programOpts!: IRegistrarProgramOpts;
     private extensions = ['.ts', '.tsx'];
+    private endpoint?: IConfigTypes;
 
     constructor() {
         this.ignore = this.ignore.bind(this);
@@ -31,14 +32,14 @@ class RequireRegistrar<T extends IRegisterType> {
     public init(type: T, props: IRequireRegistrarProps<T>): void {
         this.type = type;
         this.registerOpts = props.registerOpts;
-        this.programOpts = props.programOpts;
         this.initialized = true;
     }
 
-    public start(): void {
+    public start(endpoint: IConfigTypes): void {
         if (!this.initialized)
             throwError('[gatsby-plugin-ts-config] Compiler registration was started before it was initialized!', new Error());
         this.active = true;
+        this.endpoint = endpoint;
         if (!this.registered) this.register();
     }
 
@@ -63,6 +64,7 @@ class RequireRegistrar<T extends IRegisterType> {
             }
         }
         if (filename.endsWith('/.pnp.js')) return true;
+        if (this.endpoint) optionsHandler.addChainedImport(this.endpoint, filename);
         return false;
     }
 

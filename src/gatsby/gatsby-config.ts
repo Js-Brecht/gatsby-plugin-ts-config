@@ -81,8 +81,8 @@ export default (args = {} as ITSConfigArgs) => {
     let gatsbyConfig = {} as GatsbyConfig;
     if (endpoints.config) {
         try {
-            RequireRegistrar.start();
-            const gatsbyConfigModule = preferDefault(require(endpoints.config));
+            RequireRegistrar.start('config');
+            const gatsbyConfigModule = preferDefault(require(endpoints.config[0]));
             gatsbyConfig = typeof gatsbyConfigModule === 'function' ? gatsbyConfigModule(OptionsHandler.public()) : gatsbyConfigModule;
         } catch (err) {
             throwError(`[gatsby-plugin-ts-config] An error occurred while reading your gatsby-config!`, err);

@@ -11,8 +11,8 @@ type IGatsbyNode = Required<GatsbyNode>;
 let gatsbyNode = {} as IGatsbyNode;
 if (endpoints.node) {
     try {
-        RequireRegistrar.start();
-        const userGatsbyNode = preferDefault(require(endpoints.node));
+        RequireRegistrar.start('node');
+        const userGatsbyNode = preferDefault(require(endpoints.node[0]));
         gatsbyNode = typeof userGatsbyNode === 'function' ? userGatsbyNode(OptionsHandler.public()) : userGatsbyNode;
     } catch (err) {
         throwError(`[gatsby-plugin-ts-config] An error occurred while reading your gatsby-node!`, err);

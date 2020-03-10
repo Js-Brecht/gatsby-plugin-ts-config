@@ -3,8 +3,8 @@ import { keys } from 'ts-transformer-keys';
 import mergeWith from 'lodash.mergewith';
 import { TsConfigJson } from 'type-fest';
 import { TransformOptions as BabelTransformOptions } from '@babel/core';
-import { TsConfigOptions, RegisterOptions as TSNodeRegisterOptions } from 'ts-node';
-import { IGlobalOpts, IPublicOpts } from "../types";
+import { RegisterOptions as TSNodeRegisterOptions } from 'ts-node';
+import { IGlobalOpts, IPublicOpts, IConfigTypes } from "../types";
 import { addOptsToPreset } from './babel';
 import { getAbsoluteRelativeTo } from '../utils/fs-tools';
 
@@ -26,6 +26,12 @@ class OptionsHandler {
                 acc[key as keyof IPublicOpts] = val;
                 return acc;
             }, {} as IPublicOpts);
+    }
+
+    public addChainedImport(endpoint: IConfigTypes, filepath: string) {
+        if (!this.opts.endpoints[endpoint]) this.opts.endpoints[endpoint] = [];
+        if (this.opts.endpoints[endpoint]![0] === filepath) return;
+        this.opts.endpoints[endpoint]!.push(filepath);
     }
 
     public get(): IGlobalOpts {
