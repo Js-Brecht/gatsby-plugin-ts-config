@@ -1,6 +1,5 @@
 import { TransformOptions } from '@babel/core';
-import { IRegisterOptions as BabelRegisterOpts } from '@babel/register';
-import { RegisterOptions as ITSNodeRegisterOpts } from 'ts-node';
+import { RegisterOptions } from 'ts-node';
 
 export type IRegisterType = 'ts-node' | 'babel';
 export type IValidExts = '.js' | '.ts' | '.jsx' | '.tsx';
@@ -12,7 +11,7 @@ export type IEndpointResolutionSpec = IConfigTypes | {
 
 export type IRegisterOptions<T extends IRegisterType> =
     T extends 'ts-node'
-        ? ITSNodeRegisterOpts
+        ? RegisterOptions
         : T extends 'babel'
             ? TransformOptions
             : never;
@@ -26,7 +25,8 @@ export interface ICommonDirectories {
 
 export interface IGlobalOpts extends ICommonDirectories {
     endpoints: IGatsbyEndpoints;
-    transformOpts?: TransformOptions;
+    babelOpts?: TransformOptions;
+    tsNodeOpts?: RegisterOptions;
 }
 
 export type IGatsbyEndpoints = {
