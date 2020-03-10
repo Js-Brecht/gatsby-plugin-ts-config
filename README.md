@@ -8,9 +8,9 @@
 
 * Install using your project manager
 
-```shell
-npm install -D gatsby-plugin-ts-config
-```
+  ```shell
+  npm install -D gatsby-plugin-ts-config
+  ```
 
 ---
 
@@ -30,7 +30,8 @@ npm install -D gatsby-plugin-ts-config
 ### Usage
 
 You will still need to define, at minimum, one `.js` Gatsby configuration: `gatsby-config.js`.
-It also needs to be in the root of your project, as usual.  You will then use _**it**_ to call
+
+As usual, it needs to be in the root of your project.  You will then use _**it**_ to call
 this plugin, and the rest of your configuration will be in Typescript files.
 
 * The easy way
@@ -162,15 +163,14 @@ module.exports = generateConfig({
 });
 ```
 
-I prefer to keep my configuration files out of my project root, so I usually define a subdirectory:
-
-> It is recommended that you define a `configDir`.
+When using this plugin, it is preferable to keep the configuration files out of my project root, because
+this helps avoid Gatsby node ownership conflicts.
 
 ```js
 // gatsby-config.js
 const { generateConfig } = require('gatsby-plugin-ts-config');
 module.exports = generateConfig({
-    projectRoot: __dirname,
+    projectRoot: __dirname, // <- not required.  If omitted, projectRoot will be process.cwd()
     configDir: '.gatsby'
 });
 ```
@@ -190,9 +190,59 @@ following:
 
 ---
 
-### ts-node specific usage details
+### `babel` specific usage details
 
-#### Options
+#### babel Options
+
+The babel configuration takes all of the same options you would expect
+to provide to babel itself.  For specific details, please see the
+[babel options documentation](https://babeljs.io/docs/en/options#config-loading-options)
+
+Options that you give to this plugin for babel to use will not interfere with
+the options that you give to Gatsby.  However, it's important to keep in mind
+that they **will** mix with the options that you put in a `.babelrc` in your
+project root.
+
+#### `babel` example usage
+
+Following is an example setup that will configure babel to be able to use the
+aliases defined in `tsconfig.compilerOptions.paths`.
+
+```js
+// gatsby-config.js
+const { generateConfig } = require('gatsby-plugin-ts-config');
+
+const path = require('path');
+const tsconfig = require('./tsconfig.json');
+const moduleResolverOpts = {};
+if (tsconfig && tsconfig.compilerOptions) {
+  if (tsconfig.compilerOptions.baseUrl)
+    moduleResolverOpts.root = [path.resolve(__dirname, tsconfig.compilerOptions.baseUrl)];
+  if (tsconfig.compilerOptions.paths)
+    moduleResolverOpts.alias = Object.entries(tsconfig.compilerOptions.paths).reduce((acc, [key, val]) => {
+      acc[key.replace(/\/\*$/, '')] = val[0].replace(/\/\*$/, '');
+      return acc;
+    }, {});
+}
+
+module.exports = generateConfig({
+  configDir: '.gatsby',
+  babel: {
+    plugins: [
+      [
+        require.resolve('babel-plugin-module-resolver'),
+        moduleResolverOpts,
+      ],
+    ],
+  },
+});
+```
+
+---
+
+### `ts-node` specific usage details
+
+#### `ts-node` Options
 
 For valid options you may use to configure `ts-node`, see the [ts-node
 options documentation here](https://github.com/TypeStrong/ts-node#cli-and-programmatic-options)
@@ -215,9 +265,10 @@ module.exports = generateConfig({
 Note: if you define this file, it will be resolved relative to the defined `projectRoot` (which is your
 `process.cwd()` by default), unless it is an absolute path.
 
-#### tsconfig path aliases
+#### `ts-node` example usage
 
-I like to use aliases in my Typescript, so I prefer to configure a custom paths transformer for `ts-node`:
+Following is an example of `ts-node` usage that will configure a custom paths transformer for `ts-node`,
+enabling the usage of `tsconfig.compilerOptions.paths` in your Typescript code:
 
 ```js
 // gatsby-config.js
@@ -290,14 +341,22 @@ defined as below
 
 * `cacheDir`: `{string}`
   * The cache folder location that the plugin will use to store any of the files that it needs to.
-* `endpoints`: `{string[]}`
+* `endpoints`: `{object}`
+  * Properties:
+    * config: `{string[]}` - The list of chained requires/imports that were performed by `gatsby-config`
+    * node: `{string[]}` - The list of chained requires/imports that were performed by `gatsby-node`
+    * browser: `{string[]}` - The resolved path of the `gatsby-browser` api endpoint
+    * ssr: `{string[]}` - The resolved path of the `gatsby-ssr` api endpoint
   * A collection of the fully qualified paths for all of the Gatsby configuration files that have been
     resolved, and that will be called, by this plugin.  This will be equal to any of the endpoints that
-    you have in your `configDir`, with two exceptions:
+    you have in your `configDir`, with one exception:
     * If your `configDir` is the same as the `projectRoot`, then `gatsby-ssr` and `gastby-browser` will
       **not** be included in these resolved endpoints, because they will not be called by this plugin.
-    * Files that are imported by your `gatsby-*` files will be included in this collection
-      as well.
+  * If the `browser` or `ssr` properties are included, they will only have one index, containing the
+    location of the endpoint that was resolved.  This is because transpiling & compiling of those modules
+    is done by Gatsby itself, not this module.
+  * The first index of each property will always be the Gatsby endpoint.  All following indexes will be
+    the files that were required/imported by that one
 
 #### Type utilities
 
