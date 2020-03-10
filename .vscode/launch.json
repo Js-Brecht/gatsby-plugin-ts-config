@@ -1,52 +1,97 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Launch Build",
-            "skipFiles": [
-                "<node_internals>/**",
-                "**/.pnp.js"
-            ],
-            "runtimeArgs": [
-              "--nolazy",
-              "-r",
-              "./.pnp.js"
-            ],
-            "cwd": "${env:GATSBY_TEST_ROOT}",
-            "program": "${env:GATSBY_TEST_ROOT}/.yarn/unplugged/gatsby-virtual-546c515729/node_modules/gatsby/dist/bin/gatsby.js",
-            "args": ["build"],
-            "outFiles": [
-                "${workspaceFolder}/dist/**/*.js"
-            ],
-            "sourceMaps": true,
-            "console": "integratedTerminal"
-        },
-        {
-          "type": "node",
-          "request": "launch",
-          "name": "Launch Develop",
-          "skipFiles": [
-              "<node_internals>/**",
-              "**/.pnp.js"
-          ],
-          "runtimeArgs": [
-            "--nolazy",
-            "-r",
-            "./.pnp.js"
-          ],
-          "cwd": "${env:GATSBY_TEST_ROOT}",
-          "program": "${env:GATSBY_TEST_ROOT}/.yarn/unplugged/gatsby-virtual-546c515729/node_modules/gatsby/dist/bin/gatsby.js",
-          "args": ["develop"],
-          "outFiles": [
-              "${workspaceFolder}/dist/**/*.js"
-          ],
-          "sourceMaps": true,
-          "console": "integratedTerminal"
-      }
-    ]
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Pnpm | Launch Build",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "runtimeArgs": [
+        "--nolazy"
+      ],
+      "cwd": "${env:GATSBY_TEST_ROOT}",
+      "program": "${env:GATSBY_TEST_ROOT}/node_modules/gatsby/dist/bin/gatsby.js",
+      "args": [
+        "build"
+      ],
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "webpack:///./~/*": "${workspaceRoot}/node_modules/*",
+        "webpack:///./*": "${workspaceRoot}/*",
+        "webpack:///*": "*"
+      },
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Pnpm | Launch Build",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "runtimeArgs": [
+        "--nolazy"
+      ],
+      "cwd": "${env:GATSBY_TEST_ROOT}",
+      "program": "${env:GATSBY_TEST_ROOT}/node_modules/gatsby/dist/bin/gatsby.js",
+      "args": [
+        "build"
+      ],
+      "sourceMaps": true,
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Yarn | Launch Build",
+      "skipFiles": [
+        "<node_internals>/**",
+        "**/.pnp.js"
+      ],
+      "env": {
+        "VSCODE_LAUNCH_APP": "gatsby/dist/bin/gatsby.js"
+      },
+      "runtimeArgs": [
+        "--nolazy",
+        "-r",
+        "${env:GATSBY_TEST_ROOT}/.pnp.js"
+      ],
+      "cwd": "${env:GATSBY_TEST_ROOT}",
+      "program": "${env:GATSBY_TEST_ROOT}/.vscode/launch.js",
+      "args": [
+        "build"
+      ],
+      "sourceMaps": true,
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Yarn | Launch Develop",
+      "skipFiles": [
+        "<node_internals>/**",
+        "**/.pnp.js"
+      ],
+      "env": {
+        "VSCODE_LAUNCH_APP": "gatsby/dist/bin/gatsby.js"
+      },
+      "runtimeArgs": [
+        "--nolazy",
+        "-r",
+        "${env:GATSBY_TEST_ROOT}/.pnp.js"
+      ],
+      "cwd": "${env:GATSBY_TEST_ROOT}",
+      "program": "${env:GATSBY_TEST_ROOT}/.vscode/launch.js",
+      "args": [
+        "develop"
+      ],
+      "sourceMaps": true,
+      "console": "integratedTerminal"
+    }
+  ]
 }
