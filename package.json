@@ -24,8 +24,8 @@
 		"url": "https://github.com/Js-Brecht/gatsby-plugin-ts-config/issues"
 	},
 	"files": [
-    "dist",
-    "index.js",
+		"dist",
+		"index.js",
 		"gatsby-node.js",
 		"gatsby-config.js",
 		"gatsby-browser.js",
