@@ -8,7 +8,6 @@ export type IRegistrarProgramOpts = ICommonDirectories;
 
 export interface IRequireRegistrarProps<T extends IRegisterType> {
     registerOpts: IRegisterOptions<T>;
-    programOpts: IRegistrarProgramOpts;
 }
 
 class RequireRegistrar<T extends IRegisterType> {

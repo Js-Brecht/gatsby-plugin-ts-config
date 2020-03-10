@@ -65,7 +65,6 @@ export default (args = {} as ITSConfigArgs) => {
 
         RequireRegistrar.init('babel', {
             registerOpts: babelOpts,
-            programOpts,
         });
     } else {
         const tsNodeOpts: RegisterOptions = OptionsHandler.setTsNodeOpts(
@@ -74,7 +73,6 @@ export default (args = {} as ITSConfigArgs) => {
 
         RequireRegistrar.init('ts-node', {
             registerOpts: tsNodeOpts,
-            programOpts,
         });
     }
     // }
