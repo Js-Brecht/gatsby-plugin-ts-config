@@ -2,7 +2,7 @@
 	"name": "gatsby-plugin-ts-config",
 	"version": "0.2.0-pre.06",
 	"description": "Configure Gatsby to use Typescript configuration files",
-	"main": "index.js",
+	"main": "./index.js",
 	"types": "./dist/index.js",
 	"author": "Jeremy Albright",
 	"license": "MIT",
@@ -37,32 +37,35 @@
 		"clean": "rimraf ./dist",
 		"prebuild": "npm run clean",
 		"build": "ttsc",
+		"build:map": "ttsc --sourceMap",
+		"watch": "npm run build -- -w",
 		"lint": "eslint -c .eslintrc ./src/**/*"
 	},
 	"peerDependencies": {
-		"@babel/runtime": "^7.8.4",
+		"@babel/core": "^7.0.0",
+		"@babel/runtime": "^7.8.7",
 		"gatsby": "~2.x.x",
 		"typescript": "~3.x.x"
 	},
 	"peerDependenciesMeta": {
 		"@babel/runtime": {
-			"optional": false
+			"optional": true
 		},
 		"typescript": {
 			"optional": true
 		}
 	},
 	"dependencies": {
-		"@babel/core": "^7.8.6",
 		"@babel/preset-typescript": "^7.8.3",
 		"@babel/register": "^7.8.6",
-		"@babel/runtime": "^7.8.4",
+		"@babel/runtime": "^7.8.7",
 		"babel-preset-gatsby-package": "^0.2.16",
 		"fs-extra": "^8.1.0",
 		"lodash.mergewith": "^4.6.2",
 		"ts-node": "^8.6.2"
 	},
 	"devDependencies": {
+		"@babel/core": "^7.8.6",
 		"@jtechsvcs/eslint-config-typescript": "^2.0.3",
 		"@types/babel__core": "^7.1.6",
 		"@types/fs-extra": "^8.1.0",

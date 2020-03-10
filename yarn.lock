@@ -1164,6 +1164,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.8.7":
+  version: 7.8.7
+  resolution: "@babel/runtime@npm:7.8.7"
+  dependencies:
+    regenerator-runtime: ^0.13.4
+  checksum: 2/f7990173bfcbdfd9e00c63c27c887615e6c24dbf03540f8564b25001af838db6cdc5a7fbdcf8eea562a56daff4430177081a7355ebc2d162a9f7456f904bf17e
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.8.3, @babel/template@npm:^7.8.6":
   version: 7.8.6
   resolution: "@babel/template@npm:7.8.6"
@@ -6202,7 +6211,7 @@ fsevents@~2.1.1:
     "@babel/core": ^7.8.6
     "@babel/preset-typescript": ^7.8.3
     "@babel/register": ^7.8.6
-    "@babel/runtime": ^7.8.4
+    "@babel/runtime": ^7.8.7
     "@jtechsvcs/eslint-config-typescript": ^2.0.3
     "@types/babel__core": ^7.1.6
     "@types/fs-extra": ^8.1.0
@@ -6224,7 +6233,8 @@ fsevents@~2.1.1:
     ttypescript: ^1.5.10
     typescript: 3.8.3
   peerDependencies:
-    "@babel/runtime": ^7.8.4
+    "@babel/core": ^7.0.0
+    "@babel/runtime": ^7.8.7
     gatsby: ~2.x.x
     typescript: ~3.x.x
   dependenciesMeta:
@@ -6234,7 +6244,7 @@ fsevents@~2.1.1:
       unplugged: true
   peerDependenciesMeta:
     "@babel/runtime":
-      optional: false
+      optional: true
     typescript:
       optional: true
   languageName: unknown
@@ -11372,7 +11382,7 @@ fsevents@~2.1.1:
   languageName: node
   linkType: hard
 
-"regenerator-runtime@npm:^0.13.2":
+"regenerator-runtime@npm:^0.13.2, regenerator-runtime@npm:^0.13.4":
   version: 0.13.4
   resolution: "regenerator-runtime@npm:0.13.4"
   checksum: 2/d6165e7ba67f28f813a28fc07aa0c771ae8df913a3277c0aa837957d72debc4f1df4f53a6e98636c1cc87c6ba643ce8c522eb36542bbc4234c645af9d992c7c2
