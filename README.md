@@ -108,11 +108,6 @@ this plugin, and the rest of your configuration will be in Typescript files.
 
 > Babel takes priority, so will be the default interpreter.
 
-|truthy|falsy|
-|:-----|:----|
-|true|false|
-|{}|undefined|
-
 1. If `babel` is a truthy value, or `tsNode` is a falsy value, then `babel` will be chosen.
 
 2. If `babel` is a falsy value, and `tsNode` is a truthy value, then `ts-node` will be chosen.
@@ -121,6 +116,7 @@ this plugin, and the rest of your configuration will be in Typescript files.
    in a later release
 
 For example:
+
 ```js
 // Picks babel
 const { generateConfig } = require('gatsby-plugin-ts-config');
@@ -198,7 +194,7 @@ following:
 
 #### Options
 
-For valid options you may use to configure `ts-node`, see the [ts-node 
+For valid options you may use to configure `ts-node`, see the [ts-node
 options documentation here](https://github.com/TypeStrong/ts-node#cli-and-programmatic-options)
 
 #### tsconfig.json
@@ -219,7 +215,7 @@ module.exports = generateConfig({
 Note: if you define this file, it will be resolved relative to the defined `projectRoot` (which is your
 `process.cwd()` by default), unless it is an absolute path.
 
-#### tsconfig paths
+#### tsconfig path aliases
 
 I like to use aliases in my Typescript, so I prefer to configure a custom paths transformer for `ts-node`:
 
@@ -261,9 +257,11 @@ These files can be created two ways.
 
 1. The first is by exporting a single object or series of
 named exports, the same way you normally would.
-  * You may also export this object as the _**default export**_, if you wish.
-    It is supported by this plugin, and it has better support in Typescript itself.
-    
+
+    * You may also export this object as the _**default export**_, if you
+      wish.  It is supported by this plugin, and it has better support in
+      Typescript itself.
+
     ```ts
     // gatsby-config.ts
     export default {
@@ -316,7 +314,6 @@ type-safe functions in `gatsby-node` and `gatsby-config`:
   into your plugins object array.  Accepts two parameters:
   * The name of the plugin, which will be used in the `resolve` property
   * The interface for the plugin's options
-
 
 #### Examples
 
