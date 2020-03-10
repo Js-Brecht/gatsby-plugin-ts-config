@@ -53,17 +53,8 @@ class RequireRegistrar<T extends IRegisterType> {
 
     private ignore(filename: string): boolean {
         if (!this.active) return true;
-        switch (this.type) {
-            case 'ts-node': {
-                if (!this.extensions.includes(path.extname(filename))) return true;
-                break;
-            }
-            case 'babel': {
-                if (filename.indexOf('node_modules') > -1) return true;
-                break;
-            }
-        }
-        if (filename.endsWith('/.pnp.js')) return true;
+        if (filename.indexOf('node_modules') > -1) return true;
+        if (filename.endsWith('.pnp.js')) return true;
         if (this.endpoint) optionsHandler.addChainedImport(this.endpoint, filename);
         return false;
     }
