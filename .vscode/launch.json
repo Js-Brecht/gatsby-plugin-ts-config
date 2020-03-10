@@ -9,11 +9,16 @@
             "request": "launch",
             "name": "Launch Build",
             "skipFiles": [
-                "<node_internals>/**"
+                "<node_internals>/**",
+                "**/.pnp.js"
             ],
-            "runtimeArgs": ["--nolazy"],
+            "runtimeArgs": [
+              "--nolazy",
+              "-r",
+              "./.pnp.js"
+            ],
             "cwd": "${env:GATSBY_TEST_ROOT}",
-            "program": "${env:GATSBY_TEST_ROOT}/node_modules/gatsby/dist/bin/gatsby.js",
+            "program": "${env:GATSBY_TEST_ROOT}/.yarn/unplugged/gatsby-virtual-546c515729/node_modules/gatsby/dist/bin/gatsby.js",
             "args": ["build"],
             "outFiles": [
                 "${workspaceFolder}/dist/**/*.js"
@@ -26,11 +31,16 @@
           "request": "launch",
           "name": "Launch Develop",
           "skipFiles": [
-              "<node_internals>/**"
+              "<node_internals>/**",
+              "**/.pnp.js"
           ],
-          "runtimeArgs": ["--nolazy"],
+          "runtimeArgs": [
+            "--nolazy",
+            "-r",
+            "./.pnp.js"
+          ],
           "cwd": "${env:GATSBY_TEST_ROOT}",
-          "program": "${env:GATSBY_TEST_ROOT}/node_modules/gatsby/dist/bin/gatsby.js",
+          "program": "${env:GATSBY_TEST_ROOT}/.yarn/unplugged/gatsby-virtual-546c515729/node_modules/gatsby/dist/bin/gatsby.js",
           "args": ["develop"],
           "outFiles": [
               "${workspaceFolder}/dist/**/*.js"
