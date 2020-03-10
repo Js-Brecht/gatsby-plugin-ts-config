@@ -68,11 +68,9 @@ export default (args = {} as ITSConfigArgs) => {
             programOpts,
         });
     } else {
-        const tsNodeOpts: RegisterOptions = typeof args.tsNode === 'boolean' ? {} : args.tsNode;
-
-        if (tsNodeOpts.project) {
-            tsNodeOpts.project = getAbsoluteRelativeTo(projectRoot, tsNodeOpts.project);
-        }
+        const tsNodeOpts: RegisterOptions = OptionsHandler.setTsNodeOpts(
+            typeof args.tsNode === 'boolean' ? {} : args.tsNode,
+        );
 
         RequireRegistrar.init('ts-node', {
             registerOpts: tsNodeOpts,

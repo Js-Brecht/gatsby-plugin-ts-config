@@ -1,9 +1,13 @@
 import * as path from 'path';
 import { keys } from 'ts-transformer-keys';
 import mergeWith from 'lodash.mergewith';
-import { TransformOptions } from '@babel/core';
+import { TsConfigJson } from 'type-fest';
+import { TransformOptions as BabelTransformOptions } from '@babel/core';
+import { TsConfigOptions, RegisterOptions as TSNodeRegisterOptions } from 'ts-node';
 import { IGlobalOpts, IPublicOpts } from "../types";
 import { addOptsToPreset } from './babel';
+import { getAbsoluteRelativeTo } from '../utils/fs-tools';
+
 
 const publicProps = keys<IPublicOpts>();
 
@@ -38,10 +42,35 @@ class OptionsHandler {
         }
     }
 
-    public setBabelOpts(opts?: TransformOptions): Required<IGlobalOpts>['transformOpts'] {
-        this.opts.transformOpts = mergeWith(
+    public setTsNodeOpts(opts: TSNodeRegisterOptions = {}): Required<IGlobalOpts>['tsNodeOpts'] {
+        const compilerOptions: TsConfigJson['compilerOptions'] = {
+            module: "commonjs",
+            target: "es2015",
+            allowJs: false,
+            noEmit: true,
+            declaration: false,
+            importHelpers: true,
+            resolveJsonModule: true,
+            jsx: "preserve",
+            // sourceMap: true,
+        };
+
+        this.opts.tsNodeOpts = mergeWith(
             {
-                sourceMaps: "both",
+                project: getAbsoluteRelativeTo(this.opts.projectRoot, opts.project || 'tsconfig.json'),
+                files: true,
+                compilerOptions,
+            },
+            opts,
+            this.mergeOptionsWithConcat,
+        );
+        return this.opts.tsNodeOpts;
+    }
+
+    public setBabelOpts(opts?: BabelTransformOptions): Required<IGlobalOpts>['babelOpts'] {
+        this.opts.babelOpts = mergeWith(
+            {
+                sourceMaps: "inline",
                 sourceRoot: this.opts.projectRoot,
                 cwd: this.opts.projectRoot,
                 presets: [
@@ -58,7 +87,7 @@ class OptionsHandler {
             opts,
             this.mergeOptionsWithConcat,
         );
-        return this.opts.transformOpts;
+        return this.opts.babelOpts;
     }
 }
 

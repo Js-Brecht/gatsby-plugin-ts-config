@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { register, TsConfigOptions } from 'ts-node';
+import { register } from 'ts-node';
 import babelRegister, { revert } from '@babel/register';
 import { IRegisterOptions, IRegisterType, ICommonDirectories } from '../types';
 import { throwError } from './errors';
@@ -63,6 +63,7 @@ class RequireRegistrar<T extends IRegisterType> {
                 break;
             }
         }
+        if (filename.endsWith('/.pnp.js')) return true;
         return false;
     }
 
@@ -72,30 +73,11 @@ class RequireRegistrar<T extends IRegisterType> {
 
     private register(): void {
         if (this.registered) return;
-        const { projectRoot } = this.programOpts;
 
         switch (this.type) {
             case 'ts-node': {
-                const tsNodeOpts = this.registerOpts as IRegisterOptions<'ts-node'>;
-                const compilerOptions: TsConfigOptions['compilerOptions'] = {
-                    module: "commonjs",
-                    target: "es2015",
-                    allowJs: false,
-                    noEmit: true,
-                    declaration: false,
-                    importHelpers: true,
-                    resolveJsonModule: true,
-                    jsx: "preserve",
-                    ...tsNodeOpts.compilerOptions || {},
-                };
-
-                const tsNodeService = register({
-                    project: path.join(projectRoot, 'tsconfig.json'),
-                    compilerOptions,
-                    files: true,
-                    ...tsNodeOpts,
-                });
-
+                const opts = this.registerOpts as IRegisterOptions<'ts-node'>;
+                const tsNodeService = register(opts);
                 tsNodeService.ignored = this.ignore;
                 break;
             }
