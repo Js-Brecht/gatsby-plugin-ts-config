@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { GatsbyNode, CreateWebpackConfigArgs } from 'gatsby';
 import { preferDefault } from '../utils/node';
 import { setupGatsbyEndpoints } from '../utils/endpoints';
@@ -55,16 +54,13 @@ export = {
         actions: {
             setWebpackConfig,
         },
-        plugins: {
-            define,
-        },
     }: CreateWebpackConfigArgs) => {
         setWebpackConfig({
-            plugins: [
-                define({
-                    __TS_CONFIG_CACHE_DIR__: JSON.stringify(cacheDir + path.sep),
-                }),
-            ],
+            resolve: {
+                alias: {
+                    "ts-config-cache-dir": cacheDir,
+                },
+            },
         });
         return;
     }),
