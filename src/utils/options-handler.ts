@@ -52,7 +52,7 @@ class OptionsHandler {
         const compilerOptions: TsConfigJson['compilerOptions'] = {
             module: "commonjs",
             target: "es2015",
-            allowJs: false,
+            allowJs: true,
             noEmit: true,
             declaration: false,
             importHelpers: true,

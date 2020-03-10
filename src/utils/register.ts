@@ -17,7 +17,7 @@ class RequireRegistrar<T extends IRegisterType> {
     private active = false;
     private type!: T;
     private registerOpts!: IRegisterOptions<T>;
-    private extensions = ['.ts', '.tsx'];
+    private extensions = ['.ts', '.tsx', '.js', '.jsx'];
     private endpoint?: IConfigTypes;
 
     constructor() {
