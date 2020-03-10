@@ -36,7 +36,7 @@ export const resolveGatsbyEndpoints = ({
         const endpointFile = `gatsby-${endpointType}`;
         const configFile = checkFileWithExts(path.join(configDir, endpointFile), endpointExt);
         if (configFile) {
-            resolved[endpointType] = configFile;
+            resolved[endpointType] = [configFile];
         }
     }
 
@@ -77,7 +77,7 @@ export const setupGatsbyEndpoints = ({
         if (setupApi in resolvedEndpoints) {
             // If User endpoint was resolved, then write out the proxy
             // module that will point to the user's
-            const resolvedPath = resolvedEndpoints[setupApi] as string;
+            const resolvedPath = resolvedEndpoints[setupApi]![0] as string;
             moduleSrc = `module.exports = require("${
                 resolvedPath.replace(/\\/g, '\\\\')
             }");`;

@@ -30,5 +30,5 @@ export interface IGlobalOpts extends ICommonDirectories {
 }
 
 export type IGatsbyEndpoints = {
-    [k in IConfigTypes]?: string;
+    [k in IConfigTypes]?: string[];
 }
