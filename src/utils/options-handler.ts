@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { keys } from 'ts-transformer-keys';
 import mergeWith from 'lodash.mergewith';
 import { TransformOptions } from '@babel/core';
@@ -40,7 +41,7 @@ class OptionsHandler {
     public setBabelOpts(opts?: TransformOptions): Required<IGlobalOpts>['transformOpts'] {
         this.opts.transformOpts = mergeWith(
             {
-                sourceMaps: true,
+                sourceMaps: "both",
                 sourceRoot: this.opts.projectRoot,
                 cwd: this.opts.projectRoot,
                 presets: [
@@ -49,7 +50,7 @@ class OptionsHandler {
                         require('babel-preset-gatsby-package'),
                         '@babel/plugin-transform-runtime',
                         {
-                            absoluteRuntime: this.opts.pluginDir,
+                            absoluteRuntime: path.dirname(require.resolve('@babel/runtime/package.json')),
                         },
                     ),
                 ],
