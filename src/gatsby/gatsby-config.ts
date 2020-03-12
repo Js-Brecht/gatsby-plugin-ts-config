@@ -1,14 +1,12 @@
 import * as path from 'path';
-import { GatsbyConfig } from 'gatsby';
 import { RegisterOptions } from 'ts-node';
 import { TransformOptions } from '@babel/core';
+import { ITSConfigArgs, IConfigTypes, IEndpointResolutionSpec } from '../types';
 import { getAbsoluteRelativeTo } from '../utils/fs-tools';
 import { resolveGatsbyEndpoints, browserSsr } from '../utils/endpoints';
-import { ITSConfigArgs, IConfigTypes, IEndpointResolutionSpec } from '../types';
-import { preferDefault } from '../utils/node';
+import { tryRequireModule, getModuleObject } from '../utils/node';
 import RequireRegistrar from '../utils/register';
 import OptionsHandler from '../utils/options-handler';
-import { throwError } from '../utils/errors';
 
 const gatsbyEndpoints: IConfigTypes[] = [
     ...browserSsr,
@@ -78,17 +76,15 @@ export default (args = {} as ITSConfigArgs) => {
     // }
 
 
-    let gatsbyConfig = {} as GatsbyConfig;
-    if (endpoints.config) {
-        try {
-            RequireRegistrar.start('config');
-            const gatsbyConfigModule = preferDefault(require(endpoints.config[0]));
-            gatsbyConfig = typeof gatsbyConfigModule === 'function' ? gatsbyConfigModule(OptionsHandler.public()) : gatsbyConfigModule;
-        } catch (err) {
-            throwError(`[gatsby-plugin-ts-config] An error occurred while reading your gatsby-config!`, err);
-        } finally {
-            RequireRegistrar.stop();
-        }
-    }
+    // Prefetch gatsby-node here so that we can collect the import chain.
+    // Doing it here also means we can revert the changes to require.extensions
+    // before continuing with the build.  The cached, transpiled source will be
+    // retrieved later when it is required in gatsby-node
+    const gatsbyNodeModule = tryRequireModule('node', endpoints);
+
+    const gatsbyConfigModule = tryRequireModule('config', endpoints);
+    const gatsbyConfig = getModuleObject(gatsbyConfigModule);
+
+    RequireRegistrar.revert();
     return gatsbyConfig;
 };

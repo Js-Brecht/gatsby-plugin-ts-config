@@ -1,6 +1,5 @@
-import * as path from 'path';
 import { register } from 'ts-node';
-import babelRegister, { revert } from '@babel/register';
+import babelRegister from '@babel/register';
 import { IRegisterOptions, IRegisterType, ICommonDirectories, IConfigTypes } from '../types';
 import { throwError } from './errors';
 import optionsHandler from './options-handler';
@@ -19,6 +18,9 @@ class RequireRegistrar<T extends IRegisterType> {
     private registerOpts!: IRegisterOptions<T>;
     private extensions = ['.ts', '.tsx', '.js', '.jsx'];
     private endpoint?: IConfigTypes;
+    private origExtensions = {
+        ...require.extensions,
+    }
 
     constructor() {
         this.ignore = this.ignore.bind(this);
@@ -45,10 +47,12 @@ class RequireRegistrar<T extends IRegisterType> {
 
     public stop(): void {
         this.active = false;
-        if (this.type === 'babel') {
-            revert();
-            this.registered = false;
-        }
+    }
+
+    public revert(): void {
+        this.active = false;
+        this.registered = false;
+        require.extensions = this.origExtensions;
     }
 
     private ignore(filename: string): boolean {

@@ -1,26 +1,16 @@
 import { GatsbyNode, CreateWebpackConfigArgs } from 'gatsby';
-import { preferDefault } from '../utils/node';
+import {
+    tryRequireModule,
+    getModuleObject,
+} from '../utils/node';
 import { setupGatsbyEndpoints } from '../utils/endpoints';
 import OptionsHandler from '../utils/options-handler';
-import RequireRegistrar from '../utils/register';
-import { throwError } from '../utils/errors';
 
 const { endpoints, cacheDir } = OptionsHandler.get();
 
 type IGatsbyNode = Required<GatsbyNode>;
-let gatsbyNode = {} as IGatsbyNode;
-if (endpoints.node) {
-    try {
-        RequireRegistrar.start('node');
-        const userGatsbyNode = preferDefault(require(endpoints.node[0]));
-        gatsbyNode = typeof userGatsbyNode === 'function' ? userGatsbyNode(OptionsHandler.public()) : userGatsbyNode;
-    } catch (err) {
-        throwError(`[gatsby-plugin-ts-config] An error occurred while reading your gatsby-node!`, err);
-    } finally {
-        RequireRegistrar.stop();
-    }
-}
-
+const gatsbyNodeModule = tryRequireModule('node', endpoints, false);
+const gatsbyNode = getModuleObject(gatsbyNodeModule);
 
 type IGatsbyNodeFunctions = keyof IGatsbyNode;
 type IGatsbyNodeFnParameters<T extends IGatsbyNodeFunctions> = Parameters<IGatsbyNode[T]>;
