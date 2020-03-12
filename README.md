@@ -299,8 +299,8 @@ module.exports = generateConfig({
 
 #### `gatsby-browser` and `gatsby-ssr`
 
-  If these files are located in your `projectRoot`, then they will be skipped by this plugin
-  because Gatsby is able to process them by default, through Webpack.
+If these files are located in your `projectRoot`, then they will be skipped by this plugin
+because Gatsby is able to process them by default, through Webpack.
 
 #### `gatsby-config` and `gatsby-node`
 
@@ -327,7 +327,7 @@ named exports, the same way you normally would.
 
 2. The second method allows you to export a single function as the default export.  This function
 will receive a single object as the first and only parameter.  The object properties are
-defined as below
+defined below
 
 #### `gatsby-*` as-a-function parameters
 
