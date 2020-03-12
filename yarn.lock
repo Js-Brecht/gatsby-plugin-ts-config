@@ -6231,6 +6231,7 @@ fsevents@~2.1.1:
     ts-node: ^8.6.2
     ts-transformer-keys: ^0.4.1
     ttypescript: ^1.5.10
+    type-fest: ^0.12.0
     typescript: 3.8.3
   peerDependencies:
     "@babel/core": ^7.0.0
@@ -13246,6 +13247,13 @@ fsevents@~2.1.1:
   dependencies:
     prelude-ls: ~1.1.2
   checksum: 2/4e080645319c12bb78119f7e8bb333cab8dacad2c1988597aabf44da985ad36fce3419707e93ed0fc84514b7eec94e4d8817e33d0aab8c81de394916e00d6806
+  languageName: node
+  linkType: hard
+
+"type-fest@npm:^0.12.0":
+  version: 0.12.0
+  resolution: "type-fest@npm:0.12.0"
+  checksum: 2/e9e82ef5d1f3fbd39634626aa9a096b856e58271e9aafca0b6b56ef287443a776bb6c0ee784f7537306a69c0d028ced992b66b1d6552c7fa5d9717ee62206c21
   languageName: node
   linkType: hard
 

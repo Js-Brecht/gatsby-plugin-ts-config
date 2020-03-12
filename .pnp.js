@@ -58,6 +58,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["ts-node", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:8.6.2"],
             ["ts-transformer-keys", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:0.4.1"],
             ["ttypescript", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:1.5.10"],
+            ["type-fest", "npm:0.12.0"],
             ["typescript", "patch:typescript@npm%3A3.8.3#builtin<compat/typescript>::version=3.8.3&hash=273569"]
           ],
           "packagePeers": [
@@ -8199,6 +8200,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["ts-node", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:8.6.2"],
             ["ts-transformer-keys", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:0.4.1"],
             ["ttypescript", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:1.5.10"],
+            ["type-fest", "npm:0.12.0"],
             ["typescript", "patch:typescript@npm%3A3.8.3#builtin<compat/typescript>::version=3.8.3&hash=273569"]
           ],
           "packagePeers": [
@@ -15861,6 +15863,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["type-fest", [
+        ["npm:0.12.0", {
+          "packageLocation": "../../../.yarncache/berry/cache/type-fest-npm-0.12.0-52734205c8-2.zip/node_modules/type-fest/",
+          "packageDependencies": [
+            ["type-fest", "npm:0.12.0"]
+          ],
+          "linkType": "HARD",
+        }],
         ["npm:0.3.1", {
           "packageLocation": "../../../.yarncache/berry/cache/type-fest-npm-0.3.1-542c938bf6-2.zip/node_modules/type-fest/",
           "packageDependencies": [
