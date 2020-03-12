@@ -2,10 +2,10 @@ import * as path from 'path';
 import {
     ConfigItem,
     CreateConfigItemOptions,
-    createConfigItem,
     ConfigAPI,
     TransformOptions,
     PluginItem,
+    createConfigItem,
 } from '@babel/core';
 
 type ICreatePresetProps = string | {
