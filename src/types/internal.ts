@@ -66,4 +66,3 @@ export interface IGlobalOpts extends ICommonDirectories {
     babelOpts?: TransformOptions;
     tsNodeOpts?: RegisterOptions;
 }
-
