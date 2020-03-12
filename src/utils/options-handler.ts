@@ -1,6 +1,6 @@
 import * as path from 'path';
-import { keys } from 'ts-transformer-keys';
 import mergeWith from 'lodash.mergewith';
+import { keys } from 'ts-transformer-keys';
 import { TsConfigJson } from 'type-fest';
 import { TransformOptions as BabelTransformOptions } from '@babel/core';
 import { RegisterOptions as TSNodeRegisterOptions } from 'ts-node';
@@ -8,24 +8,16 @@ import { IGlobalOpts, IPublicOpts, IConfigTypes } from "../types";
 import { addOptsToPreset } from './babel';
 import { getAbsoluteRelativeTo } from '../utils/fs-tools';
 
-
 const publicProps = keys<IPublicOpts>();
 
 class OptionsHandler {
     private opts = {} as IGlobalOpts;
-    private publicOpts = {} as IPublicOpts;
 
     public set(args: Partial<IGlobalOpts>) {
         this.opts = {
             ...this.opts,
             ...args,
         };
-        this.publicOpts = Object.entries(this.opts)
-            .filter(([key]) => publicProps.includes(key as keyof IPublicOpts))
-            .reduce((acc, [key, val]) => {
-                acc[key as keyof IPublicOpts] = val;
-                return acc;
-            }, {} as IPublicOpts);
     }
 
     public addChainedImport(endpoint: IConfigTypes, filepath: string) {
@@ -39,7 +31,14 @@ class OptionsHandler {
     }
 
     public public(): IPublicOpts {
-        return this.publicOpts;
+        const entries = Object.entries(this.opts);
+        const publicOpts = entries
+            .filter(([key]) => publicProps.includes(key as keyof IPublicOpts))
+            .reduce((acc, [key, val]) => {
+                acc[key as keyof IPublicOpts] = val;
+                return acc;
+            }, {} as IPublicOpts);
+        return publicOpts;
     }
 
     private mergeOptionsWithConcat(to: any, from: any): any {
