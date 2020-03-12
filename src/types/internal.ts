@@ -17,7 +17,9 @@ export type IEndpointReturnTypes<T extends IConfigTypes = IConfigTypes> = T exte
         ? GatsbyNode | ITSConfigFn<'node'>
         : T extends 'browser'
             ? GatsbyBrowser
-            : GatsbySSR
+            : T extends 'ssr'
+                ? GatsbySSR
+                : unknown;
 
 export type IEndpointReturnObject<T extends IConfigTypes> = T extends 'config'
     ? GatsbyConfig
@@ -25,7 +27,9 @@ export type IEndpointReturnObject<T extends IConfigTypes> = T extends 'config'
         ? GatsbyNode
         : T extends 'browser'
             ? GatsbyBrowser
-            : GatsbySSR;
+            : T extends 'ssr'
+                ? GatsbySSR
+                : unknown;
 
 export type InferredConfigType<T extends IEndpointReturnTypes, K = IConfigTypes> = T extends GatsbyConfig | ITSConfigFn<'config'>
     ? 'config'
