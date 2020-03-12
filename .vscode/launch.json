@@ -30,7 +30,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Pnpm | Launch Build",
+      "name": "Pnpm | Launch Develop",
       "skipFiles": [
         "<node_internals>/**"
       ],
@@ -40,7 +40,7 @@
       "cwd": "${env:GATSBY_TEST_ROOT}",
       "program": "${env:GATSBY_TEST_ROOT}/node_modules/gatsby/dist/bin/gatsby.js",
       "args": [
-        "build"
+        "develop"
       ],
       "sourceMaps": true,
       "console": "integratedTerminal"
