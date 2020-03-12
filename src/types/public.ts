@@ -22,7 +22,7 @@ export type IPublicOpts = Omit<IGlobalOpts, 'transformOpts' | 'pluginDir'>
 
 type ITSConfigFnTypes = 'config' | 'node';
 type ITSConfigFnReturn<T extends ITSConfigFnTypes, TMergeConfigs extends IMergePluginOptions = any> = T extends 'config'
-    ? IGatsbyConfiguration<TMergeConfigs>
+    ? IGatsbyConfig<TMergeConfigs>
     : GatsbyNode;
 
 export interface ITSConfigFn<TConfigType extends ITSConfigFnTypes, TMergeConfigs extends IMergePluginOptions = any> {
@@ -30,10 +30,10 @@ export interface ITSConfigFn<TConfigType extends ITSConfigFnTypes, TMergeConfigs
 }
 
 /**
- * This is just an interface used to extend the default GatsbyConfig interface
+ * This interface is used to extend the default GatsbyConfig interface
  * with the additional plugin definitions
  */
-export interface IGatsbyConfiguration<TPluginDefinition extends IMergePluginOptions = IMergePluginOptions> extends GatsbyConfig {
+export interface IGatsbyConfig<TPluginDefinition extends IMergePluginOptions = IMergePluginOptions> extends GatsbyConfig {
     plugins?: Array<
         | string
         | IMergePluginOptions
