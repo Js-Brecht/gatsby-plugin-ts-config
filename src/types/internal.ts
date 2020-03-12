@@ -11,35 +11,37 @@ export type IEndpointResolutionSpec = IConfigTypes | {
     ext: IValidExts[];
 }
 
-export type IEndpointReturnTypes<T extends IConfigTypes = IConfigTypes> = T extends 'config'
-    ? GatsbyConfig | ITSConfigFn<'config'>
-    : T extends 'node'
-        ? GatsbyNode | ITSConfigFn<'node'>
-        : T extends 'browser'
-            ? GatsbyBrowser
-            : T extends 'ssr'
-                ? GatsbySSR
-                : unknown;
+export type IEndpointReturnTypes<T extends IConfigTypes = IConfigTypes> =
+    T extends 'config'
+        ? GatsbyConfig | ITSConfigFn<'config'>
+        : T extends 'node'
+            ? GatsbyNode | ITSConfigFn<'node'>
+            : T extends 'browser'
+                ? GatsbyBrowser
+                : T extends 'ssr'
+                    ? GatsbySSR
+                    : unknown;
 
-export type IEndpointReturnObject<T extends IConfigTypes> = T extends 'config'
-    ? GatsbyConfig
-    : T extends 'node'
-        ? GatsbyNode
-        : T extends 'browser'
-            ? GatsbyBrowser
-            : T extends 'ssr'
-                ? GatsbySSR
-                : unknown;
+export type IEndpointReturnObject<T extends IConfigTypes> =
+    T extends 'config' ? GatsbyConfig
+        : T extends 'node'
+            ? GatsbyNode
+            : T extends 'browser'
+                ? GatsbyBrowser
+                : T extends 'ssr'
+                    ? GatsbySSR
+                    : unknown;
 
-export type InferredConfigType<T extends IEndpointReturnTypes, K = IConfigTypes> = T extends GatsbyConfig | ITSConfigFn<'config'>
-    ? 'config'
-    : T extends GatsbyNode | ITSConfigFn<'node'>
-        ? 'node'
-        : T extends GatsbyBrowser
-            ? 'browser'
-            : T extends GatsbySSR
-                ? 'ssr'
-                : unknown;
+export type InferredConfigType<T extends IEndpointReturnTypes> =
+    T extends GatsbyConfig | ITSConfigFn<'config'>
+        ? 'config'
+        : T extends GatsbyNode | ITSConfigFn<'node'>
+            ? 'node'
+            : T extends GatsbyBrowser
+                ? 'browser'
+                : T extends GatsbySSR
+                    ? 'ssr'
+                    : unknown;
 
 export type IGatsbyEndpoints = {
     [k in IConfigTypes]?: string[];
