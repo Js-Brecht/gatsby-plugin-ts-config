@@ -37,7 +37,9 @@ export type InferredConfigType<T extends IEndpointReturnTypes, K = IConfigTypes>
         ? 'node'
         : T extends GatsbyBrowser
             ? 'browser'
-            : 'ssr';
+            : T extends GatsbySSR
+                ? 'ssr'
+                : unknown;
 
 export type IGatsbyEndpoints = {
     [k in IConfigTypes]?: string[];
