@@ -37,13 +37,10 @@ interface IGetModuleObject {
     >(mod: T): IEndpointReturnObject<K>;
 }
 
-export const getModuleObject: IGetModuleObject = <
-    T extends IEndpointReturnTypes,
-    K extends InferredConfigType<T> = InferredConfigType<T>,
->(mod: T): IEndpointReturnObject<K> => {
+export const getModuleObject: IGetModuleObject = (mod) => {
     if (mod instanceof Function) {
         return (mod as Function)(OptionsHandler.public());
     }
-    return mod as unknown as IEndpointReturnObject<K>;
+    return mod;
 
 };
