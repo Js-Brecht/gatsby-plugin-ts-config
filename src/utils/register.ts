@@ -1,12 +1,13 @@
-import * as path from 'path';
-import { register, TsConfigOptions } from 'ts-node';
-import { IRegisterOptions, IRegisterType, ICommonDirectories } from '../types';
+import { register } from 'ts-node';
+import babelRegister from '@babel/register';
+import { IRegisterOptions, IRegisterType, ICommonDirectories, IConfigTypes } from '../types';
+import { throwError } from './errors';
+import optionsHandler from './options-handler';
 
 export type IRegistrarProgramOpts = ICommonDirectories;
 
 export interface IRequireRegistrarProps<T extends IRegisterType> {
     registerOpts: IRegisterOptions<T>;
-    programOpts: IRegistrarProgramOpts;
 }
 
 class RequireRegistrar<T extends IRegisterType> {
@@ -15,25 +16,32 @@ class RequireRegistrar<T extends IRegisterType> {
     private active = false;
     private type!: T;
     private registerOpts!: IRegisterOptions<T>;
-    private programOpts!: IRegistrarProgramOpts;
-    private extensions = ['.ts', '.tsx'];
+    private extensions = ['.ts', '.tsx', '.js', '.jsx'];
+    private endpoint?: IConfigTypes;
+    private origExtensions = {
+        ...require.extensions,
+    }
 
     constructor() {
         this.ignore = this.ignore.bind(this);
         this.only = this.only.bind(this);
     }
 
+    public get ext(): string[] {
+        return this.extensions;
+    }
+
     public init(type: T, props: IRequireRegistrarProps<T>): void {
         this.type = type;
         this.registerOpts = props.registerOpts;
-        this.programOpts = props.programOpts;
         this.initialized = true;
     }
 
-    public start(): void {
+    public start(endpoint: IConfigTypes): void {
         if (!this.initialized)
-            throw new Error('[gatsby-plugin-ts-config] Compiler registration was started before it was initialized!');
+            throwError('[gatsby-plugin-ts-config] Compiler registration was started before it was initialized!', new Error());
         this.active = true;
+        this.endpoint = endpoint;
         if (!this.registered) this.register();
     }
 
@@ -41,18 +49,17 @@ class RequireRegistrar<T extends IRegisterType> {
         this.active = false;
     }
 
+    public revert(): void {
+        this.active = false;
+        this.registered = false;
+        require.extensions = this.origExtensions;
+    }
+
     private ignore(filename: string): boolean {
         if (!this.active) return true;
-        switch (this.type) {
-            case 'ts-node': {
-                if (!this.extensions.includes(path.extname(filename))) return true;
-                break;
-            }
-            case 'babel': {
-                if (filename.indexOf('node_modules') > -1) return true;
-                break;
-            }
-        }
+        if (filename.indexOf('node_modules') > -1) return true;
+        if (filename.endsWith('.pnp.js')) return true;
+        if (this.endpoint) optionsHandler.addChainedImport(this.endpoint, filename);
         return false;
     }
 
@@ -62,31 +69,21 @@ class RequireRegistrar<T extends IRegisterType> {
 
     private register(): void {
         if (this.registered) return;
-        const { projectRoot } = this.programOpts;
 
         switch (this.type) {
             case 'ts-node': {
-                const tsNodeOpts = this.registerOpts as IRegisterOptions<'ts-node'>;
-                const compilerOptions: TsConfigOptions['compilerOptions'] = {
-                    module: "commonjs",
-                    target: "es2015",
-                    allowJs: false,
-                    noEmit: true,
-                    declaration: false,
-                    importHelpers: true,
-                    resolveJsonModule: true,
-                    jsx: "preserve",
-                    ...tsNodeOpts.compilerOptions || {},
-                };
-
-                const tsNodeService = register({
-                    project: path.join(projectRoot, 'tsconfig.json'),
-                    compilerOptions,
-                    files: true,
-                    ...tsNodeOpts,
-                });
-
+                const opts = this.registerOpts as IRegisterOptions<'ts-node'>;
+                const tsNodeService = register(opts);
                 tsNodeService.ignored = this.ignore;
+                break;
+            }
+            case 'babel': {
+                const opts = this.registerOpts as IRegisterOptions<'babel'>;
+                babelRegister({
+                    ...opts,
+                    extensions: this.extensions,
+                    only: [this.only],
+                });
                 break;
             }
         }

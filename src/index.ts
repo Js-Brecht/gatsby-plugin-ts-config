@@ -1,25 +1,17 @@
 import { GatsbyConfig } from 'gatsby';
-import { ITsConfigArgs } from './types';
+import { ITSConfigArgs } from './types';
 
 type IGeneratedGatsbyConfig = Pick<GatsbyConfig, 'plugins'>;
 interface IGenerateConfig {
-    (args: ITsConfigArgs): IGeneratedGatsbyConfig;
+    (args: ITSConfigArgs): IGeneratedGatsbyConfig;
 }
 
-const generateConfig: IGenerateConfig = ({
-    projectRoot = process.cwd(),
-    configDir = '',
-    tsNode = {},
-} = {}) => {
+const generateConfig: IGenerateConfig = (options) => {
     const config: IGeneratedGatsbyConfig = {
         plugins: [
             {
                 resolve: `gatsby-plugin-ts-config`,
-                options: {
-                    projectRoot,
-                    configDir,
-                    tsNode,
-                },
+                options,
             },
         ],
     };
@@ -27,10 +19,7 @@ const generateConfig: IGenerateConfig = ({
 };
 
 export {
-    IGenerateConfig,
-    ITsConfigArgs,
-    IGeneratedGatsbyConfig,
     generateConfig,
 };
 
-export * from './types';
+export * from './types/public';
