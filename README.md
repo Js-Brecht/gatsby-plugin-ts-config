@@ -111,10 +111,12 @@ this plugin, and the rest of your configuration will be in Typescript files.
 
 1. If `babel` is a truthy value, or `tsNode` is a falsy value, then `babel` will be chosen.
 
-2. If `babel` is a falsy value, and `tsNode` is a truthy value, then `ts-node` will be chosen.
+2. If `babel` is a truthy value, and `tsNode` is a truthy value, then `babel` will be chosen.
 
-3. For the moment, there is no way to layer `ts-node` -> `babel`, but the feature may be included
-   in a later release
+3. If `babel` is a falsy value, and `tsNode` is a truthy value, then `ts-node` will be chosen.
+
+_For the moment, there is no way to layer `ts-node` -> `babel`, but the feature may be included
+   in a later release_
 
 For example:
 
