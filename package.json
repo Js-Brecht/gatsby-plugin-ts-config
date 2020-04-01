@@ -3,7 +3,7 @@
 	"version": "0.2.1",
 	"description": "Configure Gatsby to use Typescript configuration files",
 	"main": "./index.js",
-	"types": "./dist/index.js",
+	"types": "./dist/index",
 	"author": "Jeremy Albright",
 	"license": "MIT",
 	"keywords": [
