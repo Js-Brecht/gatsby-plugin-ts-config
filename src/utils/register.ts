@@ -1,12 +1,13 @@
 import { register } from 'ts-node';
 import babelRegister from '@babel/register';
-import { IRegisterOptions, IRegisterType, ICommonDirectories, IConfigTypes } from '../types';
+import { IRegisterOptions, IRegisterType, ICommonDirectories, IConfigTypes, IRegisterHooks } from '../types';
 import { throwError } from './errors';
 import optionsHandler from './options-handler';
 
 export type IRegistrarProgramOpts = ICommonDirectories;
 
 export interface IRequireRegistrarProps<T extends IRegisterType> {
+    hooks?: IRegisterHooks;
     registerOpts: IRegisterOptions<T>;
 }
 
@@ -16,6 +17,7 @@ class RequireRegistrar<T extends IRegisterType> {
     private active = false;
     private type!: T;
     private registerOpts!: IRegisterOptions<T>;
+    private hooks?: IRegisterHooks;
     private extensions = ['.ts', '.tsx', '.js', '.jsx'];
     private endpoint?: IConfigTypes;
     private origExtensions = {
@@ -34,6 +36,7 @@ class RequireRegistrar<T extends IRegisterType> {
     public init(type: T, props: IRequireRegistrarProps<T>): void {
         this.type = type;
         this.registerOpts = props.registerOpts;
+        this.hooks = props.hooks;
         this.initialized = true;
     }
 
@@ -57,8 +60,19 @@ class RequireRegistrar<T extends IRegisterType> {
 
     private ignore(filename: string): boolean {
         if (!this.active) return true;
-        if (filename.indexOf('node_modules') > -1) return true;
-        if (filename.endsWith('.pnp.js')) return true;
+
+        const getIgnored = (filePath: string) =>{
+            if (filePath.indexOf('node_modules') > -1) return true;
+            if (filePath.endsWith('.pnp.js')) return true;
+            return false;
+        };
+
+        if (this.hooks?.ignore) {
+            if (this.hooks.ignore(filename, getIgnored)) return true;
+        } else if (getIgnored(filename)) {
+            return true;
+        }
+
         if (this.endpoint) optionsHandler.addChainedImport(this.endpoint, filename);
         return false;
     }

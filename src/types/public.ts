@@ -1,7 +1,7 @@
 import { GatsbyConfig, GatsbyNode } from 'gatsby';
 import { RegisterOptions as TSNodeRegisterOptions } from 'ts-node';
 import { TransformOptions } from '@babel/core';
-import { IGlobalOpts } from './internal';
+import { IGlobalOpts, IRegisterHooks } from './internal';
 
 interface ITSConfigArgsBase {
     configDir?: string;
@@ -9,6 +9,7 @@ interface ITSConfigArgsBase {
 }
 interface ITSConfigArgsJIT extends ITSConfigArgsBase {
     // JIT: true;
+    hooks?: IRegisterHooks;
     babel?: TransformOptions | boolean;
     tsNode?: TSNodeRegisterOptions | boolean;
 }

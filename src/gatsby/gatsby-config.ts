@@ -22,6 +22,7 @@ export default (args = {} as ITSConfigArgs) => {
     const configDir = getAbsoluteRelativeTo(projectRoot, args.configDir);
     const cacheDir = path.join(projectRoot, '.cache', 'caches', 'gatsby-plugin-ts-config');
     const pluginDir = path.resolve(path.join(__dirname, '..', '..'));
+    const hooks = args.hooks;
 
     const ignore: IConfigTypes[] = [];
     const configEndpoint: IEndpointResolutionSpec = {
@@ -62,6 +63,7 @@ export default (args = {} as ITSConfigArgs) => {
         );
 
         RequireRegistrar.init('babel', {
+            hooks,
             registerOpts: babelOpts,
         });
     } else {
@@ -70,6 +72,7 @@ export default (args = {} as ITSConfigArgs) => {
         );
 
         RequireRegistrar.init('ts-node', {
+            hooks,
             registerOpts: tsNodeOpts,
         });
     }
