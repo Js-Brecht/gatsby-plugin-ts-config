@@ -84,6 +84,22 @@ this plugin, and the rest of your configuration will be in Typescript files.
   * You can define a folder, relative to `projectRoot`, that will store your Typescript configuration files.
     If you do not define this option, then it will automatically use `projectRoot`.
 
+* `hooks`: `{object}`
+  * Default: `{}`
+  * Hooks:
+    * `ignore`: `Function(filename: string, getDefault: (filename: string) => boolean) => boolean`
+      * Tells the transpiler whether or not to transpile the current source.
+      * If this hook is not defined, the transpiler will automatically ignore anything in `node_modules`.
+        * Some other files are ignored, like `.pnp.js` when using yarn2 (PNP).
+      * Usage:
+        * Your hook will be passed the filename of the current file that is being processed in the first parameter.
+        * The second parameter will be a function that will execute this plugin's default ignore procedure.
+          * This default ignore procedure will only return a boolean.  It will not influence the transpiler.
+            If you wish to use it to influence the transpiler, then you must return **its** return value
+            from your hook.
+        * You must return a boolean value from this hook.  `true` will tell the transpiler to ignore the
+          file.  `false` will tell it to process the file.
+
 * `babel`: `{boolean|TransformOptions}`
   * Default: `true`
   * Setting this to `true`, or an object, will cause the plugin to use `babel` for transforming
@@ -332,6 +348,8 @@ will receive a single object as the first and only parameter.  The object proper
 defined below
 
 #### `gatsby-*` as-a-function parameters
+
+_These are all properties of an object passed in as the first parameter_
 
 * `projectRoot`: `{string}`
   * The resolved pathname that you either defined in the plugin options, or that was calculated
