@@ -93,7 +93,7 @@ this plugin, and the rest of your configuration will be in Typescript files.
         * Some other files are ignored, like `.pnp.js` when using yarn2 (PNP).
       * Usage:
         * Your hook will be passed the pathname of the current file that is being processed in the first parameter.
-        * The second parameter will be a boolean indicating whether or not this plugin will ignore the file
+        * The second parameter will be a boolean indicating whether or not this plugin would have ignored the file
           by following its default procedure
           * This default procedure will not influence the transpiler if you have defined this hook.
         * You must return a boolean value from this hook.  `true` will tell the transpiler to ignore the
