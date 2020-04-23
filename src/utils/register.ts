@@ -1,3 +1,4 @@
+import { basename } from 'path';
 import { register } from 'ts-node';
 import babelRegister from '@babel/register';
 import { IRegisterOptions, IRegisterType, ICommonDirectories, IConfigTypes, IRegisterHooks } from '../types';
@@ -63,7 +64,7 @@ class RequireRegistrar<T extends IRegisterType> {
 
         const getIgnored = (filePath: string) =>{
             if (filePath.indexOf('node_modules') > -1) return true;
-            if (filePath.endsWith('.pnp.js')) return true;
+            if (basename(filePath) === '.pnp.js') return true;
             return false;
         };
 
