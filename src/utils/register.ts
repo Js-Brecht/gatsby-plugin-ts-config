@@ -67,7 +67,7 @@ class RequireRegistrar<T extends IRegisterType> {
             return false;
         };
 
-        if (this.hooks?.ignore) {
+        if (this.hooks?.ignore && this.hooks.ignore instanceof Function) {
             if (this.hooks.ignore(filename, getIgnored)) return true;
         } else if (getIgnored(filename)) {
             return true;
