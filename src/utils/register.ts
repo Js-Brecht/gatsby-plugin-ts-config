@@ -59,24 +59,27 @@ class RequireRegistrar<T extends IRegisterType> {
         require.extensions = this.origExtensions;
     }
 
-    private ignore(filename: string): boolean {
+    private ignore(filepath: string): boolean {
         if (!this.active) return true;
 
         const getIgnored = () =>{
+            if (filepath.indexOf('node_modules') > -1) return true;
+            if (basename(filepath) === '.pnp.js') return true;
             return false;
         };
 
         if (this.hooks?.ignore && this.hooks.ignore instanceof Function) {
+            if (this.hooks.ignore(filepath, getIgnored)) return true;
         } else if (getIgnored()) {
             return true;
         }
 
-        if (this.endpoint) optionsHandler.addChainedImport(this.endpoint, filename);
+        if (this.endpoint) optionsHandler.addChainedImport(this.endpoint, filepath);
         return false;
     }
 
-    private only(filename: string): boolean {
-        return !this.ignore(filename);
+    private only(filepath: string): boolean {
+        return !this.ignore(filepath);
     }
 
     private register(): void {
