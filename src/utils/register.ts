@@ -62,15 +62,12 @@ class RequireRegistrar<T extends IRegisterType> {
     private ignore(filename: string): boolean {
         if (!this.active) return true;
 
-        const getIgnored = (filePath: string) =>{
-            if (filePath.indexOf('node_modules') > -1) return true;
-            if (basename(filePath) === '.pnp.js') return true;
+        const getIgnored = () =>{
             return false;
         };
 
         if (this.hooks?.ignore && this.hooks.ignore instanceof Function) {
-            if (this.hooks.ignore(filename, getIgnored)) return true;
-        } else if (getIgnored(filename)) {
+        } else if (getIgnored()) {
             return true;
         }
 

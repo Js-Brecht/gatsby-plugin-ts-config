@@ -87,7 +87,7 @@ this plugin, and the rest of your configuration will be in Typescript files.
 * `hooks`: `{object}`
   * Default: `{}`
   * Hooks:
-    * `ignore`: `Function(filePath: string, getDefault: (filePath: string) => boolean) => boolean`
+    * `ignore`: `Function(filePath: string, getDefault: () => boolean) => boolean`
       * Tells the transpiler whether or not to transpile the current source.
       * If this hook is not defined, the transpiler will automatically ignore anything in `node_modules`.
         * Some other files are ignored, like `.pnp.js` when using yarn2 (PNP).
