@@ -74,32 +74,30 @@ this plugin, and the rest of your configuration will be in Typescript files.
 
 ### Plugin Options
 
-* `projectRoot`: `String`
+* `projectRoot`: `String` - Optional
   * Default: `process.cwd()`
   * This defines your project's root directory for the plugin.  All folder/file resolutions will be performed
     relative to this directory.
 
-* `configDir`: `String`
+* `configDir`: `String` - Optional
   * Default: `projectRoot`
   * You can define a folder, relative to `projectRoot`, that will store your Typescript configuration files.
     If you do not define this option, then it will automatically use `projectRoot`.
 
-* `hooks`: `Object`
-  * Default: `{}`
-  * Hooks:
-    * `ignore`: `Function(filePath: string, defaultIgnored: boolean) => boolean`
-      * Tells the transpiler whether or not to transpile the current source.
-      * If this hook is not defined, the transpiler will automatically ignore anything in `node_modules`.
-        * Some other files are ignored, like `.pnp.js` when using yarn2 (PNP).
-      * Usage:
-        * Your hook will be passed the pathname of the current file that is being processed in the first parameter.
-        * The second parameter will be a boolean indicating whether or not this plugin would have ignored the file
-          by following its default procedure
-          * This default procedure will not influence the transpiler if you have defined this hook.
-        * You must return a boolean value from this hook.  `true` will tell the transpiler to ignore the
-          file.  `false` will tell it to process the file.
+* `hooks`: `Object` - Optional
+  * `ignore`: `Function(filePath: string, defaultIgnored: boolean) => boolean`
+    * Tells the transpiler whether or not to transpile the current source.
+    * If this hook is not defined, the transpiler will automatically ignore anything in `node_modules`.
+      * Some other files are ignored, like `.pnp.js` when using yarn2 (PNP).
+    * Usage:
+      * Your hook will be passed the pathname of the current file that is being processed in the first parameter.
+      * The second parameter will be a boolean indicating whether or not this plugin would have ignored the file
+        by following its default procedure
+        * This default procedure will not influence the transpiler if you have defined this hook.
+      * You must return a boolean value from this hook.  `true` will tell the transpiler to ignore the
+        file.  `false` will tell it to process the file.
 
-* `babel`: `Boolean | TransformOptions`
+* `babel`: `Boolean | TransformOptions` - Optional
   * Default: `true`
   * Setting this to `true`, or an object, will cause the plugin to use `babel` for transforming
     typescript configurations.
@@ -109,7 +107,7 @@ this plugin, and the rest of your configuration will be in Typescript files.
   * See [Determining the interpreter](#determining-the-interpreter) below for details on how
     the interpeter is chosen
 
-* `tsNode`: `Boolean | RegisterOptions`
+* `tsNode`: `Boolean | RegisterOptions` - Optional
   * Default: `false`
   * Setting this to `true` or an object will cause `ts-node` to be used, so long as `babel` is
     a falsy value.
