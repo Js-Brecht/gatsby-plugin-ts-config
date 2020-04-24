@@ -74,17 +74,17 @@ this plugin, and the rest of your configuration will be in Typescript files.
 
 ### Plugin Options
 
-* `projectRoot`: `{string}`
+* `projectRoot`: `String`
   * Default: `process.cwd()`
   * This defines your project's root directory for the plugin.  All folder/file resolutions will be performed
     relative to this directory.
 
-* `configDir`: `{string}`
+* `configDir`: `String`
   * Default: `projectRoot`
   * You can define a folder, relative to `projectRoot`, that will store your Typescript configuration files.
     If you do not define this option, then it will automatically use `projectRoot`.
 
-* `hooks`: `{object}`
+* `hooks`: `Object`
   * Default: `{}`
   * Hooks:
     * `ignore`: `Function(filePath: string, defaultIgnored: boolean) => boolean`
@@ -99,7 +99,7 @@ this plugin, and the rest of your configuration will be in Typescript files.
         * You must return a boolean value from this hook.  `true` will tell the transpiler to ignore the
           file.  `false` will tell it to process the file.
 
-* `babel`: `{boolean|TransformOptions}`
+* `babel`: `Boolean | TransformOptions`
   * Default: `true`
   * Setting this to `true`, or an object, will cause the plugin to use `babel` for transforming
     typescript configurations.
@@ -109,7 +109,7 @@ this plugin, and the rest of your configuration will be in Typescript files.
   * See [Determining the interpreter](#determining-the-interpreter) below for details on how
     the interpeter is chosen
 
-* `tsNode`: `{boolean|RegisterOptions}`
+* `tsNode`: `Boolean | RegisterOptions`
   * Default: `false`
   * Setting this to `true` or an object will cause `ts-node` to be used, so long as `babel` is
     a falsy value.
