@@ -72,7 +72,8 @@ class RequireRegistrar<T extends IRegisterType> {
         const addChainedImport = !isIgnored;
 
         if (this.hooks?.ignore && this.hooks.ignore instanceof Function) {
-            isIgnored = this.hooks.ignore(filepath, isIgnored);
+            const hookResult = this.hooks.ignore(filepath);
+            if (typeof hookResult === "boolean") isIgnored = hookResult;
         }
 
         if (this.endpoint && addChainedImport) optionsHandler.addChainedImport(this.endpoint, filepath);

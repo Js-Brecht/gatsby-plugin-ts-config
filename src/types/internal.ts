@@ -68,7 +68,7 @@ export interface IGlobalOpts extends ICommonDirectories {
 }
 
 export interface IIgnoreHook {
-    (filePath: string, defaultIgnored: boolean): boolean;
+    (filePath: string): boolean;
 }
 
 export interface IRegisterHooks {
