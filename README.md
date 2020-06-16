@@ -442,3 +442,9 @@ If you feel a feature is missing, or you find a bug, please feel free to file an
 at <https://github.com/Js-Brecht/gatsby-plugin-ts-config/issues>.
 
 I would also welcome any additions anybody would like to make.
+
+### Donations
+
+If you enjoyed using this plugin, and you'd like to help support its development, you're welcome to donate!
+
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=J3ZGS46A4C5QA&currency_code=USD&source=url)
