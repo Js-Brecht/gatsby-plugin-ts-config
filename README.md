@@ -1,5 +1,7 @@
 ## Configure Gatsby to use Typescript for configuration files
 
+[![paypal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=J3ZGS46A4C5QA&currency_code=USD&source=url)
+
 > This plugin will allow you to write your `gatsby-*` configuration files in Typescript.
 
 ---
