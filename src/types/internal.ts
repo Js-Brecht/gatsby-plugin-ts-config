@@ -66,3 +66,11 @@ export interface IGlobalOpts extends ICommonDirectories {
     babelOpts?: TransformOptions;
     tsNodeOpts?: RegisterOptions;
 }
+
+export interface IIgnoreHook {
+    (filePath: string): boolean;
+}
+
+export interface IRegisterHooks {
+    ignore?: IIgnoreHook;
+}

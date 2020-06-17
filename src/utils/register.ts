@@ -1,12 +1,14 @@
+import { basename } from 'path';
 import { register } from 'ts-node';
 import babelRegister from '@babel/register';
-import { IRegisterOptions, IRegisterType, ICommonDirectories, IConfigTypes } from '../types';
+import { IRegisterOptions, IRegisterType, ICommonDirectories, IConfigTypes, IRegisterHooks } from '../types';
 import { throwError } from './errors';
 import optionsHandler from './options-handler';
 
 export type IRegistrarProgramOpts = ICommonDirectories;
 
 export interface IRequireRegistrarProps<T extends IRegisterType> {
+    hooks?: IRegisterHooks;
     registerOpts: IRegisterOptions<T>;
 }
 
@@ -16,6 +18,7 @@ class RequireRegistrar<T extends IRegisterType> {
     private active = false;
     private type!: T;
     private registerOpts!: IRegisterOptions<T>;
+    private hooks?: IRegisterHooks;
     private extensions = ['.ts', '.tsx', '.js', '.jsx'];
     private endpoint?: IConfigTypes;
     private origExtensions = {
@@ -34,6 +37,7 @@ class RequireRegistrar<T extends IRegisterType> {
     public init(type: T, props: IRequireRegistrarProps<T>): void {
         this.type = type;
         this.registerOpts = props.registerOpts;
+        this.hooks = props.hooks;
         this.initialized = true;
     }
 
@@ -55,16 +59,29 @@ class RequireRegistrar<T extends IRegisterType> {
         require.extensions = this.origExtensions;
     }
 
-    private ignore(filename: string): boolean {
+    private ignore(filepath: string): boolean {
         if (!this.active) return true;
-        if (filename.indexOf('node_modules') > -1) return true;
-        if (filename.endsWith('.pnp.js')) return true;
-        if (this.endpoint) optionsHandler.addChainedImport(this.endpoint, filename);
-        return false;
+
+        const getIgnored = () =>{
+            if (filepath.indexOf('node_modules') > -1) return true;
+            if (basename(filepath) === '.pnp.js') return true;
+            return false;
+        };
+
+        let isIgnored = getIgnored();
+        const addChainedImport = !isIgnored;
+
+        if (this.hooks?.ignore && this.hooks.ignore instanceof Function) {
+            const hookResult = this.hooks.ignore(filepath);
+            if (typeof hookResult === "boolean") isIgnored = hookResult;
+        }
+
+        if (this.endpoint && addChainedImport) optionsHandler.addChainedImport(this.endpoint, filepath);
+        return isIgnored;
     }
 
-    private only(filename: string): boolean {
-        return !this.ignore(filename);
+    private only(filepath: string): boolean {
+        return !this.ignore(filepath);
     }
 
     private register(): void {

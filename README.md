@@ -76,17 +76,28 @@ this plugin, and the rest of your configuration will be in Typescript files.
 
 ### Plugin Options
 
-* `projectRoot`: `{string}`
+* `projectRoot`: `String` - Optional
   * Default: `process.cwd()`
   * This defines your project's root directory for the plugin.  All folder/file resolutions will be performed
     relative to this directory.
 
-* `configDir`: `{string}`
+* `configDir`: `String` - Optional
   * Default: `projectRoot`
   * You can define a folder, relative to `projectRoot`, that will store your Typescript configuration files.
     If you do not define this option, then it will automatically use `projectRoot`.
 
-* `babel`: `{boolean|TransformOptions}`
+* `hooks`: `Object` - Optional
+  * `ignore`: `Function(filePath: string) => boolean`
+    * Tells the transpiler whether or not to transpile the current source.
+    * If this hook is not defined, the transpiler will automatically ignore anything in `node_modules`.
+      * Some other files are ignored, like `.pnp.js` when using yarn2 (PNP).
+    * Usage:
+      * Your hook will be passed the pathname of the current file that is being processed in the first parameter.
+      * If you return `true` from this hook, it will tell the transpiler not to process the file.
+      * If you return `false` from this hook, it will tell the transpiler to process the file.
+      * If you do not return a boolean value from this hook, the default ignore value will be used.
+
+* `babel`: `Boolean | TransformOptions` - Optional
   * Default: `true`
   * Setting this to `true`, or an object, will cause the plugin to use `babel` for transforming
     typescript configurations.
@@ -96,7 +107,7 @@ this plugin, and the rest of your configuration will be in Typescript files.
   * See [Determining the interpreter](#determining-the-interpreter) below for details on how
     the interpeter is chosen
 
-* `tsNode`: `{boolean|RegisterOptions}`
+* `tsNode`: `Boolean | RegisterOptions` - Optional
   * Default: `false`
   * Setting this to `true` or an object will cause `ts-node` to be used, so long as `babel` is
     a falsy value.
@@ -334,6 +345,8 @@ will receive a single object as the first and only parameter.  The object proper
 defined below
 
 #### `gatsby-*` as-a-function parameters
+
+_These are all properties of an object passed in as the first parameter_
 
 * `projectRoot`: `{string}`
   * The resolved pathname that you either defined in the plugin options, or that was calculated
