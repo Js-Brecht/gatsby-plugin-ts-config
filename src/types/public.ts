@@ -59,7 +59,7 @@ export interface ITSConfigFn<TConfigType extends ITSConfigFnTypes> {
 }
 
 /**
- * This interface can be used with the `resolvePlugins` utility function
+ * This interface can be used with the `includePlugins` utility function
  * to ensure that the options provided for any defined plugins are
  * strongly typed.
  *
@@ -73,7 +73,7 @@ export interface ITSConfigFn<TConfigType extends ITSConfigFnTypes> {
  *      barOption: 'qux';
  *  }
  *
- *  resolvePlugins<
+ *  includePlugins<
  *      | IGatsbyPluginDef<'fooPlugin'>
  *      | IGatsbyPluginDef<'barPlugin', IBarPluginOptions>
  *  >([
