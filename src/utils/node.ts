@@ -1,26 +1,32 @@
 import {
-    IConfigTypes,
+    createRequire as nodeCreateRequire,
+    createRequireFromPath as nodeCreateRequireFromPath,
+} from 'module';
+import RequireRegistrar from './register';
+import OptionsHandler from './options-handler';
+import { throwError } from "./errors";
+
+import type {
+    IGatsbyConfigTypes,
     IGatsbyEndpoints,
     IEndpointReturnTypes,
     IEndpointReturnObject,
     InferredConfigType,
 } from "../types";
-import RequireRegistrar from './register';
-import OptionsHandler from './options-handler';
-import { throwError } from "./errors";
 
 export const preferDefault = (compiled: any) => compiled && compiled.default || compiled;
 
-export const tryRequireModule = <T extends IConfigTypes = IConfigTypes>(
+export const tryRequireModule = <T extends IGatsbyConfigTypes = IGatsbyConfigTypes>(
     configType: T,
     endpoints?: IGatsbyEndpoints,
     startRegistrar = true,
+    pluginName?: string,
 ): IEndpointReturnTypes<T> => {
     if (!endpoints || !endpoints[configType]) return {} as IEndpointReturnTypes<T>;
     const modulePath = endpoints[configType]![0];
     let readModule = {} as IEndpointReturnTypes<T>;
     try {
-        if (startRegistrar) RequireRegistrar.start(configType);
+        if (startRegistrar) RequireRegistrar.start(configType, pluginName);
         readModule = preferDefault(require(modulePath));
     } catch (err) {
         throwError(`[gatsby-plugin-ts-config] An error occurred while reading your gatsby-${configType}!`, err);
@@ -44,3 +50,5 @@ export const getModuleObject: IGetModuleObject = (mod) => {
     return mod;
 
 };
+
+export const createRequire = nodeCreateRequire || nodeCreateRequireFromPath;

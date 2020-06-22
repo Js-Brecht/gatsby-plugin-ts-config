@@ -35,11 +35,12 @@
 	],
 	"scripts": {
 		"purge": "rimraf node_modules && yarn clean",
-		"clean": "rimraf ./dist",
-		"prebuild": "npm run clean",
-		"build": "ttsc",
-		"build:map": "ttsc --sourceMap",
-		"watch": "npm run build -- -w",
+		"clean": "rimraf ./dist/*",
+    "build": "run-s clean build:prod",
+    "build:prod": "ttsc",
+		"build:dev": "run-s \"build:prod --sourceMap\"",
+		"watch": "run-s clean \"build:prod -w\"",
+		"watch:dev": "run-s clean \"build:dev -w\"",
 		"lint": "eslint -c .eslintrc ./src/**/*"
 	},
 	"peerDependencies": {
@@ -79,6 +80,7 @@
 		"@yarnpkg/pnpify": "^2.0.0-rc.18",
 		"eslint": "^6.8.0",
 		"gatsby": "^2.19.18",
+		"npm-run-all": "^4.1.5",
 		"rimraf": "^3.0.2",
 		"ts-transformer-keys": "^0.4.1",
 		"ttypescript": "^1.5.10",

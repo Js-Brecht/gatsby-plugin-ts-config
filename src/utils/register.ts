@@ -1,6 +1,11 @@
 import { register } from 'ts-node';
 import babelRegister from '@babel/register';
-import { IRegisterOptions, IRegisterType, ICommonDirectories, IConfigTypes } from '../types';
+import {
+    IRegisterOptions,
+    IRegisterType,
+    ICommonDirectories,
+    GatsbyEndpointResolverKeys,
+} from '../types';
 import { throwError } from './errors';
 import optionsHandler from './options-handler';
 
@@ -17,7 +22,8 @@ class RequireRegistrar<T extends IRegisterType> {
     private type!: T;
     private registerOpts!: IRegisterOptions<T>;
     private extensions = ['.ts', '.tsx', '.js', '.jsx'];
-    private endpoint?: IConfigTypes;
+    private endpoint?: GatsbyEndpointResolverKeys;
+    private pluginName?: string;
     private origExtensions = {
         ...require.extensions,
     }
@@ -37,11 +43,12 @@ class RequireRegistrar<T extends IRegisterType> {
         this.initialized = true;
     }
 
-    public start(endpoint: IConfigTypes): void {
+    public start(endpoint: GatsbyEndpointResolverKeys, pluginName?: string): void {
         if (!this.initialized)
             throwError('[gatsby-plugin-ts-config] Compiler registration was started before it was initialized!', new Error());
         this.active = true;
         this.endpoint = endpoint;
+        this.pluginName = pluginName;
         if (!this.registered) this.register();
     }
 
@@ -53,13 +60,19 @@ class RequireRegistrar<T extends IRegisterType> {
         this.active = false;
         this.registered = false;
         require.extensions = this.origExtensions;
+        // require.extensions['.ts'] = require.extensions['.js'];
     }
 
     private ignore(filename: string): boolean {
         if (!this.active) return true;
         if (filename.indexOf('node_modules') > -1) return true;
         if (filename.endsWith('.pnp.js')) return true;
-        if (this.endpoint) optionsHandler.addChainedImport(this.endpoint, filename);
+        if (this.endpoint)
+            optionsHandler.addChainedImport(
+                this.endpoint,
+                filename,
+                this.pluginName,
+            );
         return false;
     }
 
