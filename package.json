@@ -1,6 +1,6 @@
 {
 	"name": "gatsby-plugin-ts-config",
-	"version": "0.2.3",
+	"version": "1.0.0-rc.1",
 	"description": "Configure Gatsby to use Typescript configuration files",
 	"main": "./index.js",
 	"types": "./dist/index",
@@ -41,7 +41,8 @@
 		"build:dev": "run-s \"build:prod --sourceMap\"",
 		"watch": "run-s clean \"build:prod -w\"",
 		"watch:dev": "run-s clean \"build:dev -w\"",
-		"lint": "eslint -c .eslintrc ./src/**/*"
+    "lint": "eslint -c .eslintrc ./src/**/*",
+    "prepublish": "yarn build"
 	},
 	"peerDependencies": {
 		"@babel/core": "^7.0.0",
