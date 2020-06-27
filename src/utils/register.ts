@@ -8,6 +8,13 @@ import {
 } from '../types';
 import { throwError } from './errors';
 import optionsHandler from './options-handler';
+import BuiltinModule from 'module';
+
+interface IModule extends BuiltinModule {
+    _extensions: NodeJS.RequireExtensions;
+}
+
+const Module = BuiltinModule as unknown as IModule;
 
 export type IRegistrarProgramOpts = ICommonDirectories;
 
@@ -25,7 +32,9 @@ class RequireRegistrar<T extends IRegisterType> {
     private endpoint?: GatsbyEndpointResolverKeys;
     private pluginName?: string;
     private origExtensions = {
-        ...require.extensions,
+        ...Module._extensions,
+        '.ts': Module._extensions['.js'],
+        '.tsx': Module._extensions['.jsx'],
     }
 
     constructor() {
@@ -59,8 +68,7 @@ class RequireRegistrar<T extends IRegisterType> {
     public revert(): void {
         this.active = false;
         this.registered = false;
-        require.extensions = this.origExtensions;
-        // require.extensions['.ts'] = require.extensions['.js'];
+        Module._extensions = this.origExtensions;
     }
 
     private ignore(filename: string): boolean {
