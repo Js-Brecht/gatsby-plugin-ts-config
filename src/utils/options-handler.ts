@@ -22,7 +22,7 @@ import { resolvePluginPath } from './endpoints';
 const publicProps = keys<IPublicOpts>();
 
 export interface IResolvePlugins {
-    <T extends IGatsbyPluginDef = IGatsbyPluginDef>(plugins: IPluginDetailsCallback<T>): void;
+    <T extends IGatsbyPluginDef = IGatsbyPluginDef>(plugins: T[] | IPluginDetailsCallback<T>): void;
     <T extends IGatsbyPluginDef = IGatsbyPluginDef>(plugins: T[], pluginsCb?: IPluginDetailsCallback<T>): void;
 }
 
