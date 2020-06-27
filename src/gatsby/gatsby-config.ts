@@ -6,8 +6,6 @@ import {
     resolveGatsbyEndpoints,
     allGatsbyEndpoints,
     ignoreRootEndpoints,
-    configEndpointSpecs,
-    gatsbyConfigEndpoints,
     compilePlugins,
 } from '../utils/endpoints';
 import { tryRequireModule, getModuleObject } from '../utils/node';
@@ -16,6 +14,15 @@ import OptionsHandler from '../utils/options-handler';
 
 import type { GatsbyConfig } from 'gatsby';
 import type { ITSConfigArgs, IGatsbyConfigTypes, IEndpointResolutionSpec } from '../types';
+
+import BuiltinModule from 'module';
+
+interface IModule extends BuiltinModule {
+    _extensions: NodeJS.RequireExtensions;
+}
+
+const Module = BuiltinModule as unknown as IModule;
+
 
 export default (args = {} as ITSConfigArgs): GatsbyConfig => {
     const projectRoot = getAbsoluteRelativeTo(args.projectRoot || process.cwd());
@@ -82,17 +89,19 @@ export default (args = {} as ITSConfigArgs): GatsbyConfig => {
     // retrieved later when it is required in gatsby-node
     const gatsbyNodeModule = tryRequireModule('node', endpoints);
 
+    const gatsbyConfigModule = tryRequireModule('config', endpoints);
+
     compilePlugins({
         plugins: OptionsHandler.plugins,
     });
 
-    const gatsbyConfigModule = tryRequireModule('config', endpoints);
     const gatsbyConfig = getModuleObject(gatsbyConfigModule);
 
     OptionsHandler.includePlugins(gatsbyConfig?.plugins || []);
     OptionsHandler.doExtendPlugins(true);
 
     RequireRegistrar.revert();
+
     return {
         ...gatsbyConfig,
         plugins: [
