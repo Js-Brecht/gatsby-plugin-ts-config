@@ -396,7 +396,7 @@ type-safe functions in `gatsby-node` and `gatsby-config`:
   since it exports the interface for the options that are valid for it.  They could be used like this:_
 
   _Another example would be [`gatsby-source-filesystem`](https://github.com/gatsbyjs/gatsby/blob/c1368c06fb975bd792ebb8f9d0c5a5e4ebcba388/packages/gatsby-source-filesystem/index.d.ts#L100-L103).  As you'll notice, its interface is already
-  configured to use the `resolve` and `options` properties, so the `IGatsbyPluginDef` wouldn't be needed._
+  configured to use the `resolve` and `options` properties, so `IGatsbyPluginDef` wouldn't be needed._
 
   ```ts
   import type { IPluginOptions as IPnpmPluginOptions } from 'gatsby-plugin-pnpm';
