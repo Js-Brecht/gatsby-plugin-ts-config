@@ -118,44 +118,10 @@ this plugin, and the rest of your configuration will be in Typescript files.
 _For the moment, there is no way to layer `ts-node` -> `babel`, but the feature may be included
    in a later release_
 
-For example:
-
-```js
-// Picks babel
-const { generateConfig } = require('gatsby-plugin-ts-config');
-module.exports = generateConfig();
-
-// Picks babel
-const { generateConfig } = require('gatsby-plugin-ts-config');
-module.exports = generateConfig({
-  babel: true,
-});
-
-// Picks babel
-const { generateConfig } = require('gatsby-plugin-ts-config');
-module.exports = generateConfig({
-  babel: true,
-  tsNode: true,
-});
-
-// Picks ts-node
-const { generateConfig } = require('gatsby-plugin-ts-config');
-module.exports = generateConfig({
-  tsNode: true,
-});
-
-// Picks ts-node
-const { generateConfig } = require('gatsby-plugin-ts-config');
-module.exports = generateConfig({
-  babel: false,
-  tsNode: true,
-});
-```
-
 ### Extended Usage
 
 If, for some reason, you need to force this plugin to resolve files relative to a different directory than
-your process' current working directory, then you can define the `projectRoot` option:
+your process current working directory, then you can define the `projectRoot` option:
 
 ```js
 // gatsby-config.js
@@ -349,6 +315,24 @@ defined below
     * node: `{string[]}` - The list of chained requires/imports that were performed by `gatsby-node`
     * browser: `{string[]}` - The resolved path of the `gatsby-browser` api endpoint
     * ssr: `{string[]}` - The resolved path of the `gatsby-ssr` api endpoint
+    * plugin:
+      * Type:
+
+      ```js
+      {
+        [name: string]: {
+          config: string[];
+          node: string[];
+          browser: string[];
+          ssr: string[];
+        }
+      }
+      ```
+
+      * Contains the collection of all the plugins that have been resolved by the `includePlugins()` function,
+        defined below.  `name` will be the registered name of the plugin, and the `config`, `node`, `browser`,
+        and `ssr` properties will be the same as defined above.
+
   * A collection of the fully qualified paths for all of the Gatsby configuration files that have been
     resolved, and that will be called, by this plugin.  This will be equal to any of the endpoints that
     you have in your `configDir`, with one exception:
@@ -360,18 +344,46 @@ defined below
   * The first index of each property will always be the Gatsby endpoint.  All following indexes will be
     the files that were required/imported by that one
 
+#### `gatsby-config` utilites
+
+1. `includePlugins`: This function allows you to register plugins with strongly typed options.  Using it
+  also enables advanced plugin resolution, allowing you to automatically resolve local plugins.  Any
+  plugins resolved this way will also be compiled, so if you have plugins written in Typescript, they
+  will be transpiled so that they can be consumed by Gatsby.
+
+    * There are few overloads for this function.
+
+      1. You may include an array of plugins in the first parameter, which takes the same shape as Gatsby's
+        plugin array.
+      2. You may optionally include a callback function in the second parameter.  It will receive all of the
+        same parameters defined above for the `gatsby-*` as-a-function.  It must return an array in the same
+        shape as Gatsby's plugin array.
+      3. Or, you may include only the callback function in the first parameter.
+
+    * Any plugins defined in the array in the first parameter will be resolved before the normal Gatsby plugin
+      array is processed.  This means that any plugins resolved this way will be available to the normal
+      function export.
+
+    * Any callback functions defined this way will be called, in sequence, after the normal Gatsby array has
+      been processed.  This means that all of the plugins from the previously defined array(s), and the normal
+      Gatsby array will be available in the callback's parameters.
+
+    * The ordering of the plugins will be the same as the order they are resolved.
+
+      1. Arrays resolved by this function
+      2. Standard Gatsby array
+      3. Callback function arrays
+
 #### Type utilities
 
 A couple of utility interfaces are exported by this plugin to make it easier to create
 type-safe functions in `gatsby-node` and `gatsby-config`:
 
 * `ITSConfigFn`: Interface that describes the shape of the `gatsby-config` or `gatsby-node`
-  default function exports.  Accepts two parameters:
+  default function exports.  Accepts one parameters:
   * The string parameter for the function type ('config' | 'node')
-  * In the case of 'config', a union of plugin option interfaces, to allow you to design a
-    strongly typed object export.
 
-* `IMergePluginOptions`: Utility type that makes it easy to merge a plugin's defined types
+* `IGatsbyPluginDef`: Utility type that makes it easy to merge a plugin's defined types
   into your plugins object array.  Accepts two parameters:
   * The name of the plugin, which will be used in the `resolve` property
   * The interface for the plugin's options
@@ -383,14 +395,53 @@ type-safe functions in `gatsby-node` and `gatsby-config`:
   _One good example is the plugin [`gatsby-plugin-pnpm`](https://github.com/Js-Brecht/gatsby-plugin-pnpm),
   since it exports the interface for the options that are valid for it.  They could be used like this:_
 
-  ```ts
-  import { IPluginOptions as IPnpmPluginOptions } from 'gatsby-plugin-pnpm';
-  import { ITSConfigFn, IMergePluginOptions } from 'gatsby-plugin-ts-config';
+  _Another example would be [`gatsby-source-filesystem`](https://github.com/gatsbyjs/gatsby/blob/c1368c06fb975bd792ebb8f9d0c5a5e4ebcba388/packages/gatsby-source-filesystem/index.d.ts#L100-L103).  As you'll notice, its interface is already
+  configured to use the `resolve` and `options` properties, so the `IGatsbyPluginDef` wouldn't be needed._
 
-  const gatsbyConfig: ITSConfigFn<'config',
-    | IMergePluginOptions<'gatsby-plugin-pnpm', IPnpmPluginOptions>
-    | /* Add more merged types here */
-  > = ({
+  ```ts
+  import type { IPluginOptions as IPnpmPluginOptions } from 'gatsby-plugin-pnpm';
+  import type { FileSystemConfig } from 'gatsby-plugin-filesystem';
+  import { ITSConfigFn, IGatsbyPluginDef, includePlugins } from 'gatsby-plugin-ts-config';
+
+  includePlugins<
+    | IGatsbyPluginDef<'gatsby-plugin-pnpm', IPnpmPluginOptions>
+    | FileSystemConfig
+  >([
+    {
+      resolve: 'gatsby-plugin-pnpm', // <-- this will be typed
+      options: {
+        ... // <-- These will be typed
+      }
+    }
+  ], ({
+    projectRoot,
+  }) => ([
+    {
+      resolve: 'gatsby-source-filesystem' // <-- this will be typed
+      options: {
+        ... // <-- These will be typed
+      }
+    }
+  ]))
+
+  // If you want to define a plugin that will receive the previous callback's
+  // resolved plugins (gatsby-source-filesystem), then you can call the function
+  // again
+
+  includePlugins<
+    | IGatsbyPluginDef<'foo-plugin-that-receives-filesystem-endpoints', IFooPluginOptions>
+  >(({
+    endpoints,
+  }) => ([
+    {
+      resolve: 'foo-plugin-....',
+      options: {
+        pluginPaths: endpoints.plugin['gatsby-source-filesystem'].node,
+      }
+    }
+  ]))
+
+  const gatsbyConfig: ITSConfigFn<'config'> = ({
     projectRoot
   }) => ({
     siteMetadata: {
@@ -400,10 +451,7 @@ type-safe functions in `gatsby-node` and `gatsby-config`:
     },
     plugins: [
       {
-        resolve: `gatsby-plugin-pnpm`, // <-- This will have intellisense
-        options: { // <-- These will have intellisense, and will be type-checked
-          projectPath: projectRoot
-        }
+        // All of your normal, untyped Gatsby plugins
       }
     ]
   });
