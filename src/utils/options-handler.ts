@@ -192,13 +192,14 @@ class OptionsHandler {
                 cwd: this.opts.projectRoot,
                 presets: [
                     require.resolve('@babel/preset-typescript'),
-                    addOptsToPreset(
-                        require('babel-preset-gatsby-package'),
-                        '@babel/plugin-transform-runtime',
-                        {
-                            absoluteRuntime: path.dirname(require.resolve('@babel/runtime/package.json')),
-                        },
-                    ),
+                    require.resolve('./preset'),
+                    // addOptsToPreset(
+                    //     require('babel-preset-gatsby-package'),
+                    //     '@babel/plugin-transform-runtime',
+                    //     {
+                    //         absoluteRuntime: path.dirname(require.resolve('@babel/runtime/package.json')),
+                    //     },
+                    // ),
                 ],
             },
             opts,
