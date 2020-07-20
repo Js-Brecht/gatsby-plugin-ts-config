@@ -46,9 +46,14 @@ const preset = () => {
         ].filter(Boolean),
         overrides: [
             {
-                test: [`**/*.ts`, `**/*.tsx`],
-                plugins: [[r(`@babel/plugin-transform-typescript`), { isTSX: true }]],
+                test: [`**/*.ts`],
+                presets: [[r(`@babel/preset-typescript`), { isTSX: false }]],
             },
+            {
+                test: [`**/*.tsx`],
+                presets: [[r(`@babel/preset-typescript`), { isTSX: true }]],
+            },
+            // test
         ],
     };
 };
