@@ -4,7 +4,7 @@
     "module": "commonjs",
     "declaration": true,
     "outDir": "./dist",
-    "removeComments": true,
+    "removeComments": false,
     "skipLibCheck": true,
     "strict": true,
     "noImplicitAny": true,
