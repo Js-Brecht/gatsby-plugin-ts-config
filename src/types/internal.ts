@@ -63,7 +63,7 @@ export interface IGatsbyPluginWithOpts<
     TOptions extends Record<string, any> = Record<string, any>
 > {
     resolve: TName;
-    options: TOptions;
+    options?: TOptions;
 }
 
 export interface IPluginDetails {
