@@ -1,10 +1,8 @@
-import * as path from 'path';
 import mergeWith from 'lodash.mergewith';
 import { keys } from 'ts-transformer-keys';
 import { TsConfigJson } from 'type-fest';
 import { TransformOptions as BabelTransformOptions } from '@babel/core';
 import { RegisterOptions as TSNodeRegisterOptions } from 'ts-node';
-import { addOptsToPreset } from './babel';
 import { getAbsoluteRelativeTo } from '../utils/fs-tools';
 import { compilePlugins } from './endpoints';
 
