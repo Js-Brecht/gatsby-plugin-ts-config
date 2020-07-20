@@ -126,7 +126,7 @@ export const resolvePluginPath = ({
     projectRoot,
     pluginName,
 }: IResolvePluginPathProps): string => {
-    const scopedRequire = createRequire(projectRoot);
+    const scopedRequire = createRequire(`${projectRoot}/<internal>`);
     try {
         const pluginPath = path.dirname(
             scopedRequire.resolve(`${pluginName}/package.json`),
