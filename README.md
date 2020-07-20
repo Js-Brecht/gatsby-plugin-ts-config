@@ -120,7 +120,7 @@ _For the moment, there is no way to layer `ts-node` -> `babel`, but the feature 
 
 ### Extended Usage
 
-If, for some reason, you need to force this plugin to resolve files relative to a different directory than
+If, for some reason, you need to force this plugin to resolve files relative to a directory other than
 your process current working directory, then you can define the `projectRoot` option:
 
 ```js
@@ -131,7 +131,7 @@ module.exports = generateConfig({
 });
 ```
 
-When using this plugin, it is preferable to keep the configuration files out of my project root, because
+When using this plugin, it is preferable to keep the configuration files out of your project root, because
 this helps avoid Gatsby node ownership conflicts.
 
 ```js
@@ -310,12 +310,19 @@ defined below
 * `cacheDir`: `{string}`
   * The cache folder location that the plugin will use to store any of the files that it needs to.
 * `endpoints`: `{object}`
+  * A collection of the fully qualified paths for all of the Gatsby configuration files that have been
+    resolved, and that will be called, by this plugin.  This will be equal to any of the endpoints that
+    you have in your `configDir`, with one exception:
+    * If your `configDir` is the same as the `projectRoot`, then `gatsby-ssr` and `gastby-browser` will
+      **not** be included in these resolved endpoints, because they will not be called by this plugin.
   * Properties:
     * config: `{string[]}` - The list of chained requires/imports that were performed by `gatsby-config`
     * node: `{string[]}` - The list of chained requires/imports that were performed by `gatsby-node`
     * browser: `{string[]}` - The resolved path of the `gatsby-browser` api endpoint
     * ssr: `{string[]}` - The resolved path of the `gatsby-ssr` api endpoint
-    * plugin:
+    * plugin - Contains the collection of all the plugins that have been resolved by the `includePlugins()` function,
+      defined below.  `name` will be the registered name of the plugin, and the `config`, `node`, `browser`,
+      and `ssr` properties will be the same as defined above.
       * Type:
 
       ```js
@@ -329,36 +336,30 @@ defined below
       }
       ```
 
-      * Contains the collection of all the plugins that have been resolved by the `includePlugins()` function,
-        defined below.  `name` will be the registered name of the plugin, and the `config`, `node`, `browser`,
-        and `ssr` properties will be the same as defined above.
-
-  * A collection of the fully qualified paths for all of the Gatsby configuration files that have been
-    resolved, and that will be called, by this plugin.  This will be equal to any of the endpoints that
-    you have in your `configDir`, with one exception:
-    * If your `configDir` is the same as the `projectRoot`, then `gatsby-ssr` and `gastby-browser` will
-      **not** be included in these resolved endpoints, because they will not be called by this plugin.
   * If the `browser` or `ssr` properties are included, they will only have one index, containing the
     location of the endpoint that was resolved.  This is because transpiling & compiling of those modules
     is done by Gatsby itself, not this module.
-  * The first index of each property will always be the Gatsby endpoint.  All following indexes will be
+  * The first index of each property will always be your local Gatsby endpoint.  All following indexes will be
     the files that were required/imported by that one
+
+
 
 #### `gatsby-config` utilites
 
 1. `includePlugins`: This function allows you to register plugins with strongly typed options.  Using it
   also enables advanced plugin resolution, allowing you to automatically resolve local plugins.  Any
-  plugins resolved this way will also be compiled, so if you have plugins written in Typescript, they
+  plugins resolved this way will also be compiled, so if you have local plugins written in Typescript, they
   will be transpiled so that they can be consumed by Gatsby.
 
     * There are few overloads for this function.
 
       1. You may include an array of plugins in the first parameter, which takes the same shape as Gatsby's
-        plugin array.
-      2. You may optionally include a callback function in the second parameter.  It will receive all of the
-        same parameters defined above for the `gatsby-*` as-a-function.  It must return an array in the same
-        shape as Gatsby's plugin array.
-      3. Or, you may include only the callback function in the first parameter.
+         plugin array.
+          * You may optionally include a **callback function** in the second parameter.  It will receive all of the
+            same parameters defined above for the `gatsby-*` as-a-function.  It must return an array in the same
+            shape as Gatsby's plugin array.
+
+      2. Or, you may include only the **callback function** in the first parameter.
 
     * Any plugins defined in the array in the first parameter will be resolved before the normal Gatsby plugin
       array is processed.  This means that any plugins resolved this way will be available to the normal
@@ -380,7 +381,7 @@ A couple of utility interfaces are exported by this plugin to make it easier to 
 type-safe functions in `gatsby-node` and `gatsby-config`:
 
 * `ITSConfigFn`: Interface that describes the shape of the `gatsby-config` or `gatsby-node`
-  default function exports.  Accepts one parameters:
+  default function exports.  Accepts one parameter:
   * The string parameter for the function type ('config' | 'node')
 
 * `IGatsbyPluginDef`: Utility type that makes it easy to merge a plugin's defined types
