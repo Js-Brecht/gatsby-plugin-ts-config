@@ -15,15 +15,6 @@ import OptionsHandler from '../utils/options-handler';
 import type { GatsbyConfig } from 'gatsby';
 import type { ITSConfigArgs, IGatsbyConfigTypes, IEndpointResolutionSpec } from '../types';
 
-import BuiltinModule from 'module';
-
-interface IModule extends BuiltinModule {
-    _extensions: NodeJS.RequireExtensions;
-}
-
-const Module = BuiltinModule as unknown as IModule;
-
-
 export default (args = {} as ITSConfigArgs): GatsbyConfig => {
     const projectRoot = getAbsoluteRelativeTo(args.projectRoot || process.cwd());
     const configDir = getAbsoluteRelativeTo(projectRoot, args.configDir);
