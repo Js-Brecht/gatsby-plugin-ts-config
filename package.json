@@ -42,7 +42,7 @@
 		"watch": "run-s clean \"build:prod -w\"",
 		"watch:dev": "run-s clean \"build:dev -w\"",
 		"lint": "eslint -c .eslintrc ./src/**/*",
-		"prepublish": "yarn build"
+		"prepublishOnly": "yarn build"
 	},
 	"peerDependencies": {
 		"@babel/core": "^7.0.0",
