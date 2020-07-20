@@ -7560,7 +7560,7 @@ fsevents@~2.1.1:
     ts-transformer-keys: ^0.4.1
     ttypescript: ^1.5.10
     type-fest: ^0.12.0
-    typescript: 3.8.3
+    typescript: 3.9.6
   peerDependencies:
     "@babel/core": ^7.0.0
     "@babel/runtime": ^7.8.7
@@ -14785,23 +14785,23 @@ fsevents@~2.1.1:
   languageName: node
   linkType: hard
 
-typescript@3.8.3:
-  version: 3.8.3
-  resolution: "typescript@npm:3.8.3"
+typescript@3.9.6:
+  version: 3.9.6
+  resolution: "typescript@npm:3.9.6"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 2/519b11576247fe3570d89a2aa757d8f666aafc0cb9465a6cdd4df09c1dc6bf7285f0c6008d2ac7a55ea26457e767aaab819f58439d80af2cce1d9805b2be1034
+  checksum: 2/75d8e3610ca435b0feaa3eb714ef3aa9060ec72621da3c62c45ceee1d8d0ddcbd8ff2a816de2d24ab28dcd2249953edb640d34595d59e491656156da4c2903fc
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@3.8.3#builtin<compat/typescript>":
-  version: 3.8.3
-  resolution: "typescript@patch:typescript@npm%3A3.8.3#builtin<compat/typescript>::version=3.8.3&hash=273569"
+"typescript@patch:typescript@3.9.6#builtin<compat/typescript>":
+  version: 3.9.6
+  resolution: "typescript@patch:typescript@npm%3A3.9.6#builtin<compat/typescript>::version=3.9.6&hash=273569"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 2/345573d9ee784f75c4facb98e838d28fe1376648abd627e3bca256237965940f331bf0ed502de6068f0cca9111eac675ca26d901202547068d52d66685e42be2
+  checksum: 2/849414205dad35867d0601dcc2253d605ad779f692c102ba5e746487af83363e106de7f3408a2bbb2292fa43fb06674543f3a2df81336b04219eb0f5d1d20f39
   languageName: node
   linkType: hard
 

@@ -38,7 +38,7 @@
 		"clean": "rimraf ./dist/*",
 		"build": "run-s clean build:prod",
 		"build:prod": "ttsc",
-		"build:dev": "run-s \"build:prod --sourceMap\"",
+		"build:dev": "ttsc --sourceMap",
 		"watch": "run-s clean \"build:prod -w\"",
 		"watch:dev": "run-s clean \"build:dev -w\"",
 		"lint": "eslint -c .eslintrc ./src/**/*",
@@ -94,7 +94,7 @@
 		"ts-transformer-keys": "^0.4.1",
 		"ttypescript": "^1.5.10",
 		"type-fest": "^0.12.0",
-		"typescript": "3.8.3"
+		"typescript": "3.9.6"
 	},
 	"dependenciesMeta": {
 		"@jtechsvcs/eslint-config-typescript": {
