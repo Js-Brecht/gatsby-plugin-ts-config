@@ -90,7 +90,7 @@ export interface IMakeGatsbyEndpointProps {
  * * `distDir`: The location of files that can be copied to this user's cache
  * * `cacheDir`: The location to write the proxy module
  */
-export const setupGatsbyEndpoints = ({
+export const setupGatsbyEndpointProxies = ({
     resolvedEndpoints,
     cacheDir,
 }: IMakeGatsbyEndpointProps): void => {
