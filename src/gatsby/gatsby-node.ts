@@ -3,7 +3,7 @@ import {
     tryRequireModule,
     getModuleObject,
 } from '../utils/node';
-import { setupGatsbyEndpoints } from '../utils/endpoints';
+import { setupGatsbyEndpointProxies } from '../utils/endpoints';
 import OptionsHandler from '../utils/options-handler';
 
 const { endpoints, cacheDir } = OptionsHandler.get();
@@ -44,11 +44,11 @@ export = {
         actions: {
             setWebpackConfig,
         },
-    }: CreateWebpackConfigArgs) => {
+    }) => {
         setWebpackConfig({
             resolve: {
                 alias: {
-                    "ts-config-cache-dir": cacheDir,
+                    "gatsby-plugin-ts-config-cache": cacheDir,
                 },
             },
         });
@@ -56,7 +56,7 @@ export = {
     }),
 
     onPreBootstrap: wrapGatsbyNode('onPreBootstrap', () => {
-        setupGatsbyEndpoints({
+        setupGatsbyEndpointProxies({
             resolvedEndpoints: endpoints,
             distDir: __dirname,
             cacheDir,

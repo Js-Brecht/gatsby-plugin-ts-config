@@ -1,44 +1,42 @@
 import * as path from 'path';
 import { RegisterOptions } from 'ts-node';
 import { TransformOptions } from '@babel/core';
-import { ITSConfigArgs, IConfigTypes, IEndpointResolutionSpec } from '../types';
 import { getAbsoluteRelativeTo } from '../utils/fs-tools';
-import { resolveGatsbyEndpoints, browserSsr } from '../utils/endpoints';
+import {
+    resolveGatsbyEndpoints,
+    allGatsbyEndpoints,
+    ignoreRootEndpoints,
+    compilePlugins,
+} from '../utils/endpoints';
 import { tryRequireModule, getModuleObject } from '../utils/node';
 import RequireRegistrar from '../utils/register';
 import OptionsHandler from '../utils/options-handler';
 
-const gatsbyEndpoints: IConfigTypes[] = [
-    ...browserSsr,
-    'config',
-    'node',
-];
-const ignoreRootConfigs: IConfigTypes[] = [
-    ...browserSsr,
-];
+import type { GatsbyConfig } from 'gatsby';
+import type { ITSConfigArgs, IGatsbyConfigTypes, IEndpointResolutionSpec } from '../types';
 
-export default (args = {} as ITSConfigArgs) => {
+export default (args = {} as ITSConfigArgs): GatsbyConfig => {
     const projectRoot = getAbsoluteRelativeTo(args.projectRoot || process.cwd());
     const configDir = getAbsoluteRelativeTo(projectRoot, args.configDir);
     const cacheDir = path.join(projectRoot, '.cache', 'caches', 'gatsby-plugin-ts-config');
     const pluginDir = path.resolve(path.join(__dirname, '..', '..'));
 
-    const ignore: IConfigTypes[] = [];
+    const ignore: IGatsbyConfigTypes[] = [];
     const configEndpoint: IEndpointResolutionSpec = {
         type: 'config',
         ext: ['.js', '.ts'],
     };
     if (configDir === projectRoot) {
-        ignore.push(...ignoreRootConfigs.filter((nm) => !ignore.includes(nm)));
+        ignore.push(...ignoreRootEndpoints.filter((nm) => !ignore.includes(nm)));
         configEndpoint.ext = ['.ts'];
     }
 
     const endpoints = resolveGatsbyEndpoints({
         endpointSpecs: [
-            ...gatsbyEndpoints.filter((nm) => !ignore.includes(nm) && nm !== 'config'),
+            ...allGatsbyEndpoints.filter((nm) => !ignore.includes(nm) && nm !== 'config'),
             ...(!ignore.includes('config') && [configEndpoint] || []),
         ],
-        configDir,
+        endpointRoot: configDir,
     });
 
     const programOpts = {
@@ -83,8 +81,25 @@ export default (args = {} as ITSConfigArgs) => {
     const gatsbyNodeModule = tryRequireModule('node', endpoints);
 
     const gatsbyConfigModule = tryRequireModule('config', endpoints);
+
+    compilePlugins({
+        plugins: OptionsHandler.plugins,
+    });
+
     const gatsbyConfig = getModuleObject(gatsbyConfigModule);
 
+    OptionsHandler.includePlugins(gatsbyConfig?.plugins || []);
+    OptionsHandler.doExtendPlugins(true);
+
     RequireRegistrar.revert();
-    return gatsbyConfig;
+
+    return {
+        ...gatsbyConfig,
+        plugins: [
+            ...OptionsHandler.plugins.map((plugin) => ({
+                resolve: plugin.path,
+                options: plugin.options,
+            })),
+        ],
+    };
 };

@@ -18,14 +18,13 @@ export const getAbsoluteRelativeTo = (from: string, to?: string): string => {
     return absolute;
 };
 
-export const fileExists = (fPath: string): boolean => {
+export const fileExists = (fPath: string): fs.Stats | void => {
     try {
         const fStats = fs.statSync(fPath);
-        if (fStats) return true;
+        if (fStats) return fStats;
     } catch (err) {
         // noop
     }
-    return false;
 };
 
 export const checkFileWithExts = (fPath: string, extensions: IValidExts[] = allExt): string => {

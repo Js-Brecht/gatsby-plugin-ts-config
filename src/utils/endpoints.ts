@@ -1,17 +1,42 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import {
+import { checkFileWithExts, allExt, fileExists, isDir } from './fs-tools';
+import { createRequire, tryRequireModule } from './node';
+
+import type {
     IGatsbyEndpoints,
-    IConfigTypes,
+    IGatsbyConfigTypes,
     IEndpointResolutionSpec,
+    IPluginDetails,
 } from '../types';
-import { checkFileWithExts, allExt } from './fs-tools';
+
+export const gatsbyEndpointProxies: IGatsbyConfigTypes[] = ['browser', 'ssr'];
+export const gatsbyConfigEndpoints: IGatsbyConfigTypes[] = ['config', 'node'];
+export const allGatsbyEndpoints: IGatsbyConfigTypes[] = [
+    ...gatsbyConfigEndpoints,
+    ...gatsbyEndpointProxies,
+];
+export const ignoreRootEndpoints: IGatsbyConfigTypes[] = [
+    ...gatsbyEndpointProxies,
+];
+
+
+export const configEndpointSpecs: IEndpointResolutionSpec[] = [
+    {
+        type: 'config',
+        ext: ['.js', '.ts'],
+    },
+    {
+        type: 'node',
+        ext: ['.js', '.ts'],
+    },
+];
 
 // *************************************
 
 export interface IResolveEndpointProps {
     endpointSpecs: IEndpointResolutionSpec[];
-    configDir: string;
+    endpointRoot: string;
 }
 
 /**
@@ -26,7 +51,7 @@ export interface IResolveEndpointProps {
  */
 export const resolveGatsbyEndpoints = ({
     endpointSpecs,
-    configDir,
+    endpointRoot,
 }: IResolveEndpointProps): IGatsbyEndpoints => {
     const resolved: IGatsbyEndpoints = {};
 
@@ -34,7 +59,7 @@ export const resolveGatsbyEndpoints = ({
         const endpointType = typeof endpoint === 'string' ? endpoint : endpoint.type;
         const endpointExt = typeof endpoint === 'string' ? allExt : endpoint.ext;
         const endpointFile = `gatsby-${endpointType}`;
-        const configFile = checkFileWithExts(path.join(configDir, endpointFile), endpointExt);
+        const configFile = checkFileWithExts(path.join(endpointRoot, endpointFile), endpointExt);
         if (configFile) {
             resolved[endpointType] = [configFile];
         }
@@ -50,7 +75,7 @@ export interface IMakeGatsbyEndpointProps {
     distDir: string;
     cacheDir: string;
 }
-export const browserSsr: IConfigTypes[] = ['browser', 'ssr'];
+
 
 /**
  * If defined `apiEndpoints` exist in the user's config directory,
@@ -65,11 +90,11 @@ export const browserSsr: IConfigTypes[] = ['browser', 'ssr'];
  * * `distDir`: The location of files that can be copied to this user's cache
  * * `cacheDir`: The location to write the proxy module
  */
-export const setupGatsbyEndpoints = ({
+export const setupGatsbyEndpointProxies = ({
     resolvedEndpoints,
     cacheDir,
 }: IMakeGatsbyEndpointProps): void => {
-    for (const setupApi of browserSsr) {
+    for (const setupApi of gatsbyEndpointProxies) {
         const endpointFile = `gatsby-${setupApi}.js`;
         const targetFile = path.join(cacheDir, endpointFile);
 
@@ -87,5 +112,53 @@ export const setupGatsbyEndpoints = ({
         }
         fs.ensureDirSync(path.dirname(targetFile));
         fs.writeFileSync(targetFile, moduleSrc);
+    }
+};
+
+// ***********************************************
+
+interface IResolvePluginPathProps {
+    projectRoot: string;
+    pluginName: string;
+}
+
+export const resolvePluginPath = ({
+    projectRoot,
+    pluginName,
+}: IResolvePluginPathProps): string => {
+    const scopedRequire = createRequire(`${projectRoot}/<internal>`);
+    try {
+        const pluginPath = path.dirname(
+            scopedRequire.resolve(`${pluginName}/package.json`),
+        );
+        return pluginPath;
+    } catch (err) {
+        const localPluginsDir = path.resolve(projectRoot, 'plugins');
+        const pluginDir = path.join(localPluginsDir, pluginName);
+        if (isDir(path.join(localPluginsDir, pluginName))) {
+            const pkgJson = fileExists(path.join(pluginDir, 'package.json'));
+            if (pkgJson && pkgJson.isFile()) {
+                return pluginDir;
+            }
+        }
+        return '';
+    }
+};
+
+interface ICompilePluginsProps {
+    plugins: IPluginDetails[];
+}
+
+export const compilePlugins = ({
+    plugins,
+}: ICompilePluginsProps) => {
+    for (const pluginDetails of plugins) {
+        const pluginEndpoints = resolveGatsbyEndpoints({
+            endpointSpecs: configEndpointSpecs,
+            endpointRoot: pluginDetails.path,
+        });
+        for (const type of gatsbyConfigEndpoints) {
+            const pluginEndpointModule = tryRequireModule(type, pluginEndpoints, true, pluginDetails.name);
+        }
     }
 };

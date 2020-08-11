@@ -4,4 +4,4 @@ exports.onPreRenderHTML = function () {
     return null;
 };
 
-module.exports = require("ts-config-cache-dir/gatsby-ssr");
+module.exports = require("gatsby-plugin-ts-config-cache/gatsby-ssr");

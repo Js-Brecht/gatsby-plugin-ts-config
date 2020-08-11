@@ -1,3 +1,3 @@
 "use strict";
 
-module.exports = require("ts-config-cache-dir/gatsby-browser");
+module.exports = require("gatsby-plugin-ts-config-cache/gatsby-browser");
