@@ -3,13 +3,7 @@ import type { TransformOptions } from '@babel/core';
 import type { RegisterOptions } from 'ts-node';
 import type { ITSConfigFn, IPublicOpts, IGatsbyPluginDef } from './public';
 
-export type IRegisterType = 'ts-node' | 'babel';
-export type IValidExts = '.js' | '.ts' | '.jsx' | '.tsx';
-export type IGatsbyConfigTypes = 'config' | 'node' | 'browser' | 'ssr'
-export type IConfigTypes =  IGatsbyConfigTypes | 'plugin';
-export type IEndpointResolutionSpec = IGatsbyConfigTypes | {
-    type: IGatsbyConfigTypes;
-    ext: IValidExts[];
+export type PropertyBag = Record<string, any>;
 }
 
 export type IEndpointReturnTypes<T extends IGatsbyConfigTypes = IGatsbyConfigTypes> =
@@ -90,7 +84,5 @@ export interface ICommonDirectories {
 }
 
 export interface IGlobalOpts extends ICommonDirectories {
-    endpoints: IGatsbyResolveChain;
-    babelOpts?: TransformOptions;
-    tsNodeOpts?: RegisterOptions;
+    props: PropertyBag;
 }

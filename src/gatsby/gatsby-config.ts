@@ -20,6 +20,7 @@ export default (args = {} as ITSConfigArgs): GatsbyConfig => {
     const configDir = getAbsoluteRelativeTo(projectRoot, args.configDir);
     const cacheDir = path.join(projectRoot, '.cache', 'caches', 'gatsby-plugin-ts-config');
     const pluginDir = path.resolve(path.join(__dirname, '..', '..'));
+    const propBag = args.props || {};
 
     const ignore: IGatsbyConfigTypes[] = [];
     const configEndpoint: IEndpointResolutionSpec = {
@@ -48,6 +49,7 @@ export default (args = {} as ITSConfigArgs): GatsbyConfig => {
 
     OptionsHandler.set({
         ...programOpts,
+        props: propBag,
         endpoints,
     });
 
