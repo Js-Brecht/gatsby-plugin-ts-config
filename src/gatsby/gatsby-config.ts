@@ -13,7 +13,7 @@ import RequireRegistrar from '../utils/register';
 import OptionsHandler from '../utils/options-handler';
 
 import type { GatsbyConfig } from 'gatsby';
-import type { ITSConfigArgs, IGatsbyConfigTypes, IEndpointResolutionSpec } from '../types';
+import type { ITSConfigArgs, GatsbyConfigTypes, EndpointResolutionSpec } from '../types';
 
 export default (args = {} as ITSConfigArgs): GatsbyConfig => {
     const projectRoot = getAbsoluteRelativeTo(args.projectRoot || process.cwd());
@@ -22,8 +22,8 @@ export default (args = {} as ITSConfigArgs): GatsbyConfig => {
     const pluginDir = path.resolve(path.join(__dirname, '..', '..'));
     const propBag = args.props || {};
 
-    const ignore: IGatsbyConfigTypes[] = [];
-    const configEndpoint: IEndpointResolutionSpec = {
+    const ignore: GatsbyConfigTypes[] = [];
+    const configEndpoint: EndpointResolutionSpec = {
         type: 'config',
         ext: ['.js', '.ts'],
     };

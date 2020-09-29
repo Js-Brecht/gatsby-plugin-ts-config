@@ -1,8 +1,8 @@
 import { register } from 'ts-node';
 import babelRegister from '@babel/register';
 import {
-    IRegisterOptions,
-    IRegisterType,
+    RegisterOptions,
+    RegisterType,
     ICommonDirectories,
     GatsbyEndpointResolverKeys,
 } from '../types';
@@ -16,18 +16,18 @@ interface IModule extends BuiltinModule {
 
 const Module = BuiltinModule as unknown as IModule;
 
-export type IRegistrarProgramOpts = ICommonDirectories;
+export type RegistrarProgramOpts = ICommonDirectories;
 
-export interface IRequireRegistrarProps<T extends IRegisterType> {
-    registerOpts: IRegisterOptions<T>;
+export interface IRequireRegistrarProps<T extends RegisterType> {
+    registerOpts: RegisterOptions<T>;
 }
 
-class RequireRegistrar<T extends IRegisterType> {
+class RequireRegistrar<T extends RegisterType> {
     private initialized = false;
     private registered = false;
     private active = false;
     private type!: T;
-    private registerOpts!: IRegisterOptions<T>;
+    private registerOpts!: RegisterOptions<T>;
     private extensions = ['.ts', '.tsx', '.js', '.jsx'];
     private endpoint?: GatsbyEndpointResolverKeys;
     private pluginName?: string;
@@ -93,13 +93,13 @@ class RequireRegistrar<T extends IRegisterType> {
 
         switch (this.type) {
             case 'ts-node': {
-                const opts = this.registerOpts as IRegisterOptions<'ts-node'>;
+                const opts = this.registerOpts as RegisterOptions<'ts-node'>;
                 const tsNodeService = register(opts);
                 tsNodeService.ignored = this.ignore;
                 break;
             }
             case 'babel': {
-                const opts = this.registerOpts as IRegisterOptions<'babel'>;
+                const opts = this.registerOpts as RegisterOptions<'babel'>;
                 babelRegister({
                     ...opts,
                     extensions: this.extensions,

@@ -8,7 +8,7 @@ import { compilePlugins } from './endpoints';
 
 import type {
     IGlobalOpts,
-    IPublicOpts,
+    PublicOpts,
     GatsbyEndpointResolverKeys,
     IGatsbyPluginDef,
     IGatsbyPluginWithOpts,
@@ -17,7 +17,7 @@ import type {
 } from "../types";
 import { resolvePluginPath } from './endpoints';
 
-const publicProps = keys<IPublicOpts>();
+const publicProps = keys<PublicOpts>();
 
 export interface IResolvePlugins {
     <T extends IGatsbyPluginDef = IGatsbyPluginDef>(plugins: T[] | IPluginDetailsCallback<T>): void;
@@ -140,14 +140,14 @@ class OptionsHandler {
         return this.opts;
     }
 
-    public public = (): IPublicOpts => {
+    public public = (): PublicOpts => {
         const entries = Object.entries(this.opts);
         const publicOpts = entries
-            .filter(([key]) => publicProps.includes(key as keyof IPublicOpts))
+            .filter(([key]) => publicProps.includes(key as keyof PublicOpts))
             .reduce((acc, [key, val]) => {
-                acc[key as keyof IPublicOpts] = val;
+                acc[key as keyof PublicOpts] = val;
                 return acc;
-            }, {} as IPublicOpts);
+            }, {} as PublicOpts);
         return publicOpts;
     }
 

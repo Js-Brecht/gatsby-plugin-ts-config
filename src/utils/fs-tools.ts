@@ -1,13 +1,9 @@
 import * as path from 'path';
 import * as fs from 'fs';
-import { IValidExts } from '../types';
+import { enumerate } from "ts-transformer-enumerate";
+import type { ValidExts } from "../types";
 
-export const allExt: IValidExts[] = [
-    '.ts',
-    '.tsx',
-    '.js',
-    '.jsx',
-];
+export const allExt = Object.values(enumerate<ValidExts>());
 
 export const getAbsoluteRelativeTo = (from: string, to?: string): string => {
     if (to && path.isAbsolute(to)) return to;
@@ -27,7 +23,7 @@ export const fileExists = (fPath: string): fs.Stats | void => {
     }
 };
 
-export const checkFileWithExts = (fPath: string, extensions: IValidExts[] = allExt): string => {
+export const checkFileWithExts = (fPath: string, extensions: ValidExts[] = allExt): string => {
     for (const ext of extensions) {
         if (fileExists(fPath + ext)) return fPath + ext;
     }

@@ -1,7 +1,14 @@
 import { GatsbyConfig, GatsbyNode } from 'gatsby';
 import { RegisterOptions as TSNodeRegisterOptions } from 'ts-node';
 import { TransformOptions } from '@babel/core';
+import {
+    IGlobalOpts,
+    PickLiteral,
+    GatsbyConfigTypes,
+    IGatsbyPluginWithOpts,
     PropertyBag,
+} from './internal';
+
 
 interface ITSConfigArgsBase {
     configDir?: string;
@@ -19,7 +26,7 @@ interface ITSConfigArgsJIT extends ITSConfigArgsBase {
 // }
 export interface ITSConfigArgs extends ITSConfigArgsJIT /* | ITSConfigArgsAOT */ {}
 
-export type IPublicOpts = Pick<IGlobalOpts,
+export type PublicOpts = Pick<IGlobalOpts,
     | 'endpoints'
     | 'props'
     | 'projectRoot'
@@ -27,7 +34,7 @@ export type IPublicOpts = Pick<IGlobalOpts,
     | 'cacheDir'
 >
 
-type ITSConfigFnTypes = PickLiteral<IGatsbyConfigTypes, 'config' | 'node'>;
+type ITSConfigFnTypes = PickLiteral<GatsbyConfigTypes, 'config' | 'node'>;
 type ITSConfigFnReturn<T extends ITSConfigFnTypes> = T extends 'config'
     ? GatsbyConfig
     : GatsbyNode;
@@ -57,7 +64,7 @@ type ITSConfigFnReturn<T extends ITSConfigFnTypes> = T extends 'config'
  * ```
  */
 export interface ITSConfigFn<TConfigType extends ITSConfigFnTypes> {
-    (args: IPublicOpts): ITSConfigFnReturn<TConfigType>;
+    (args: PublicOpts): ITSConfigFnReturn<TConfigType>;
 }
 
 /**

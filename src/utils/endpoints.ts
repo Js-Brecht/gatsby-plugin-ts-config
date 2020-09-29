@@ -4,24 +4,24 @@ import { checkFileWithExts, allExt, fileExists, isDir } from './fs-tools';
 import { createRequire, tryRequireModule } from './node';
 
 import type {
-    IGatsbyEndpoints,
-    IGatsbyConfigTypes,
-    IEndpointResolutionSpec,
+    GatsbyEndpoints,
+    GatsbyConfigTypes,
+    EndpointResolutionSpec,
     IPluginDetails,
 } from '../types';
 
-export const gatsbyEndpointProxies: IGatsbyConfigTypes[] = ['browser', 'ssr'];
-export const gatsbyConfigEndpoints: IGatsbyConfigTypes[] = ['config', 'node'];
-export const allGatsbyEndpoints: IGatsbyConfigTypes[] = [
+export const gatsbyEndpointProxies: GatsbyConfigTypes[] = ['browser', 'ssr'];
+export const gatsbyConfigEndpoints: GatsbyConfigTypes[] = ['config', 'node'];
+export const allGatsbyEndpoints: GatsbyConfigTypes[] = [
     ...gatsbyConfigEndpoints,
     ...gatsbyEndpointProxies,
 ];
-export const ignoreRootEndpoints: IGatsbyConfigTypes[] = [
+export const ignoreRootEndpoints: GatsbyConfigTypes[] = [
     ...gatsbyEndpointProxies,
 ];
 
 
-export const configEndpointSpecs: IEndpointResolutionSpec[] = [
+export const configEndpointSpecs: EndpointResolutionSpec[] = [
     {
         type: 'config',
         ext: ['.js', '.ts'],
@@ -35,7 +35,7 @@ export const configEndpointSpecs: IEndpointResolutionSpec[] = [
 // *************************************
 
 export interface IResolveEndpointProps {
-    endpointSpecs: IEndpointResolutionSpec[];
+    endpointSpecs: EndpointResolutionSpec[];
     endpointRoot: string;
 }
 
@@ -47,13 +47,13 @@ export interface IResolveEndpointProps {
  *
  * * `endpointSpecs`: What endpoints to resolve
  * * `configDir`: Where to resolve the endpoints
- * @returns {IGatsbyEndpoints} The resolved endpoints
+ * @returns {GatsbyEndpoints} The resolved endpoints
  */
 export const resolveGatsbyEndpoints = ({
     endpointSpecs,
     endpointRoot,
-}: IResolveEndpointProps): IGatsbyEndpoints => {
-    const resolved: IGatsbyEndpoints = {};
+}: IResolveEndpointProps): GatsbyEndpoints => {
+    const resolved: GatsbyEndpoints = {};
 
     for (const endpoint of endpointSpecs) {
         const endpointType = typeof endpoint === 'string' ? endpoint : endpoint.type;
@@ -71,7 +71,7 @@ export const resolveGatsbyEndpoints = ({
 // ***************************************
 
 export interface IMakeGatsbyEndpointProps {
-    resolvedEndpoints: IGatsbyEndpoints;
+    resolvedEndpoints: GatsbyEndpoints;
     distDir: string;
     cacheDir: string;
 }

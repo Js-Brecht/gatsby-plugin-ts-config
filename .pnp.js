@@ -65,6 +65,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["npm-run-all", "npm:4.1.5"],
             ["rimraf", "npm:3.0.2"],
             ["ts-node", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:8.6.2"],
+            ["ts-transformer-enumerate", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:0.5.1"],
             ["ts-transformer-keys", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:0.4.1"],
             ["ttypescript", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:1.5.10"],
             ["type-fest", "npm:0.12.0"],
@@ -8859,6 +8860,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["npm-run-all", "npm:4.1.5"],
             ["rimraf", "npm:3.0.2"],
             ["ts-node", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:8.6.2"],
+            ["ts-transformer-enumerate", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:0.5.1"],
             ["ts-transformer-keys", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:0.4.1"],
             ["ttypescript", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:1.5.10"],
             ["type-fest", "npm:0.12.0"],
@@ -16559,6 +16561,19 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["ts-pnp", "virtual:c497046afcbefb679e3fe12575088ec12205b913a36c3d158b27e7cd646d448426540ab27ba98e54ddb75b1ed97de7e3ce5dc0158c9ba4e76ce942c87e5d02d8#npm:1.1.6"],
             ["typescript", null]
+          ],
+          "packagePeers": [
+            "typescript"
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["ts-transformer-enumerate", [
+        ["virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:0.5.1", {
+          "packageLocation": "./.yarn/$$virtual/ts-transformer-enumerate-virtual-9e09133584/4/.yarncache/berry/cache/ts-transformer-enumerate-npm-0.5.1-9b7ca9f924-2.zip/node_modules/ts-transformer-enumerate/",
+          "packageDependencies": [
+            ["ts-transformer-enumerate", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:0.5.1"],
+            ["typescript", "patch:typescript@npm%3A3.9.6#builtin<compat/typescript>::version=3.9.6&hash=273569"]
           ],
           "packagePeers": [
             "typescript"
