@@ -45,7 +45,7 @@ interface IGetModuleObject {
 
 export const getModuleObject: IGetModuleObject = (mod) => {
     if (mod instanceof Function) {
-        return (mod as Function)(OptionsHandler.public());
+        return (mod as Function)(OptionsHandler.public(), OptionsHandler.propertyBag);
     }
     return mod;
 

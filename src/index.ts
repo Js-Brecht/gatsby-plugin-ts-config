@@ -1,19 +1,22 @@
 import OptionsHandler from './utils/options-handler';
 
 import type { GatsbyConfig } from 'gatsby';
-import type { ITSConfigArgs } from './types';
+import type { TSConfigSetupOptions, PropertyBag } from './types';
 
 type GeneratedGatsbyConfig = Pick<GatsbyConfig, 'plugins'>;
 interface IGenerateConfig {
-    (args: ITSConfigArgs): GeneratedGatsbyConfig;
+    (args: TSConfigSetupOptions, props: PropertyBag): GeneratedGatsbyConfig;
 }
 
-export const generateConfig: IGenerateConfig = (options) => {
+export const generateConfig: IGenerateConfig = (options, props) => {
     return {
         plugins: [
             {
                 resolve: `gatsby-plugin-ts-config`,
-                options: (options as Record<string, any>),
+                options: {
+                    ...(options as Record<string, any>),
+                    props,
+                },
             },
         ],
     };

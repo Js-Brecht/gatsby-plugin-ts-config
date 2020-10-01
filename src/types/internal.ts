@@ -25,7 +25,8 @@ export type EndpointReturnTypes<T extends GatsbyConfigTypes = GatsbyConfigTypes>
                     : unknown;
 
 export type EndpointReturnObject<T extends GatsbyConfigTypes> =
-    T extends 'config' ? GatsbyConfig
+    T extends 'config'
+        ? GatsbyConfig
         : T extends 'node'
             ? GatsbyNode
             : T extends 'browser'
@@ -72,8 +73,11 @@ export interface IPluginDetails {
     path: string;
     options: Record<string, any>;
 }
-export interface IPluginDetailsCallback<TReturn extends IGatsbyPluginDef = IGatsbyPluginDef> {
-    (args: PublicOpts): TReturn[];
+export interface IPluginDetailsCallback<
+    TReturn extends IGatsbyPluginDef = IGatsbyPluginDef,
+    TProps extends PropertyBag = PropertyBag,
+> {
+    (args: PublicOpts, props: TProps): TReturn[];
 }
 
 export type RegisterOptions<T extends RegisterType> =
