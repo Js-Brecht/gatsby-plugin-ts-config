@@ -1,4 +1,4 @@
-import { GatsbyNode as RootGatsbyNode, CreateWebpackConfigArgs } from 'gatsby';
+import { GatsbyNode as RootGatsbyNode } from 'gatsby';
 import {
     tryRequireModule,
     getModuleObject,
@@ -17,14 +17,19 @@ type GatsbyNodeFnParameters<T extends GatsbyNodeFunctions> = Parameters<GatsbyNo
 type GatsbyNodeFnReturn<T extends GatsbyNodeFunctions> = ReturnType<GatsbyNode[T]>;
 type GatsbyNodeFn<T extends GatsbyNodeFunctions> = (...args: GatsbyNodeFnParameters<T>) => GatsbyNodeFnReturn<T>;
 
+const isFunction = (fn: any): fn is Function => (
+    typeof fn === "function"
+);
+
 const wrapGatsbyNode = <T extends GatsbyNodeFunctions>(
     endpoint: T,
     cb: GatsbyNodeFn<T>,
 ): GatsbyNodeFn<T> => {
     return (...args) => {
         const callOriginal = () => {
-            if (typeof gatsbyNode[endpoint] === 'function') {
-                return (gatsbyNode[endpoint] as Function)(...args);
+            const ep = gatsbyNode[endpoint];
+            if (isFunction(ep)) {
+                return (ep as Function)(...args);
             }
         };
         const result = cb(...args);
