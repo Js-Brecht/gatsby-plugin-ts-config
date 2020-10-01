@@ -21,8 +21,14 @@ import { resolvePluginPath } from './endpoints';
 const publicProps = keys<PublicOpts>();
 
 export interface IResolvePlugins {
-    <T extends IGatsbyPluginDef = IGatsbyPluginDef>(plugins: T[] | IPluginDetailsCallback<T>): void;
-    <T extends IGatsbyPluginDef = IGatsbyPluginDef>(plugins: T[], pluginsCb?: IPluginDetailsCallback<T>): void;
+    <
+        T extends IGatsbyPluginDef = IGatsbyPluginDef,
+        P extends PropertyBag = PropertyBag,
+    >(plugins: T[] | IPluginDetailsCallback<T, P>): void;
+    <
+        T extends IGatsbyPluginDef = IGatsbyPluginDef,
+        P extends PropertyBag = PropertyBag,
+    >(plugins: T[], pluginsCb?: IPluginDetailsCallback<T, P>): void;
 }
 
 class OptionsHandler {
