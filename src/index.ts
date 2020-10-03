@@ -8,14 +8,14 @@ interface IGenerateConfig {
     (args: TSConfigSetupOptions, props: PropertyBag): GeneratedGatsbyConfig;
 }
 
-export const generateConfig: IGenerateConfig = (options, props) => {
+export const generateConfig: IGenerateConfig = (options, props = {}) => {
     return {
         plugins: [
             {
                 resolve: `gatsby-plugin-ts-config`,
                 options: {
-                    ...(options as Record<string, any>),
                     props,
+                    ...(options as Record<string, any>),
                 },
             },
         ],
