@@ -72,6 +72,7 @@ Every function that this plugin utilizes will receive the property bag as the se
   includePlugins<
     // Defines a loosely typed plugin array
     IGatsbyPluginDef,
+    // Defines the property bag received by the callback function
     IPropBag
   >([ /** some plugins */ ], ({ projectRoot }, { test }) => {
     console.log(test); // some string
