@@ -162,7 +162,7 @@ class OptionsHandler {
     }
 
     public get propertyBag(): PropertyBag {
-        return { ...this._propertyBag };
+        return this._propertyBag;
     }
 
     private mergeOptionsWithConcat = (to: any, from: any): any => {
