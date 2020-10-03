@@ -105,6 +105,29 @@ this plugin, and the rest of your configuration will be in Typescript files.
   * See [Determining the interpreter](#determining-the-interpreter) below for details on how
     the interpeter is chosen
 
+* `props`: `{object}`
+  * Default: `{}`
+  * This object will be passed to the default functions that are exported from `gatsby-config` and `gatsby-node`,
+    as well as any `includePlugins()` calls.
+  * This is meant to contain a dynamic context; anything you may want to pass around to the various functions that
+    this plugin supports.
+    * This object is **mutable**, so any changes you make to it after it has been passed to a function will be
+      persistent.
+  * If you are using the `generateConfig()` plugin declaration, this will be represented by that function's
+    second parameter:
+
+    ```js
+    // gatsby-config.js
+    module.exports = generateConfig({}, { test: 1234 });
+    ```
+
+    ```ts
+    // .gatsby/gatsby-config.ts
+    export default ({ projectRoot }, { test }) => {
+      console.log(test) // 1234
+    }
+    ```
+
 ---
 
 ### Determining the interpreter
@@ -301,50 +324,53 @@ defined below
 
 #### `gatsby-*` as-a-function parameters
 
-* `projectRoot`: `{string}`
-  * The resolved pathname that you either defined in the plugin options, or that was calculated
-    automatically.
+* First parameter: `{object}`
+  * `projectRoot`: `{string}`
+    * The resolved pathname that you either defined in the plugin options, or that was calculated
+      automatically.
 
-* `configDir`: `{string}`
-  * The location of your configuration files.  If you do not define one in the plugin options, then
-    this will be the same as your `projectRoot`.
+  * `configDir`: `{string}`
+    * The location of your configuration files.  If you do not define one in the plugin options, then
+      this will be the same as your `projectRoot`.
 
-* `cacheDir`: `{string}`
-  * The cache folder location that the plugin will use to store any of the files that it needs to.
-* `endpoints`: `{object}`
-  * A collection of the fully qualified paths for all of the Gatsby configuration files that have been
-    resolved, and that will be called, by this plugin.  This will be equal to any of the endpoints that
-    you have in your `configDir`, with one exception:
-    * If your `configDir` is the same as the `projectRoot`, then `gatsby-ssr` and `gastby-browser` will
-      **not** be included in these resolved endpoints, because they will not be called by this plugin.
-  * Properties:
-    * config: `{string[]}` - The list of chained requires/imports that were performed by `gatsby-config`
-    * node: `{string[]}` - The list of chained requires/imports that were performed by `gatsby-node`
-    * browser: `{string[]}` - The resolved path of the `gatsby-browser` api endpoint
-    * ssr: `{string[]}` - The resolved path of the `gatsby-ssr` api endpoint
-    * plugin - Contains the collection of all the plugins that have been resolved by the `includePlugins()` function,
-      defined below.  `name` will be the registered name of the plugin, and the `config`, `node`, `browser`,
-      and `ssr` properties will be the same as defined above.
-      * Type:
+  * `cacheDir`: `{string}`
+    * The cache folder location that the plugin will use to store any of the files that it needs to.
+  * `endpoints`: `{object}`
+    * A collection of the fully qualified paths for all of the Gatsby configuration files that have been
+      resolved, and that will be called, by this plugin.  This will be equal to any of the endpoints that
+      you have in your `configDir`, with one exception:
+      * If your `configDir` is the same as the `projectRoot`, then `gatsby-ssr` and `gastby-browser` will
+        **not** be included in these resolved endpoints, because they will not be called by this plugin.
+    * Properties:
+      * config: `{string[]}` - The list of chained requires/imports that were performed by `gatsby-config`
+      * node: `{string[]}` - The list of chained requires/imports that were performed by `gatsby-node`
+      * browser: `{string[]}` - The resolved path of the `gatsby-browser` api endpoint
+      * ssr: `{string[]}` - The resolved path of the `gatsby-ssr` api endpoint
+      * plugin - Contains the collection of all the plugins that have been resolved by the `includePlugins()` function,
+        defined below.  `name` will be the registered name of the plugin, and the `config`, `node`, `browser`,
+        and `ssr` properties will be the same as defined above.
+        * Type:
 
-      ```js
-      {
-        [name: string]: {
-          config: string[];
-          node: string[];
-          browser: string[];
-          ssr: string[];
+        ```js
+        {
+          [name: string]: {
+            config: string[];
+            node: string[];
+            browser: string[];
+            ssr: string[];
+          }
         }
-      }
-      ```
+        ```
 
-  * If the `browser` or `ssr` properties are included, they will only have one index, containing the
-    location of the endpoint that was resolved.  This is because transpiling & compiling of those modules
-    is done by Gatsby itself, not this module.
-  * The first index of each property will always be your local Gatsby endpoint.  All following indexes will be
-    the files that were required/imported by that one
+    * If the `browser` or `ssr` properties are included, they will only have one index, containing the
+      location of the endpoint that was resolved.  This is because transpiling & compiling of those modules
+      is done by Gatsby itself, not this module.
+    * The first index of each property will always be your local Gatsby endpoint.  All following indexes will be
+      the files that were required/imported by that one
 
-
+* Second parameter: `{object}`
+  * This parameter contain the object that you passed in as the `props` plugin option in the original plugin
+    declaration array, or as the second parameter you passed to `generateConfig()`
 
 #### `gatsby-config` utilites
 
@@ -377,14 +403,56 @@ defined below
       2. Standard Gatsby array
       3. Callback function arrays
 
+    * Generic type parameters are:
+
+      1. A union of the potential plugins (and their options).  Structuring these options is made easier
+         by the type utility, `IGatsbyPluginDef`.
+         * The default value of this parameter represents a loosely typed plugin array, which is essentially
+           the same as `IGatsbyPluginDef` without any of its type parameters.
+
+      2. The object type of the property bag that was defined in the `props` plugin option, or the second
+         parameter passed to the `generateConfig()` function.
+
+          ```js
+           // Defaults
+           includePlugins<IGatsbyPluginDef, Record<string, any>>
+           ```
+
+
+    ##### includePlugins callback function
+
+    * Callback functions defined for use by the `includePlugins()` utility will receive the same parameters
+      as the [`gatsby-*` default export functions](#gatsby--as-a-function-parameters) do.
+
 #### Type utilities
 
 A couple of utility interfaces are exported by this plugin to make it easier to create
 type-safe functions in `gatsby-node` and `gatsby-config`:
 
 * `ITSConfigFn`: Interface that describes the shape of the `gatsby-config` or `gatsby-node`
-  default function exports.  Accepts one parameter:
+  default export functions.  Accepts two parameter:
   * The string parameter for the function type ('config' | 'node')
+  * The type of the property bag, which is represented by the second parameter in the function.
+
+  ```ts
+  interface IPropertyBag {
+    test: number;
+  }
+
+  export const gatsbyConfig: ITSConfigFn<"config", IPropertyBag> = (
+    { projectRoot },
+    { test }
+  ) => {
+    console.log(test);
+    return {
+      plugins: [
+        "foo-plugin"
+      ]
+    }
+  }
+
+  export default gatsbyConfig;
+  ```
 
 * `IGatsbyPluginDef`: Utility type that makes it easy to merge a plugin's defined types
   into your plugins object array.  Accepts two parameters:
@@ -406,26 +474,30 @@ type-safe functions in `gatsby-node` and `gatsby-config`:
   import type { FileSystemConfig } from 'gatsby-plugin-filesystem';
   import { ITSConfigFn, IGatsbyPluginDef, includePlugins } from 'gatsby-plugin-ts-config';
 
-  includePlugins<
+  type PluginDefs = (
     | IGatsbyPluginDef<'gatsby-plugin-pnpm', IPnpmPluginOptions>
     | FileSystemConfig
-  >([
-    {
-      resolve: 'gatsby-plugin-pnpm', // <-- this will be typed
-      options: {
-        ... // <-- These will be typed
+  )
+
+  includePlugins<PluginDefs>(
+    [
+      {
+        resolve: 'gatsby-plugin-pnpm', // <-- this will be typed
+        options: {
+          ... // <-- These will be typed
+        }
       }
-    }
-  ], ({
-    projectRoot,
-  }) => ([
-    {
-      resolve: 'gatsby-source-filesystem' // <-- this will be typed
-      options: {
-        ... // <-- These will be typed
+    ],
+
+    ({ projectRoot }) => ([
+      {
+        resolve: 'gatsby-source-filesystem' // <-- this will be typed
+        options: {
+          ... // <-- These will be typed
+        }
       }
-    }
-  ]))
+    ])
+  )
 
   // If you want to define a plugin that will receive the previous callback's
   // resolved plugins (gatsby-source-filesystem), then you can call the function
