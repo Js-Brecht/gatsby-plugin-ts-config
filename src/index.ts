@@ -76,7 +76,7 @@ export const generateConfig: IGenerateConfig = (options, props) => {
  * only be a callback function.
  *
  * @remarks
- * * `IPluginDetailsCallback`:
+ * * `cb`:
  *
  *   `(args: PublicOpts, props: PropertyBag) => GatsbyPluginDef[]`
  *   * `PublicOpts` - A collection of options/parameters that provide context
