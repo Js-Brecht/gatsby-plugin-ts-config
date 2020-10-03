@@ -50,13 +50,31 @@ Every function that this plugin utilizes will receive the property bag as the se
   import { ITSConfigFn } from "gatsby-plugin-ts-config";
 
   interface IPropBag {
-    test: string;
+    test: number;
   }
 
-  export default ({ projectRoot }, { test }) => {
-    console.log(test) // some string
+  export default ({ projectRoot }, props) => {
+    console.log(props.test) // 1234
     console.log(projectRoot); // The process cwd
+
+    // Object is mutable; this is saved
+    props.foo = "asdf";
   } as ITSConfigFn<"gatsby", IPropBag>;
+  ```
+
+  ```ts
+  // .gatsby/gatsby-config.ts
+  import { ITSConfigFn } from "gatsby-plugin-ts-config";
+
+  interface IPropBag {
+    test: number;
+    foo: string;
+  }
+
+  export default ({ projectRoot }, props) => {
+    console.log(props.test) // 1234
+    console.log(props.foo) // asdf
+  } as ITSConfigFn<"node", IPropBag>;
   ```
 
 * The `includePlugins()` utility function
@@ -66,7 +84,7 @@ Every function that this plugin utilizes will receive the property bag as the se
   import { includePlugins, IGatsbyPluginDef } from "gatsby-plugin-ts-config";
 
   interface IPropBag {
-    test: string;
+    test: number;
   }
 
   includePlugins<
@@ -75,7 +93,7 @@ Every function that this plugin utilizes will receive the property bag as the se
     // Defines the property bag received by the callback function
     IPropBag
   >([ /** some plugins */ ], ({ projectRoot }, { test }) => {
-    console.log(test); // some string
+    console.log(test); // 1234
   });
   ```
 
