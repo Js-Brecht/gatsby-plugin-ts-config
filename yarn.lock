@@ -7556,7 +7556,7 @@ fsevents@~2.1.1:
     lodash.mergewith: ^4.6.2
     npm-run-all: ^4.1.5
     rimraf: ^3.0.2
-    ts-node: ^8.6.2
+    ts-node: ^9.0.0
     ts-transformer-enumerate: ^0.5.1
     ts-transformer-keys: ^0.4.1
     ttypescript: ^1.5.10
@@ -13838,13 +13838,23 @@ fsevents@~2.1.1:
   languageName: node
   linkType: hard
 
-"source-map-support@npm:^0.5.16, source-map-support@npm:^0.5.6, source-map-support@npm:~0.5.12":
+"source-map-support@npm:^0.5.16, source-map-support@npm:~0.5.12":
   version: 0.5.16
   resolution: "source-map-support@npm:0.5.16"
   dependencies:
     buffer-from: ^1.0.0
     source-map: ^0.6.0
   checksum: 2/cf44ce8b694a32bc63f686826bc7e254e5025d4c7eeb4f0c76f61c828cd81067f0df88c0414c50db728dc3d207fb032d7c50c3b419286330332ddbdd4d2689d7
+  languageName: node
+  linkType: hard
+
+"source-map-support@npm:^0.5.17":
+  version: 0.5.19
+  resolution: "source-map-support@npm:0.5.19"
+  dependencies:
+    buffer-from: ^1.0.0
+    source-map: ^0.6.0
+  checksum: 2/59d4efaae97755155b078413ecba63517e3ef054cc7ab767bbd30e6f3054be2ae8e8f5cce7eef53b7eb93e98fe27a58dd8f5e7abfb13144ba420ddaf5267bbb2
   languageName: node
   linkType: hard
 
@@ -14628,21 +14638,23 @@ fsevents@~2.1.1:
   languageName: node
   linkType: hard
 
-"ts-node@npm:^8.6.2":
-  version: 8.6.2
-  resolution: "ts-node@npm:8.6.2"
+"ts-node@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "ts-node@npm:9.0.0"
   dependencies:
     arg: ^4.1.0
     diff: ^4.0.1
     make-error: ^1.1.1
-    source-map-support: ^0.5.6
+    source-map-support: ^0.5.17
     yn: 3.1.1
   peerDependencies:
     typescript: ">=2.7"
   bin:
     ts-node: dist/bin.js
-    ts-script: dist/script.js
-  checksum: 2/56103b97ca6562914446af3db546c7988260d707321313d7eb9bd20b4302f73e684c920031aa618733bcdef19f881b0a8c5339fb1963908af50fec063ab34ef9
+    ts-node-script: dist/bin-script.js
+    ts-node-transpile-only: dist/bin-transpile.js
+    ts-script: dist/bin-script-deprecated.js
+  checksum: 2/49d2ab087fc4b93f0a292e426ea6d242a80d1a4809ac008758bb0170aea1a85cd4182792c1d70889285fe5328cd8bd1ffb1e5108d1c4f31c39dbe9151ea4cabe
   languageName: node
   linkType: hard
 

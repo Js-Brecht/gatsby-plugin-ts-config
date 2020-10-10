@@ -64,7 +64,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["lodash.mergewith", "npm:4.6.2"],
             ["npm-run-all", "npm:4.1.5"],
             ["rimraf", "npm:3.0.2"],
-            ["ts-node", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:8.6.2"],
+            ["ts-node", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:9.0.0"],
             ["ts-transformer-enumerate", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:0.5.1"],
             ["ts-transformer-keys", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:0.4.1"],
             ["ttypescript", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:1.5.10"],
@@ -8859,7 +8859,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["lodash.mergewith", "npm:4.6.2"],
             ["npm-run-all", "npm:4.1.5"],
             ["rimraf", "npm:3.0.2"],
-            ["ts-node", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:8.6.2"],
+            ["ts-node", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:9.0.0"],
             ["ts-transformer-enumerate", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:0.5.1"],
             ["ts-transformer-keys", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:0.4.1"],
             ["ttypescript", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:1.5.10"],
@@ -15682,6 +15682,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["source-map", "npm:0.6.1"]
           ],
           "linkType": "HARD",
+        }],
+        ["npm:0.5.19", {
+          "packageLocation": "../../../.yarncache/berry/cache/source-map-support-npm-0.5.19-65b33ae61e-2.zip/node_modules/source-map-support/",
+          "packageDependencies": [
+            ["source-map-support", "npm:0.5.19"],
+            ["buffer-from", "npm:1.1.1"],
+            ["source-map", "npm:0.6.1"]
+          ],
+          "linkType": "HARD",
         }]
       ]],
       ["source-map-url", [
@@ -16538,14 +16547,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["ts-node", [
-        ["virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:8.6.2", {
-          "packageLocation": "./.yarn/$$virtual/ts-node-virtual-74262d2616/4/.yarncache/berry/cache/ts-node-npm-8.6.2-c2717958b1-2.zip/node_modules/ts-node/",
+        ["virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:9.0.0", {
+          "packageLocation": "./.yarn/$$virtual/ts-node-virtual-3ad57f7ee5/4/.yarncache/berry/cache/ts-node-npm-9.0.0-7f58a021c2-2.zip/node_modules/ts-node/",
           "packageDependencies": [
-            ["ts-node", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:8.6.2"],
+            ["ts-node", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:9.0.0"],
             ["arg", "npm:4.1.3"],
             ["diff", "npm:4.0.2"],
             ["make-error", "npm:1.3.6"],
-            ["source-map-support", "npm:0.5.16"],
+            ["source-map-support", "npm:0.5.19"],
             ["typescript", "patch:typescript@npm%3A3.9.6#builtin<compat/typescript>::version=3.9.6&hash=273569"],
             ["yn", "npm:3.1.1"]
           ],
@@ -16644,7 +16653,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["ttypescript", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:1.5.10"],
             ["resolve", "patch:resolve@npm%3A1.15.1#builtin<compat/resolve>::version=1.15.1&hash=8fccd0"],
-            ["ts-node", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:8.6.2"],
+            ["ts-node", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:9.0.0"],
             ["typescript", "patch:typescript@npm%3A3.9.6#builtin<compat/typescript>::version=3.9.6&hash=273569"]
           ],
           "packagePeers": [
