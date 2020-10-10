@@ -7,24 +7,24 @@ import OptionsHandler from './options-handler';
 import { throwError } from "./errors";
 
 import type {
-    IGatsbyConfigTypes,
-    IGatsbyEndpoints,
-    IEndpointReturnTypes,
-    IEndpointReturnObject,
+    GatsbyConfigTypes,
+    GatsbyEndpoints,
+    EndpointReturnTypes,
+    EndpointReturnObject,
     InferredConfigType,
 } from "../types";
 
 export const preferDefault = (compiled: any) => compiled && compiled.default || compiled;
 
-export const tryRequireModule = <T extends IGatsbyConfigTypes = IGatsbyConfigTypes>(
+export const tryRequireModule = <T extends GatsbyConfigTypes = GatsbyConfigTypes>(
     configType: T,
-    endpoints?: IGatsbyEndpoints,
+    endpoints?: GatsbyEndpoints,
     startRegistrar = true,
     pluginName?: string,
-): IEndpointReturnTypes<T> => {
-    if (!endpoints || !endpoints[configType]) return {} as IEndpointReturnTypes<T>;
+): EndpointReturnTypes<T> => {
+    if (!endpoints || !endpoints[configType]) return {} as EndpointReturnTypes<T>;
     const modulePath = endpoints[configType]![0];
-    let readModule = {} as IEndpointReturnTypes<T>;
+    let readModule = {} as EndpointReturnTypes<T>;
     try {
         if (startRegistrar) RequireRegistrar.start(configType, pluginName);
         readModule = preferDefault(require(modulePath));
@@ -38,14 +38,14 @@ export const tryRequireModule = <T extends IGatsbyConfigTypes = IGatsbyConfigTyp
 
 interface IGetModuleObject {
     <
-        T extends IEndpointReturnTypes,
+        T extends EndpointReturnTypes,
         K extends InferredConfigType<T> = InferredConfigType<T>,
-    >(mod: T): IEndpointReturnObject<K>;
+    >(mod: T): EndpointReturnObject<K>;
 }
 
 export const getModuleObject: IGetModuleObject = (mod) => {
     if (mod instanceof Function) {
-        return (mod as Function)(OptionsHandler.public());
+        return (mod as Function)(OptionsHandler.public(), OptionsHandler.propertyBag);
     }
     return mod;
 

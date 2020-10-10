@@ -8,33 +8,42 @@ import { compilePlugins } from './endpoints';
 
 import type {
     IGlobalOpts,
-    IPublicOpts,
+    PublicOpts,
     GatsbyEndpointResolverKeys,
     IGatsbyPluginDef,
     IGatsbyPluginWithOpts,
     IPluginDetails,
     IPluginDetailsCallback,
+    PropertyBag,
 } from "../types";
 import { resolvePluginPath } from './endpoints';
 
-const publicProps = keys<IPublicOpts>();
+const publicProps = keys<PublicOpts>();
 
 export interface IResolvePlugins {
-    <T extends IGatsbyPluginDef = IGatsbyPluginDef>(plugins: T[] | IPluginDetailsCallback<T>): void;
-    <T extends IGatsbyPluginDef = IGatsbyPluginDef>(plugins: T[], pluginsCb?: IPluginDetailsCallback<T>): void;
+    <
+        T extends IGatsbyPluginDef = IGatsbyPluginDef,
+        P extends PropertyBag = PropertyBag,
+    >(plugins: T[] | IPluginDetailsCallback<T, P>): void;
+    <
+        T extends IGatsbyPluginDef = IGatsbyPluginDef,
+        P extends PropertyBag = PropertyBag,
+    >(plugins: T[], pluginsCb?: IPluginDetailsCallback<T, P>): void;
 }
 
 class OptionsHandler {
     private opts = {} as IGlobalOpts;
+    private _propertyBag = {} as PropertyBag;
     private _plugins: IPluginDetails[] = [];
     private _pluginCb: IPluginDetailsCallback[] = [];
     private _extendedPlugins: IPluginDetails[] = [];
 
-    public set(args: Partial<IGlobalOpts>) {
+    public set(args: Partial<IGlobalOpts>, props: PropertyBag) {
         this.opts = {
             ...this.opts,
             ...args,
         };
+        this._propertyBag = props;
     }
 
     private doResolvePlugins = <T extends IGatsbyPluginDef = IGatsbyPluginDef>(plugins: T[]): IPluginDetails[] => {
@@ -67,7 +76,7 @@ class OptionsHandler {
         if (this.extendedPlugins.length > 0) return;
         const pluginDetails = this._pluginCb.reduce((acc, pluginCb) => {
             const plugins = this.doResolvePlugins(
-                pluginCb(this.public()),
+                pluginCb(this.public(), this.propertyBag),
             );
             if (compile) {
                 compilePlugins({
@@ -82,10 +91,11 @@ class OptionsHandler {
     }
 
     public includePlugins: IResolvePlugins = <
-        T extends IGatsbyPluginDef = IGatsbyPluginDef
+        T extends IGatsbyPluginDef = IGatsbyPluginDef,
+        P extends PropertyBag = PropertyBag,
     >(
         plugins: T[] | IPluginDetailsCallback<T>,
-        pluginsCb?: IPluginDetailsCallback<T>,
+        pluginsCb?: IPluginDetailsCallback<T, P>,
     ) => {
         if (plugins instanceof Array) {
             this._plugins.push(...this.doResolvePlugins(plugins));
@@ -93,7 +103,7 @@ class OptionsHandler {
             this._pluginCb.push(plugins);
         }
         if (pluginsCb) {
-            this._pluginCb.push(pluginsCb);
+            this._pluginCb.push(pluginsCb as IPluginDetailsCallback);
         }
     }
 
@@ -140,15 +150,19 @@ class OptionsHandler {
         return this.opts;
     }
 
-    public public = (): IPublicOpts => {
+    public public = (): PublicOpts => {
         const entries = Object.entries(this.opts);
         const publicOpts = entries
-            .filter(([key]) => publicProps.includes(key as keyof IPublicOpts))
+            .filter(([key]) => publicProps.includes(key as keyof PublicOpts))
             .reduce((acc, [key, val]) => {
-                acc[key as keyof IPublicOpts] = val;
+                acc[key as keyof PublicOpts] = val;
                 return acc;
-            }, {} as IPublicOpts);
+            }, {} as PublicOpts);
         return publicOpts;
+    }
+
+    public get propertyBag(): PropertyBag {
+        return this._propertyBag;
     }
 
     private mergeOptionsWithConcat = (to: any, from: any): any => {

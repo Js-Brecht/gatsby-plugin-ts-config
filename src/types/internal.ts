@@ -1,18 +1,19 @@
 import type { GatsbyConfig, GatsbyNode, GatsbyBrowser, GatsbySSR } from 'gatsby';
 import type { TransformOptions } from '@babel/core';
-import type { RegisterOptions } from 'ts-node';
-import type { ITSConfigFn, IPublicOpts, IGatsbyPluginDef } from './public';
+import type { RegisterOptions as TSNodeRegisterOptions } from 'ts-node';
+import type { ITSConfigFn, PublicOpts, IGatsbyPluginDef } from './public';
 
-export type IRegisterType = 'ts-node' | 'babel';
-export type IValidExts = '.js' | '.ts' | '.jsx' | '.tsx';
-export type IGatsbyConfigTypes = 'config' | 'node' | 'browser' | 'ssr'
-export type IConfigTypes =  IGatsbyConfigTypes | 'plugin';
-export type IEndpointResolutionSpec = IGatsbyConfigTypes | {
-    type: IGatsbyConfigTypes;
-    ext: IValidExts[];
+export type PropertyBag = Record<string, any>;
+export type ValidExts = '.js' | '.ts' | '.jsx' | '.tsx';
+export type RegisterType = 'ts-node' | 'babel';
+export type GatsbyConfigTypes = 'config' | 'node' | 'browser' | 'ssr'
+export type ConfigTypes =  GatsbyConfigTypes | 'plugin';
+export type EndpointResolutionSpec = GatsbyConfigTypes | {
+    type: GatsbyConfigTypes;
+    ext: ValidExts[];
 }
 
-export type IEndpointReturnTypes<T extends IGatsbyConfigTypes = IGatsbyConfigTypes> =
+export type EndpointReturnTypes<T extends GatsbyConfigTypes = GatsbyConfigTypes> =
     T extends 'config'
         ? GatsbyConfig | ITSConfigFn<'config'>
         : T extends 'node'
@@ -23,8 +24,9 @@ export type IEndpointReturnTypes<T extends IGatsbyConfigTypes = IGatsbyConfigTyp
                     ? GatsbySSR
                     : unknown;
 
-export type IEndpointReturnObject<T extends IGatsbyConfigTypes> =
-    T extends 'config' ? GatsbyConfig
+export type EndpointReturnObject<T extends GatsbyConfigTypes> =
+    T extends 'config'
+        ? GatsbyConfig
         : T extends 'node'
             ? GatsbyNode
             : T extends 'browser'
@@ -33,7 +35,7 @@ export type IEndpointReturnObject<T extends IGatsbyConfigTypes> =
                     ? GatsbySSR
                     : unknown;
 
-export type InferredConfigType<T extends IEndpointReturnTypes> =
+export type InferredConfigType<T extends EndpointReturnTypes> =
     T extends GatsbyConfig | ITSConfigFn<'config'>
         ? 'config'
         : T extends GatsbyNode | ITSConfigFn<'node'>
@@ -46,16 +48,16 @@ export type InferredConfigType<T extends IEndpointReturnTypes> =
 
 export type PickLiteral<T, K extends T> = K extends T ? K : T;
 
-export type GatsbyEndpointResolverMapKeys = PickLiteral<IConfigTypes, 'plugin'>;
-export type GatsbyEndpointResolverKeys = Exclude<IConfigTypes, GatsbyEndpointResolverMapKeys>;
+export type GatsbyEndpointResolverMapKeys = PickLiteral<ConfigTypes, 'plugin'>;
+export type GatsbyEndpointResolverKeys = Exclude<ConfigTypes, GatsbyEndpointResolverMapKeys>;
 
-export type IGatsbyEndpoints = {
+export type GatsbyEndpoints = {
     [K in GatsbyEndpointResolverKeys]?: string[];
 }
 export interface IGatsbyEndpointResolverMap {
-    [K: string]: IGatsbyEndpoints;
+    [K: string]: GatsbyEndpoints;
 }
-export type IGatsbyResolveChain = IGatsbyEndpoints & {
+export type GatsbyResolveChain = GatsbyEndpoints & {
     [K in GatsbyEndpointResolverMapKeys]?: IGatsbyEndpointResolverMap;
 };
 export interface IGatsbyPluginWithOpts<
@@ -71,13 +73,16 @@ export interface IPluginDetails {
     path: string;
     options: Record<string, any>;
 }
-export interface IPluginDetailsCallback<TReturn extends IGatsbyPluginDef = IGatsbyPluginDef> {
-    (args: IPublicOpts): TReturn[];
+export interface IPluginDetailsCallback<
+    TReturn extends IGatsbyPluginDef = IGatsbyPluginDef,
+    TProps extends PropertyBag = PropertyBag,
+> {
+    (args: PublicOpts, props: TProps): TReturn[];
 }
 
-export type IRegisterOptions<T extends IRegisterType> =
+export type RegisterOptions<T extends RegisterType> =
     T extends 'ts-node'
-        ? RegisterOptions
+        ? TSNodeRegisterOptions
         : T extends 'babel'
             ? TransformOptions
             : never;
@@ -90,7 +95,8 @@ export interface ICommonDirectories {
 }
 
 export interface IGlobalOpts extends ICommonDirectories {
-    endpoints: IGatsbyResolveChain;
-    babelOpts?: TransformOptions;
-    tsNodeOpts?: RegisterOptions;
+    endpoints: GatsbyResolveChain;
+    props: PropertyBag;
+    babelOpts?: RegisterOptions<"babel">;
+    tsNodeOpts?: RegisterOptions<"ts-node">;
 }

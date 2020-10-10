@@ -7557,6 +7557,7 @@ fsevents@~2.1.1:
     npm-run-all: ^4.1.5
     rimraf: ^3.0.2
     ts-node: ^8.6.2
+    ts-transformer-enumerate: ^0.5.1
     ts-transformer-keys: ^0.4.1
     ttypescript: ^1.5.10
     type-fest: ^0.12.0
@@ -14654,6 +14655,15 @@ fsevents@~2.1.1:
     typescript:
       optional: true
   checksum: 2/0c1ab7d1b85820a4ad12d25f18e6e9b68e57095412cb436266e8d0c58508892d871cd6d39512701e1117b0ad6354f0596d7f9ef9a0e630538ef3c7ff1970e0ef
+  languageName: node
+  linkType: hard
+
+"ts-transformer-enumerate@npm:^0.5.1":
+  version: 0.5.1
+  resolution: "ts-transformer-enumerate@npm:0.5.1"
+  peerDependencies:
+    typescript: ">=2.4.1"
+  checksum: 2/04d7b1edb87b32dd8ff16ec74068a2d7953c019fd86eacdc9140d6aa9d64d4d6bea3f612dbfebae354e92b2edc8eac25bfca16b7946af8a6e3cf65834e9e4ccd
   languageName: node
   linkType: hard
 

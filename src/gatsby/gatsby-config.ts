@@ -13,16 +13,17 @@ import RequireRegistrar from '../utils/register';
 import OptionsHandler from '../utils/options-handler';
 
 import type { GatsbyConfig } from 'gatsby';
-import type { ITSConfigArgs, IGatsbyConfigTypes, IEndpointResolutionSpec } from '../types';
+import type { ITSConfigPluginOptions, GatsbyConfigTypes, EndpointResolutionSpec } from '../types';
 
-export default (args = {} as ITSConfigArgs): GatsbyConfig => {
+export default (args = {} as ITSConfigPluginOptions): GatsbyConfig => {
     const projectRoot = getAbsoluteRelativeTo(args.projectRoot || process.cwd());
     const configDir = getAbsoluteRelativeTo(projectRoot, args.configDir);
     const cacheDir = path.join(projectRoot, '.cache', 'caches', 'gatsby-plugin-ts-config');
     const pluginDir = path.resolve(path.join(__dirname, '..', '..'));
+    const propBag = args.props || {};
 
-    const ignore: IGatsbyConfigTypes[] = [];
-    const configEndpoint: IEndpointResolutionSpec = {
+    const ignore: GatsbyConfigTypes[] = [];
+    const configEndpoint: EndpointResolutionSpec = {
         type: 'config',
         ext: ['.js', '.ts'],
     };
@@ -46,12 +47,14 @@ export default (args = {} as ITSConfigArgs): GatsbyConfig => {
         pluginDir,
     };
 
-    OptionsHandler.set({
-        ...programOpts,
-        endpoints,
-    });
+    OptionsHandler.set(
+        {
+            ...programOpts,
+            endpoints,
+        },
+        propBag,
+    );
 
-    // if (args.JIT) {
     if (args.babel || !args.tsNode) {
         const babelOpts: TransformOptions = OptionsHandler.setBabelOpts(
             typeof args.babel === 'object'
@@ -71,7 +74,6 @@ export default (args = {} as ITSConfigArgs): GatsbyConfig => {
             registerOpts: tsNodeOpts,
         });
     }
-    // }
 
 
     // Prefetch gatsby-node here so that we can collect the import chain.
