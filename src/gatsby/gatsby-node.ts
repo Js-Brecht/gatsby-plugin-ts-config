@@ -5,6 +5,7 @@ import {
 } from '../utils/node';
 import { setupGatsbyEndpointProxies } from '../utils/endpoints';
 import OptionsHandler from '../utils/options-handler';
+import type { ITSConfigPluginOptions } from '../types';
 
 const { endpoints, cacheDir } = OptionsHandler.get();
 
@@ -45,6 +46,11 @@ const wrapGatsbyNode = <T extends GatsbyNodeFunctions>(
 
 export = {
     ...gatsbyNode,
+
+    onPreInit: wrapGatsbyNode('onPreInit', (_, options) => {
+        delete (options as ITSConfigPluginOptions).props;
+    }),
+
     onCreateWebpackConfig: wrapGatsbyNode('onCreateWebpackConfig', ({
         actions: {
             setWebpackConfig,
