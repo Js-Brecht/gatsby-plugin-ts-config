@@ -51,7 +51,10 @@ const preset = () => {
             },
             {
                 test: [`**/*.tsx`],
-                presets: [[r(`@babel/preset-typescript`), { isTSX: true }]],
+                presets: [[r(`@babel/preset-typescript`), {
+                    isTSX: true,
+                    allExtensions: true,
+                }]],
             },
         ],
     };
