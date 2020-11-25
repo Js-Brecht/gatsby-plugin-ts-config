@@ -5,7 +5,7 @@ import type { TSConfigSetupOptions, PropertyBag } from './types';
 
 type GeneratedGatsbyConfig = Pick<GatsbyConfig, 'plugins'>;
 interface IGenerateConfig {
-    (args: TSConfigSetupOptions, props: PropertyBag): GeneratedGatsbyConfig;
+    (args: TSConfigSetupOptions, props?: PropertyBag): GeneratedGatsbyConfig;
 }
 
 export const generateConfig: IGenerateConfig = (options, props = {}) => {
