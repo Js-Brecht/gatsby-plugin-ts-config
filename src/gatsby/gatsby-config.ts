@@ -99,7 +99,7 @@ export default (args = {} as ITSConfigPluginOptions): GatsbyConfig => {
         ...gatsbyConfig,
         plugins: [
             ...OptionsHandler.plugins.map((plugin) => ({
-                resolve: plugin.path,
+                resolve: `${plugin.path}/package.json`,
                 options: plugin.options,
             })),
         ],
