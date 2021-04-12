@@ -1,14 +1,14 @@
-import { register } from 'ts-node';
-import babelRegister from '@babel/register';
+import { register } from "ts-node";
+import babelRegister from "@babel/register";
 import {
     RegisterOptions,
     RegisterType,
     ICommonDirectories,
     GatsbyEndpointResolverKeys,
-} from '../types';
-import { throwError } from './errors';
-import optionsHandler from './options-handler';
-import BuiltinModule from 'module';
+} from "../types";
+import { throwError } from "./errors";
+import optionsHandler from "./options-handler";
+import BuiltinModule from "module";
 
 interface IModule extends BuiltinModule {
     _extensions: NodeJS.RequireExtensions;
@@ -28,13 +28,13 @@ class RequireRegistrar<T extends RegisterType> {
     private active = false;
     private type!: T;
     private registerOpts!: RegisterOptions<T>;
-    private extensions = ['.ts', '.tsx', '.js', '.jsx'];
+    private extensions = [".ts", ".tsx", ".js", ".jsx"];
     private endpoint?: GatsbyEndpointResolverKeys;
     private pluginName?: string;
     private origExtensions = {
         ...Module._extensions,
-        '.ts': Module._extensions['.js'],
-        '.tsx': Module._extensions['.jsx'],
+        ".ts": Module._extensions[".js"],
+        ".tsx": Module._extensions[".jsx"],
     }
 
     constructor() {
@@ -54,7 +54,7 @@ class RequireRegistrar<T extends RegisterType> {
 
     public start(endpoint: GatsbyEndpointResolverKeys, pluginName?: string): void {
         if (!this.initialized)
-            throwError('[gatsby-plugin-ts-config] Compiler registration was started before it was initialized!', new Error());
+            throwError("[gatsby-plugin-ts-config] Compiler registration was started before it was initialized!", new Error());
         this.active = true;
         this.endpoint = endpoint;
         this.pluginName = pluginName;
@@ -73,8 +73,8 @@ class RequireRegistrar<T extends RegisterType> {
 
     private ignore(filename: string): boolean {
         if (!this.active) return true;
-        if (filename.indexOf('node_modules') > -1) return true;
-        if (filename.endsWith('.pnp.js')) return true;
+        if (filename.indexOf("node_modules") > -1) return true;
+        if (filename.endsWith(".pnp.js")) return true;
         if (this.endpoint)
             optionsHandler.addChainedImport(
                 this.endpoint,
@@ -92,14 +92,14 @@ class RequireRegistrar<T extends RegisterType> {
         if (this.registered) return;
 
         switch (this.type) {
-            case 'ts-node': {
-                const opts = this.registerOpts as RegisterOptions<'ts-node'>;
+            case "ts-node": {
+                const opts = this.registerOpts as RegisterOptions<"ts-node">;
                 const tsNodeService = register(opts);
                 tsNodeService.ignored = this.ignore;
                 break;
             }
-            case 'babel': {
-                const opts = this.registerOpts as RegisterOptions<'babel'>;
+            case "babel": {
+                const opts = this.registerOpts as RegisterOptions<"babel">;
                 babelRegister({
                     ...opts,
                     extensions: this.extensions,

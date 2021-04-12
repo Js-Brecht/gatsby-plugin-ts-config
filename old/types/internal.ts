@@ -1,54 +1,54 @@
-import type { GatsbyConfig, GatsbyNode, GatsbyBrowser, GatsbySSR } from 'gatsby';
-import type { TransformOptions } from '@babel/core';
-import type { RegisterOptions as TSNodeRegisterOptions } from 'ts-node';
-import type { ITSConfigFn, PublicOpts, IGatsbyPluginDef } from './public';
+import type { GatsbyConfig, GatsbyNode, GatsbyBrowser, GatsbySSR } from "gatsby";
+import type { TransformOptions } from "@babel/core";
+import type { RegisterOptions as TSNodeRegisterOptions } from "ts-node";
+import type { ITSConfigFn, PublicOpts, IGatsbyPluginDef } from "./public";
 
 export type PropertyBag = Record<string, any>;
-export type ValidExts = '.js' | '.ts' | '.jsx' | '.tsx';
-export type RegisterType = 'ts-node' | 'babel';
-export type GatsbyConfigTypes = 'config' | 'node' | 'browser' | 'ssr'
-export type ConfigTypes =  GatsbyConfigTypes | 'plugin';
+export type ValidExts = ".js" | ".ts" | ".jsx" | ".tsx";
+export type RegisterType = "ts-node" | "babel";
+export type GatsbyConfigTypes = "config" | "node" | "browser" | "ssr"
+export type ConfigTypes =  GatsbyConfigTypes | "plugin";
 export type EndpointResolutionSpec = GatsbyConfigTypes | {
     type: GatsbyConfigTypes;
     ext: ValidExts[];
 }
 
 export type EndpointReturnTypes<T extends GatsbyConfigTypes = GatsbyConfigTypes> =
-    T extends 'config'
-        ? GatsbyConfig | ITSConfigFn<'config'>
-        : T extends 'node'
-            ? GatsbyNode | ITSConfigFn<'node'>
-            : T extends 'browser'
+    T extends "config"
+        ? GatsbyConfig | ITSConfigFn<"config">
+        : T extends "node"
+            ? GatsbyNode | ITSConfigFn<"node">
+            : T extends "browser"
                 ? GatsbyBrowser
-                : T extends 'ssr'
+                : T extends "ssr"
                     ? GatsbySSR
                     : unknown;
 
 export type EndpointReturnObject<T extends GatsbyConfigTypes> =
-    T extends 'config'
+    T extends "config"
         ? GatsbyConfig
-        : T extends 'node'
+        : T extends "node"
             ? GatsbyNode
-            : T extends 'browser'
+            : T extends "browser"
                 ? GatsbyBrowser
-                : T extends 'ssr'
+                : T extends "ssr"
                     ? GatsbySSR
                     : unknown;
 
 export type InferredConfigType<T extends EndpointReturnTypes> =
-    T extends GatsbyConfig | ITSConfigFn<'config'>
-        ? 'config'
-        : T extends GatsbyNode | ITSConfigFn<'node'>
-            ? 'node'
+    T extends GatsbyConfig | ITSConfigFn<"config">
+        ? "config"
+        : T extends GatsbyNode | ITSConfigFn<"node">
+            ? "node"
             : T extends GatsbyBrowser
-                ? 'browser'
+                ? "browser"
                 : T extends GatsbySSR
-                    ? 'ssr'
+                    ? "ssr"
                     : unknown;
 
 export type PickLiteral<T, K extends T> = K extends T ? K : T;
 
-export type GatsbyEndpointResolverMapKeys = PickLiteral<ConfigTypes, 'plugin'>;
+export type GatsbyEndpointResolverMapKeys = PickLiteral<ConfigTypes, "plugin">;
 export type GatsbyEndpointResolverKeys = Exclude<ConfigTypes, GatsbyEndpointResolverMapKeys>;
 
 export type GatsbyEndpoints = {
@@ -81,9 +81,9 @@ export interface IPluginDetailsCallback<
 }
 
 export type RegisterOptions<T extends RegisterType> =
-    T extends 'ts-node'
+    T extends "ts-node"
         ? TSNodeRegisterOptions
-        : T extends 'babel'
+        : T extends "babel"
             ? TransformOptions
             : never;
 

@@ -1,9 +1,9 @@
 import {
     createRequire as nodeCreateRequire,
     createRequireFromPath as nodeCreateRequireFromPath,
-} from 'module';
-import RequireRegistrar from './register';
-import OptionsHandler from './options-handler';
+} from "module";
+import RequireRegistrar from "./register";
+import OptionsHandler from "./options-handler";
 import { throwError } from "./errors";
 
 import type {

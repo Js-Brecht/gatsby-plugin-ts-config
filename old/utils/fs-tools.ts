@@ -1,5 +1,5 @@
-import * as path from 'path';
-import * as fs from 'fs';
+import * as path from "path";
+import * as fs from "fs";
 import { enumerate } from "ts-transformer-enumerate";
 import type { ValidExts } from "../types";
 
@@ -9,7 +9,7 @@ export const getAbsoluteRelativeTo = (from: string, to?: string): string => {
     if (to && path.isAbsolute(to)) return to;
     const absolute = path.join(
         path.isAbsolute(from) ? from : path.resolve(from),
-        to || '',
+        to || "",
     );
     return absolute;
 };
@@ -27,7 +27,7 @@ export const checkFileWithExts = (fPath: string, extensions: ValidExts[] = allEx
     for (const ext of extensions) {
         if (fileExists(fPath + ext)) return fPath + ext;
     }
-    return '';
+    return "";
 };
 
 export const isDir = (fPath: string): boolean => {

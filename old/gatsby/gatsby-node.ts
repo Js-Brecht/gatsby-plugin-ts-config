@@ -1,16 +1,16 @@
-import { GatsbyNode as RootGatsbyNode } from 'gatsby';
+import { GatsbyNode as RootGatsbyNode } from "gatsby";
 import {
     tryRequireModule,
     getModuleObject,
-} from '../utils/node';
-import { setupGatsbyEndpointProxies } from '../utils/endpoints';
-import OptionsHandler from '../utils/options-handler';
-import type { ITSConfigPluginOptions } from '../types';
+} from "../utils/node";
+import { setupGatsbyEndpointProxies } from "../utils/endpoints";
+import OptionsHandler from "../utils/options-handler";
+import type { ITSConfigPluginOptions } from "../types";
 
 const { endpoints, cacheDir } = OptionsHandler.get();
 
 type GatsbyNode = Required<RootGatsbyNode>;
-const gatsbyNodeModule = tryRequireModule('node', endpoints, false);
+const gatsbyNodeModule = tryRequireModule("node", endpoints, false);
 const gatsbyNode = getModuleObject(gatsbyNodeModule);
 
 type GatsbyNodeFunctions = keyof GatsbyNode;
@@ -47,11 +47,11 @@ const wrapGatsbyNode = <T extends GatsbyNodeFunctions>(
 export = {
     ...gatsbyNode,
 
-    onPreInit: wrapGatsbyNode('onPreInit', (_, options) => {
+    onPreInit: wrapGatsbyNode("onPreInit", (_, options) => {
         delete (options as ITSConfigPluginOptions).props;
     }),
 
-    onCreateWebpackConfig: wrapGatsbyNode('onCreateWebpackConfig', ({
+    onCreateWebpackConfig: wrapGatsbyNode("onCreateWebpackConfig", ({
         actions: {
             setWebpackConfig,
         },
@@ -66,7 +66,7 @@ export = {
         return;
     }),
 
-    onPreBootstrap: wrapGatsbyNode('onPreBootstrap', () => {
+    onPreBootstrap: wrapGatsbyNode("onPreBootstrap", () => {
         setupGatsbyEndpointProxies({
             resolvedEndpoints: endpoints,
             distDir: __dirname,

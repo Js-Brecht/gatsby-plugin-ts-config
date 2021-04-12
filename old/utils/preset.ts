@@ -1,8 +1,8 @@
-import path from 'path';
+import path from "path";
 const r = (pkg: string): string => require.resolve(pkg);
 
 const preset = () => {
-    const nodeVersion = process.version.split('v')[1];
+    const nodeVersion = process.version.split("v")[1];
     const { NODE_ENV, BABEL_ENV } = process.env;
 
     const IS_TEST = (BABEL_ENV || NODE_ENV) === `test`;
@@ -38,7 +38,7 @@ const preset = () => {
             [
                 r(`@babel/plugin-transform-runtime`),
                 {
-                    absoluteRuntime: path.dirname(require.resolve('@babel/runtime/package.json')),
+                    absoluteRuntime: path.dirname(require.resolve("@babel/runtime/package.json")),
                 },
             ],
             r(`@babel/plugin-syntax-dynamic-import`),

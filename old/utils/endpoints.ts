@@ -1,17 +1,17 @@
-import * as path from 'path';
-import * as fs from 'fs-extra';
-import { checkFileWithExts, allExt, fileExists, isDir } from './fs-tools';
-import { createRequire, tryRequireModule } from './node';
+import * as path from "path";
+import * as fs from "fs-extra";
+import { checkFileWithExts, allExt, fileExists, isDir } from "./fs-tools";
+import { createRequire, tryRequireModule } from "./node";
 
 import type {
     GatsbyEndpoints,
     GatsbyConfigTypes,
     EndpointResolutionSpec,
     IPluginDetails,
-} from '../types';
+} from "../types";
 
-export const gatsbyEndpointProxies: GatsbyConfigTypes[] = ['browser', 'ssr'];
-export const gatsbyConfigEndpoints: GatsbyConfigTypes[] = ['config', 'node'];
+export const gatsbyEndpointProxies: GatsbyConfigTypes[] = ["browser", "ssr"];
+export const gatsbyConfigEndpoints: GatsbyConfigTypes[] = ["config", "node"];
 export const allGatsbyEndpoints: GatsbyConfigTypes[] = [
     ...gatsbyConfigEndpoints,
     ...gatsbyEndpointProxies,
@@ -23,12 +23,12 @@ export const ignoreRootEndpoints: GatsbyConfigTypes[] = [
 
 export const configEndpointSpecs: EndpointResolutionSpec[] = [
     {
-        type: 'config',
-        ext: ['.js', '.ts'],
+        type: "config",
+        ext: [".js", ".ts"],
     },
     {
-        type: 'node',
-        ext: ['.js', '.ts'],
+        type: "node",
+        ext: [".js", ".ts"],
     },
 ];
 
@@ -56,8 +56,8 @@ export const resolveGatsbyEndpoints = ({
     const resolved: GatsbyEndpoints = {};
 
     for (const endpoint of endpointSpecs) {
-        const endpointType = typeof endpoint === 'string' ? endpoint : endpoint.type;
-        const endpointExt = typeof endpoint === 'string' ? allExt : endpoint.ext;
+        const endpointType = typeof endpoint === "string" ? endpoint : endpoint.type;
+        const endpointExt = typeof endpoint === "string" ? allExt : endpoint.ext;
         const endpointFile = `gatsby-${endpointType}`;
         const configFile = checkFileWithExts(path.join(endpointRoot, endpointFile), endpointExt);
         if (configFile) {
@@ -104,7 +104,7 @@ export const setupGatsbyEndpointProxies = ({
             // module that will point to the user's
             const resolvedPath = resolvedEndpoints[setupApi]![0] as string;
             moduleSrc = `module.exports = require("${
-                resolvedPath.replace(/\\/g, '\\\\')
+                resolvedPath.replace(/\\/g, "\\\\")
             }");`;
         } else {
             // User endpoint was not resolved, so just write an empty module
@@ -133,15 +133,15 @@ export const resolvePluginPath = ({
         );
         return pluginPath;
     } catch (err) {
-        const localPluginsDir = path.resolve(projectRoot, 'plugins');
+        const localPluginsDir = path.resolve(projectRoot, "plugins");
         const pluginDir = path.join(localPluginsDir, pluginName);
         if (isDir(path.join(localPluginsDir, pluginName))) {
-            const pkgJson = fileExists(path.join(pluginDir, 'package.json'));
+            const pkgJson = fileExists(path.join(pluginDir, "package.json"));
             if (pkgJson && pkgJson.isFile()) {
                 return pluginDir;
             }
         }
-        return '';
+        return "";
     }
 };
 

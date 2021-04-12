@@ -1,9 +1,9 @@
-import * as path from 'path';
+import * as path from "path";
 import {
     ConfigItem,
     CreateConfigItemOptions,
     createConfigItem,
-} from '@babel/core';
+} from "@babel/core";
 
 type ICreatePresetProps = string | {
     name: string;
@@ -14,7 +14,7 @@ export const createPresets: (
     options?: CreateConfigItemOptions
 ) => ConfigItem[] = (presets, options) => {
     const configItems: ConfigItem[] = presets.map((curPreset) => {
-        const presetName = typeof curPreset === 'string'
+        const presetName = typeof curPreset === "string"
             ? curPreset
             : curPreset.name;
 
@@ -22,13 +22,13 @@ export const createPresets: (
             ? presetName
             : require.resolve(presetName);
 
-        const presetOpts = typeof curPreset === 'string'
+        const presetOpts = typeof curPreset === "string"
             ? {}
             : curPreset.options;
 
         const createOpts: CreateConfigItemOptions = {
             ...options,
-            type: 'preset',
+            type: "preset",
         };
 
         return createConfigItem(

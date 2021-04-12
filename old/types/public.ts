@@ -1,13 +1,13 @@
-import { GatsbyConfig, GatsbyNode } from 'gatsby';
-import { RegisterOptions as TSNodeRegisterOptions } from 'ts-node';
-import { TransformOptions } from '@babel/core';
+import { GatsbyConfig, GatsbyNode } from "gatsby";
+import { RegisterOptions as TSNodeRegisterOptions } from "ts-node";
+import { TransformOptions } from "@babel/core";
 import {
     IGlobalOpts,
     PickLiteral,
     GatsbyConfigTypes,
     IGatsbyPluginWithOpts,
     PropertyBag,
-} from './internal';
+} from "./internal";
 
 
 export interface ITSConfigPluginOptions {
@@ -20,14 +20,14 @@ export interface ITSConfigPluginOptions {
 export type TSConfigSetupOptions = Omit<ITSConfigPluginOptions, "props">;
 
 export type PublicOpts = Pick<IGlobalOpts,
-    | 'endpoints'
-    | 'projectRoot'
-    | 'configDir'
-    | 'cacheDir'
+    | "endpoints"
+    | "projectRoot"
+    | "configDir"
+    | "cacheDir"
 >
 
-type ITSConfigFnTypes = PickLiteral<GatsbyConfigTypes, 'config' | 'node'>;
-type ITSConfigFnReturn<T extends ITSConfigFnTypes> = T extends 'config'
+type ITSConfigFnTypes = PickLiteral<GatsbyConfigTypes, "config" | "node">;
+type ITSConfigFnReturn<T extends ITSConfigFnTypes> = T extends "config"
     ? GatsbyConfig
     : GatsbyNode;
 

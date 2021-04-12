@@ -1,9 +1,9 @@
-import OptionsHandler from './utils/options-handler';
+import OptionsHandler from "./utils/options-handler";
 
-import type { GatsbyConfig } from 'gatsby';
-import type { TSConfigSetupOptions, PropertyBag } from './types';
+import type { GatsbyConfig } from "gatsby";
+import type { TSConfigSetupOptions, PropertyBag } from "./types";
 
-type GeneratedGatsbyConfig = Pick<GatsbyConfig, 'plugins'>;
+type GeneratedGatsbyConfig = Pick<GatsbyConfig, "plugins">;
 interface IGenerateConfig {
     (args: TSConfigSetupOptions, props?: PropertyBag): GeneratedGatsbyConfig;
 }
@@ -96,4 +96,4 @@ export const generateConfig: IGenerateConfig = (options, props = {}) => {
  */
 export const includePlugins = OptionsHandler.includePlugins;
 
-export * from './types/public';
+export * from "./types/public";

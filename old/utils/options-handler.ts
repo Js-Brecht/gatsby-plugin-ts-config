@@ -1,10 +1,10 @@
-import mergeWith from 'lodash.mergewith';
-import { keys } from 'ts-transformer-keys';
-import { TsConfigJson } from 'type-fest';
-import { TransformOptions as BabelTransformOptions } from '@babel/core';
-import { RegisterOptions as TSNodeRegisterOptions } from 'ts-node';
-import { getAbsoluteRelativeTo } from '../utils/fs-tools';
-import { compilePlugins } from './endpoints';
+import mergeWith from "lodash.mergewith";
+import { keys } from "ts-transformer-keys";
+import { TsConfigJson } from "type-fest";
+import { TransformOptions as BabelTransformOptions } from "@babel/core";
+import { RegisterOptions as TSNodeRegisterOptions } from "ts-node";
+import { getAbsoluteRelativeTo } from "../utils/fs-tools";
+import { compilePlugins } from "./endpoints";
 
 import type {
     IGlobalOpts,
@@ -16,7 +16,7 @@ import type {
     IPluginDetailsCallback,
     PropertyBag,
 } from "../types";
-import { resolvePluginPath } from './endpoints';
+import { resolvePluginPath } from "./endpoints";
 
 const publicProps = keys<PublicOpts>();
 
@@ -48,10 +48,10 @@ class OptionsHandler {
 
     private doResolvePlugins = <T extends IGatsbyPluginDef = IGatsbyPluginDef>(plugins: T[]): IPluginDetails[] => {
         return plugins.reduce((acc, plugin) => {
-            const curPlugin = typeof plugin === 'string'
+            const curPlugin = typeof plugin === "string"
                 ? plugin as string
                 : plugin as IGatsbyPluginWithOpts;
-            const pluginDetails = (typeof curPlugin === 'string'
+            const pluginDetails = (typeof curPlugin === "string"
                 ? {
                     name: curPlugin,
                     options: {},
@@ -171,8 +171,8 @@ class OptionsHandler {
         }
     }
 
-    public setTsNodeOpts = (opts: TSNodeRegisterOptions = {}): Required<IGlobalOpts>['tsNodeOpts'] => {
-        const compilerOptions: TsConfigJson['compilerOptions'] = {
+    public setTsNodeOpts = (opts: TSNodeRegisterOptions = {}): Required<IGlobalOpts>["tsNodeOpts"] => {
+        const compilerOptions: TsConfigJson["compilerOptions"] = {
             module: "commonjs",
             target: "es2015",
             allowJs: true,
@@ -186,7 +186,7 @@ class OptionsHandler {
 
         this.opts.tsNodeOpts = mergeWith(
             {
-                project: getAbsoluteRelativeTo(this.opts.projectRoot, opts.project || 'tsconfig.json'),
+                project: getAbsoluteRelativeTo(this.opts.projectRoot, opts.project || "tsconfig.json"),
                 files: true,
                 compilerOptions,
             },
@@ -196,15 +196,15 @@ class OptionsHandler {
         return this.opts.tsNodeOpts;
     }
 
-    public setBabelOpts = (opts?: BabelTransformOptions): Required<IGlobalOpts>['babelOpts'] => {
+    public setBabelOpts = (opts?: BabelTransformOptions): Required<IGlobalOpts>["babelOpts"] => {
         this.opts.babelOpts = mergeWith(
             {
                 sourceMaps: "inline",
                 sourceRoot: this.opts.projectRoot,
                 cwd: this.opts.projectRoot,
                 presets: [
-                    require.resolve('@babel/preset-typescript'),
-                    require.resolve('./preset'),
+                    require.resolve("@babel/preset-typescript"),
+                    require.resolve("./preset"),
                     // addOptsToPreset(
                     //     require('babel-preset-gatsby-package'),
                     //     '@babel/plugin-transform-runtime',
