@@ -18,9 +18,6 @@
     "plugins": [
       {
         "transform": "ts-transformer-keys/transformer"
-      },
-      {
-        "transform": "ts-transformer-enumerate/transformer"
       }
     ]
   },
