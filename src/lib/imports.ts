@@ -19,8 +19,9 @@ export const linkProjectPlugin = (projectName: string, pluginName: string): void
     const rootProject = getProjectImports(projectName);
     const pluginProject = getProjectImports(pluginName);
 
-    if (!rootProject.plugins) rootProject.plugins = {};
-    const pluginLinks = rootProject.plugins;
+    const pluginLinks = rootProject.plugins || (
+        rootProject.plugins = {}
+    );
 
     if (pluginLinks.hasOwnProperty(pluginName)) {
         throw new PluginError([
