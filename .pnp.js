@@ -59,14 +59,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@typescript-eslint/parser", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:2.21.0"],
             ["@typescript-eslint/typescript-estree", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:2.21.0"],
             ["@yarnpkg/pnpify", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:2.4.0"],
+            ["@zerollup/ts-transform-paths", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:1.7.18"],
             ["babel-plugin-dynamic-import-node", "npm:2.3.3"],
+            ["callsites", "npm:3.1.0"],
+            ["enhanced-resolve", "npm:5.8.0"],
+            ["find-up", "npm:5.0.0"],
             ["fs-extra", "npm:8.1.0"],
             ["gatsby", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:2.19.23"],
             ["lodash.mergewith", "npm:4.6.2"],
             ["npm-run-all", "npm:4.1.5"],
             ["rimraf", "npm:3.0.2"],
+            ["serialize-error", "npm:8.1.0"],
             ["ts-node", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:9.0.0"],
             ["ts-transformer-keys", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:0.4.1"],
+            ["tslog", "npm:3.2.0"],
             ["ttypescript", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:1.5.10"],
             ["type-fest", "npm:0.12.0"],
             ["typescript", "patch:typescript@npm%3A4.2.4#builtin<compat/typescript>::version=4.2.4&hash=a45b0e"]
@@ -7458,6 +7464,52 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["@zerollup/ts-helpers", [
+        ["npm:1.7.18", {
+          "packageLocation": "../../../.yarncache/berry/cache/@zerollup-ts-helpers-npm-1.7.18-fa39b91899-7.zip/node_modules/@zerollup/ts-helpers/",
+          "packageDependencies": [
+            ["@zerollup/ts-helpers", "npm:1.7.18"]
+          ],
+          "linkType": "SOFT",
+        }],
+        ["virtual:2a9f5aa5c34f861e48d58be53e2a014dedc5404c3a5d097924b6b3d57946365d9c7d5d04ab7e65e866ed5f9ed76097180ded533da1a8ff5ae3a98109c6f1ee0e#npm:1.7.18", {
+          "packageLocation": "./.yarn/$$virtual/@zerollup-ts-helpers-virtual-5018ceb10c/4/.yarncache/berry/cache/@zerollup-ts-helpers-npm-1.7.18-fa39b91899-7.zip/node_modules/@zerollup/ts-helpers/",
+          "packageDependencies": [
+            ["@zerollup/ts-helpers", "virtual:2a9f5aa5c34f861e48d58be53e2a014dedc5404c3a5d097924b6b3d57946365d9c7d5d04ab7e65e866ed5f9ed76097180ded533da1a8ff5ae3a98109c6f1ee0e#npm:1.7.18"],
+            ["@types/typescript", null],
+            ["resolve", "patch:resolve@npm%3A1.15.1#builtin<compat/resolve>::version=1.15.1&hash=3388aa"],
+            ["typescript", "patch:typescript@npm%3A4.2.4#builtin<compat/typescript>::version=4.2.4&hash=a45b0e"]
+          ],
+          "packagePeers": [
+            "@types/typescript",
+            "typescript"
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["@zerollup/ts-transform-paths", [
+        ["npm:1.7.18", {
+          "packageLocation": "../../../.yarncache/berry/cache/@zerollup-ts-transform-paths-npm-1.7.18-14319406c9-7.zip/node_modules/@zerollup/ts-transform-paths/",
+          "packageDependencies": [
+            ["@zerollup/ts-transform-paths", "npm:1.7.18"]
+          ],
+          "linkType": "SOFT",
+        }],
+        ["virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:1.7.18", {
+          "packageLocation": "./.yarn/$$virtual/@zerollup-ts-transform-paths-virtual-2a9f5aa5c3/4/.yarncache/berry/cache/@zerollup-ts-transform-paths-npm-1.7.18-14319406c9-7.zip/node_modules/@zerollup/ts-transform-paths/",
+          "packageDependencies": [
+            ["@zerollup/ts-transform-paths", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:1.7.18"],
+            ["@types/typescript", null],
+            ["@zerollup/ts-helpers", "virtual:2a9f5aa5c34f861e48d58be53e2a014dedc5404c3a5d097924b6b3d57946365d9c7d5d04ab7e65e866ed5f9ed76097180ded533da1a8ff5ae3a98109c6f1ee0e#npm:1.7.18"],
+            ["typescript", "patch:typescript@npm%3A4.2.4#builtin<compat/typescript>::version=4.2.4&hash=a45b0e"]
+          ],
+          "packagePeers": [
+            "@types/typescript",
+            "typescript"
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["abbrev", [
         ["npm:1.1.1", {
           "packageLocation": "../../../.yarncache/berry/cache/abbrev-npm-1.1.1-3659247eab-7.zip/node_modules/abbrev/",
@@ -11451,6 +11503,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["tapable", "npm:1.1.3"]
           ],
           "linkType": "HARD",
+        }],
+        ["npm:5.8.0", {
+          "packageLocation": "../../../.yarncache/berry/cache/enhanced-resolve-npm-5.8.0-83f584f25d-7.zip/node_modules/enhanced-resolve/",
+          "packageDependencies": [
+            ["enhanced-resolve", "npm:5.8.0"],
+            ["graceful-fs", "npm:4.2.6"],
+            ["tapable", "npm:2.2.0"]
+          ],
+          "linkType": "HARD",
         }]
       ]],
       ["enquirer", [
@@ -12909,6 +12970,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["path-exists", "npm:4.0.0"]
           ],
           "linkType": "HARD",
+        }],
+        ["npm:5.0.0", {
+          "packageLocation": "../../../.yarncache/berry/cache/find-up-npm-5.0.0-e03e9b796d-7.zip/node_modules/find-up/",
+          "packageDependencies": [
+            ["find-up", "npm:5.0.0"],
+            ["locate-path", "npm:6.0.0"],
+            ["path-exists", "npm:4.0.0"]
+          ],
+          "linkType": "HARD",
         }]
       ]],
       ["flat", [
@@ -13518,14 +13588,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@typescript-eslint/parser", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:2.21.0"],
             ["@typescript-eslint/typescript-estree", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:2.21.0"],
             ["@yarnpkg/pnpify", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:2.4.0"],
+            ["@zerollup/ts-transform-paths", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:1.7.18"],
             ["babel-plugin-dynamic-import-node", "npm:2.3.3"],
+            ["callsites", "npm:3.1.0"],
+            ["enhanced-resolve", "npm:5.8.0"],
+            ["find-up", "npm:5.0.0"],
             ["fs-extra", "npm:8.1.0"],
             ["gatsby", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:2.19.23"],
             ["lodash.mergewith", "npm:4.6.2"],
             ["npm-run-all", "npm:4.1.5"],
             ["rimraf", "npm:3.0.2"],
+            ["serialize-error", "npm:8.1.0"],
             ["ts-node", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:9.0.0"],
             ["ts-transformer-keys", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:0.4.1"],
+            ["tslog", "npm:3.2.0"],
             ["ttypescript", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:1.5.10"],
             ["type-fest", "npm:0.12.0"],
             ["typescript", "patch:typescript@npm%3A4.2.4#builtin<compat/typescript>::version=4.2.4&hash=a45b0e"]
@@ -13946,6 +14022,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "../../../.yarncache/berry/cache/graceful-fs-npm-4.2.3-05a65851d1-7.zip/node_modules/graceful-fs/",
           "packageDependencies": [
             ["graceful-fs", "npm:4.2.3"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:4.2.6", {
+          "packageLocation": "../../../.yarncache/berry/cache/graceful-fs-npm-4.2.6-535b2234f1-7.zip/node_modules/graceful-fs/",
+          "packageDependencies": [
+            ["graceful-fs", "npm:4.2.6"]
           ],
           "linkType": "HARD",
         }]
@@ -16404,6 +16487,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["p-locate", "npm:4.1.0"]
           ],
           "linkType": "HARD",
+        }],
+        ["npm:6.0.0", {
+          "packageLocation": "../../../.yarncache/berry/cache/locate-path-npm-6.0.0-06a1e4c528-7.zip/node_modules/locate-path/",
+          "packageDependencies": [
+            ["locate-path", "npm:6.0.0"],
+            ["p-locate", "npm:5.0.0"]
+          ],
+          "linkType": "HARD",
         }]
       ]],
       ["lockfile", [
@@ -18304,6 +18395,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["p-locate", "npm:4.1.0"],
             ["p-limit", "npm:2.3.0"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:5.0.0", {
+          "packageLocation": "../../../.yarncache/berry/cache/p-locate-npm-5.0.0-92cc7c7a3e-7.zip/node_modules/p-locate/",
+          "packageDependencies": [
+            ["p-locate", "npm:5.0.0"],
+            ["p-limit", "npm:3.1.0"]
           ],
           "linkType": "HARD",
         }]
@@ -20761,6 +20860,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["serialize-error", [
+        ["npm:8.1.0", {
+          "packageLocation": "../../../.yarncache/berry/cache/serialize-error-npm-8.1.0-a3c5bcc96c-7.zip/node_modules/serialize-error/",
+          "packageDependencies": [
+            ["serialize-error", "npm:8.1.0"],
+            ["type-fest", "npm:0.20.2"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
       ["serialize-javascript", [
         ["npm:2.1.2", {
           "packageLocation": "../../../.yarncache/berry/cache/serialize-javascript-npm-2.1.2-5c32ad4093-7.zip/node_modules/serialize-javascript/",
@@ -21961,6 +22070,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["tapable", "npm:1.1.3"]
           ],
           "linkType": "HARD",
+        }],
+        ["npm:2.2.0", {
+          "packageLocation": "../../../.yarncache/berry/cache/tapable-npm-2.2.0-516ee6aa5b-7.zip/node_modules/tapable/",
+          "packageDependencies": [
+            ["tapable", "npm:2.2.0"]
+          ],
+          "linkType": "HARD",
         }]
       ]],
       ["tar", [
@@ -22383,6 +22499,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "../../../.yarncache/berry/cache/tslib-npm-2.2.0-e83a07daa5-7.zip/node_modules/tslib/",
           "packageDependencies": [
             ["tslib", "npm:2.2.0"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["tslog", [
+        ["npm:3.2.0", {
+          "packageLocation": "../../../.yarncache/berry/cache/tslog-npm-3.2.0-77320d4ac7-7.zip/node_modules/tslog/",
+          "packageDependencies": [
+            ["tslog", "npm:3.2.0"],
+            ["source-map-support", "npm:0.5.19"]
           ],
           "linkType": "HARD",
         }]

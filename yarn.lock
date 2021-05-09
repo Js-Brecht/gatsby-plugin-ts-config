@@ -4238,6 +4238,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@zerollup/ts-helpers@npm:^1.7.18":
+  version: 1.7.18
+  resolution: "@zerollup/ts-helpers@npm:1.7.18"
+  dependencies:
+    resolve: ^1.12.0
+  peerDependencies:
+    typescript: ">=3.7.2"
+  checksum: c787542dff0af39776316e66896f17b68de2bcea41789f402383ab38d9ca6a80756717bbab17a0e127a3624982ebd4124d6c488db400f0cd9d3f523d970dd1f6
+  languageName: node
+  linkType: hard
+
+"@zerollup/ts-transform-paths@npm:^1.7.18":
+  version: 1.7.18
+  resolution: "@zerollup/ts-transform-paths@npm:1.7.18"
+  dependencies:
+    "@zerollup/ts-helpers": ^1.7.18
+  peerDependencies:
+    typescript: ">=3.7.2"
+  checksum: d622799d5688d6af2c7c32b547e28c8ddaccbfffd57ec83f3467f10ad5bd50a171b92f22328c23b8fe306217dd069955670d31bb881252bd816909419545e2d6
+  languageName: node
+  linkType: hard
+
 "abbrev@npm:1":
   version: 1.1.1
   resolution: "abbrev@npm:1.1.1"
@@ -5757,7 +5779,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"callsites@npm:^3.0.0":
+"callsites@npm:^3.0.0, callsites@npm:^3.1.0":
   version: 3.1.0
   resolution: "callsites@npm:3.1.0"
   checksum: f726bf10d752901174cae348e69c2e58206404d5eebcea485b3fedbcf7fcffdb397e10919fdf6ee2c8adb4be52a64eea2365d52583611939bfecd109260451c9
@@ -7670,6 +7692,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"enhanced-resolve@npm:^5.8.0":
+  version: 5.8.0
+  resolution: "enhanced-resolve@npm:5.8.0"
+  dependencies:
+    graceful-fs: ^4.2.4
+    tapable: ^2.2.0
+  checksum: a3e1131c9ba0dd6f8276f068ddac4e6469d824ee8132f748e2734722b9f25360f4cb5a7fbec1cab8cd56815a6762e0bb1b8d088cbdf2a276d30d573ac5528bbb
+  languageName: node
+  linkType: hard
+
 "enquirer@npm:^2.3.5":
   version: 2.3.6
   resolution: "enquirer@npm:2.3.6"
@@ -8852,6 +8884,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"find-up@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "find-up@npm:5.0.0"
+  dependencies:
+    locate-path: ^6.0.0
+    path-exists: ^4.0.0
+  checksum: cd0b77415bc59e5af31e4e1b29c6ff8d965d9ca3c60a4b74161f8f116c0d1ad8d35bc6e53bf8f92c69e704e98183f1628a363ed7d519eb28eff54378b8f167a7
+  languageName: node
+  linkType: hard
+
 "flat-cache@npm:^2.0.1":
   version: 2.0.1
   resolution: "flat-cache@npm:2.0.1"
@@ -9254,14 +9296,20 @@ fsevents@~2.1.1:
     "@typescript-eslint/parser": ^2.21.0
     "@typescript-eslint/typescript-estree": ^2.21.0
     "@yarnpkg/pnpify": ^2.4.0
+    "@zerollup/ts-transform-paths": ^1.7.18
     babel-plugin-dynamic-import-node: ^2.3.3
+    callsites: ^3.1.0
+    enhanced-resolve: ^5.8.0
+    find-up: ^5.0.0
     fs-extra: ^8.1.0
     gatsby: ^2.19.18
     lodash.mergewith: ^4.6.2
     npm-run-all: ^4.1.5
     rimraf: ^3.0.2
+    serialize-error: ^8.1.0
     ts-node: ^9.0.0
     ts-transformer-keys: ^0.4.1
+    tslog: ^3.2.0
     ttypescript: ^1.5.10
     type-fest: ^0.12.0
     typescript: ^4.2.4
@@ -9795,6 +9843,13 @@ fsevents@~2.1.1:
   version: 4.2.3
   resolution: "graceful-fs@npm:4.2.3"
   checksum: 67b7e3f6a687c91287f17a2adfcce462406e2aa16ea4440618e1daaecd579ae6362c0b13303f86c77c165ed8074fa8b0868bb0a73173fa3407c2b747e89353f9
+  languageName: node
+  linkType: hard
+
+"graceful-fs@npm:^4.2.4":
+  version: 4.2.6
+  resolution: "graceful-fs@npm:4.2.6"
+  checksum: 84d39c7756892553da990a9db7e45f844b3309b37b5a00174cbb4748476f2250c54f24594d4d252f64f085c65c2fdac7c809419bf6d55f0e6e42eb07ac0f5bf2
   languageName: node
   linkType: hard
 
@@ -11902,6 +11957,15 @@ fsevents@~2.1.1:
   languageName: node
   linkType: hard
 
+"locate-path@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "locate-path@npm:6.0.0"
+  dependencies:
+    p-locate: ^5.0.0
+  checksum: 4c379638152e0e5fda9a8cc07005702f81fcb9899db0f66d691ac1e64193dea670af14e96c50f14d82d45959daa4c400cb712c158cffe22ae265bfc1b1e3a221
+  languageName: node
+  linkType: hard
+
 "lockfile@npm:^1.0.4":
   version: 1.0.4
   resolution: "lockfile@npm:1.0.4"
@@ -13548,7 +13612,7 @@ fsevents@~2.1.1:
   languageName: node
   linkType: hard
 
-"p-limit@npm:3.1.0":
+"p-limit@npm:3.1.0, p-limit@npm:^3.0.2":
   version: 3.1.0
   resolution: "p-limit@npm:3.1.0"
   dependencies:
@@ -13608,6 +13672,15 @@ fsevents@~2.1.1:
   dependencies:
     p-limit: ^2.2.0
   checksum: 57f9abef0b29f02ff88c0936a392c9a1fbdd08169e636e0d85b7407c108014d71578c0c6fe93fa49b5bf3857b20d6f16b96389e2b356f7f599d4d2150505844f
+  languageName: node
+  linkType: hard
+
+"p-locate@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "p-locate@npm:5.0.0"
+  dependencies:
+    p-limit: ^3.0.2
+  checksum: a233d775c870e00c734adabd29f66f93824df076683c0d5a2dc16e5285b02d80c1bf3bab43b9881e4a5b16b37bb86f1922aebb094674703d30a4973041d5c0f6
   languageName: node
   linkType: hard
 
@@ -15844,6 +15917,15 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
+"serialize-error@npm:^8.1.0":
+  version: 8.1.0
+  resolution: "serialize-error@npm:8.1.0"
+  dependencies:
+    type-fest: ^0.20.2
+  checksum: b22c9db390d378433b1796fd60144f5a2aef16f23cff8be59e719328e11a5220a31baf9020bb3cc2faf31901754b5683459c1824478bb1427ad6f1ea5bf70ef7
+  languageName: node
+  linkType: hard
+
 "serialize-javascript@npm:^2.1.2":
   version: 2.1.2
   resolution: "serialize-javascript@npm:2.1.2"
@@ -16280,7 +16362,7 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"source-map-support@npm:^0.5.17":
+"source-map-support@npm:^0.5.17, source-map-support@npm:^0.5.19":
   version: 0.5.19
   resolution: "source-map-support@npm:0.5.19"
   dependencies:
@@ -16951,6 +17033,13 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
+"tapable@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "tapable@npm:2.2.0"
+  checksum: f8ed725aedb3d777bf908ff06c02d1a2108667d3e64af87dd45354ac8de67e7e4fe1a567e215057fb1a2a5437b31d80cc5e5ddbb8327f7280afd4494967a9a93
+  languageName: node
+  linkType: hard
+
 "tar-stream@npm:^2.0.1":
   version: 2.2.0
   resolution: "tar-stream@npm:2.2.0"
@@ -17292,6 +17381,15 @@ resolve@^2.0.0-next.3:
   version: 2.1.0
   resolution: "tslib@npm:2.1.0"
   checksum: d8f5bdd067611651c6b846c2388f4dc8ba1f5af124e66105f5263d1ad56da17f4b8c6566887ca2f205c5a9758451871ceca87d5d06087af2dca1699c5e33db69
+  languageName: node
+  linkType: hard
+
+"tslog@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "tslog@npm:3.2.0"
+  dependencies:
+    source-map-support: ^0.5.19
+  checksum: 304b2b904341ed2f1bad78b775ef30339c258d9799b71acfb784fd84d50687adc75006ed620951f7badd853635daa7444bf78bee813480f6dbc15ef0cee17a66
   languageName: node
   linkType: hard
 

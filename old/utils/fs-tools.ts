@@ -1,9 +1,9 @@
 import * as path from "path";
 import * as fs from "fs";
-import { enumerate } from "ts-transformer-enumerate";
+import { keys } from "ts-transformer-keys";
 import type { ValidExts } from "../types";
 
-export const allExt = Object.values(enumerate<ValidExts>());
+export const allExt = keys<Record<ValidExts, any>>();
 
 export const getAbsoluteRelativeTo = (from: string, to?: string): string => {
     if (to && path.isAbsolute(to)) return to;
