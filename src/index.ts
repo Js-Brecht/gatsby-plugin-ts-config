@@ -53,15 +53,20 @@ export const useGatsbyPluginModule = (
         transpilerOpts,
     });
 
-    return processApiModule({
-        apiType,
-        init,
-        transpiler,
 
-        projectRoot,
-        projectName,
-        propBag: options.props,
-    });
+    try {
+        return processApiModule({
+            apiType,
+            init,
+            transpiler,
+
+            projectRoot,
+            projectName,
+            propBag: options.props,
+        });
+    } catch (err) {
+        throw new PluginError(err);
+    }
 };
 
 
