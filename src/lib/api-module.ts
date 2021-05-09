@@ -5,7 +5,7 @@ import { isGatsbyConfig } from "@util/type-util";
 import { preferDefault } from "@util/node";
 
 import { getPropBag } from "./options";
-import { getProjectImports } from "./imports";
+import { getProjectImports, linkProjectPlugin } from "./imports";
 import { resolveLocalPlugin } from "./local-plugins";
 
 import type {
@@ -19,9 +19,6 @@ const apiTypeKeys = keys<Record<ApiType, any>>();
 
 const moduleResolver = resolve.create.sync({
     extensions: [".js", ".ts"],
-});
-const tsResolver = resolve.create.sync({
-    extensions: [".ts"],
 });
 
 interface IProcessApiModuleOptions<T extends ApiType> {
@@ -100,9 +97,11 @@ export const processApiModule = <
             });
             if (!pluginPath) return; // This isn't a "local" plugin
 
+            linkProjectPlugin(projectName, localPluginName);
+
             apiTypeKeys.forEach((type) => {
                 const gatsbyModuleName = `gatsby-${type}`;
-                const apiPath = tsResolver(pluginPath, gatsbyModuleName);
+                const apiPath = moduleResolver(pluginPath, gatsbyModuleName);
                 if (!apiPath) return; // This `gatsby-*` file doesn't exist for this local plugin
 
                 processApiModule({
