@@ -15,22 +15,25 @@ type ApiPropertyBags = {
 }
 const propBags: Record<string, ApiPropertyBags> = {};
 
+const getProjectPropBags = (
+    projectRoot: string,
+) => {
+    if (!propBags[projectRoot]) {
+        const apiPropBag = {} as PropertyBag;
+        propBags[projectRoot] = {
+            config: apiPropBag,
+            node: apiPropBag,
+        };
+    }
+    return propBags[projectRoot];
+}
+
 export const getPropBag = (
     apiType: ApiType,
     projectRoot: string,
     extendBag = {} as PropertyBag,
 ): PropertyBag => {
-    const getProjectBag = () => {
-        if (!propBags[projectRoot]) {
-            const apiPropBag = {} as PropertyBag;
-            propBags[projectRoot] = {
-                config: apiPropBag,
-                node: apiPropBag,
-            };
-        }
-        return propBags[projectRoot];
-    };
-    const projectPropBags = getProjectBag();
+    const projectPropBags = getProjectPropBags(projectRoot);
     const apiPropBag = projectPropBags[apiType];
     if (extendBag) {
         // We want to mutate the prop bag, not replace it
