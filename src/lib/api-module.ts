@@ -51,7 +51,7 @@ export const processApiModule = <
     );
 
     if (apiType === "config") {
-        const gatsbyNodePath = moduleResolver(projectRoot, "gatsby-node");
+        const gatsbyNodePath = moduleResolver(projectRoot, "./gatsby-node");
         /**
          * We want to pre-process `gatsby-node` from `gatsby-config` because:
          *
@@ -100,8 +100,14 @@ export const processApiModule = <
             linkProjectPlugin(projectName, localPluginName);
 
             apiTypeKeys.forEach((type) => {
-                const gatsbyModuleName = `gatsby-${type}`;
-                const apiPath = moduleResolver(pluginPath, gatsbyModuleName);
+                const gatsbyModuleName = `./gatsby-${type}`;
+                let apiPath: string | false = false;
+                try {
+                    apiPath = moduleResolver(pluginPath, gatsbyModuleName);
+                } catch (err) {
+                    // noop
+                }
+
                 if (!apiPath) return; // This `gatsby-*` file doesn't exist for this local plugin
 
                 processApiModule({
