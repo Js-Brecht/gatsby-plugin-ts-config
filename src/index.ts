@@ -51,6 +51,7 @@ export const useGatsbyPluginModule = (
 
     const transpiler = getTranspiler(transpileType, {
         transpilerOpts,
+        flattenDefault: true,
     });
 
 

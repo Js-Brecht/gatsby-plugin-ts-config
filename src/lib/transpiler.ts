@@ -19,12 +19,14 @@ export type Transpiler = ReturnType<typeof getTranspiler>;
 
 export interface ITranspilerProps<T extends TranspileType> {
     transpilerOpts: TranspilerOptions<T>;
+    flattenDefault?: boolean;
 }
 
 export const getTranspiler = <T extends TranspileType>(
     type: T,
     {
         transpilerOpts,
+        flattenDefault,
     }: ITranspilerProps<T>,
 ) => {
     const extensions = [".ts", ".tsx", ".js", ".jsx"];
@@ -90,7 +92,15 @@ export const getTranspiler = <T extends TranspileType>(
                     projectRoot,
                     init,
                 );
-                return require(requirePath);
+                const mod = require(requirePath);
+                if (mod.default && typeof mod.default === "object" && flattenDefault) {
+                    const exports = require.cache[requirePath]?.exports;
+                    if (exports) {
+                        Object.assign(exports, mod.default);
+                        delete exports.default;
+                    }
+                }
+                return mod;
             }
         } finally {
             Module._extensions = origExtensions;
