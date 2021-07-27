@@ -15,8 +15,8 @@ export class PluginError extends Error {
         super(`[${pluginName}]: ${err}`);
 
         if (err instanceof Error) {
-            const copyErr = serializeError(err);
             err.message = `[${pluginName}]: ${err.message}`;
+            const copyErr = serializeError(err);
             Object.assign(this, copyErr);
         }
     }
