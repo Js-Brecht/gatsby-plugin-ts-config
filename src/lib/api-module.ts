@@ -1,8 +1,8 @@
-import resolve from "enhanced-resolve";
 import { keys } from "ts-transformer-keys";
 
 import { isGatsbyConfig } from "@util/type-util";
 import { preferDefault } from "@util/node";
+import { resolveFilePath } from "@util/fs-tools";
 
 import { getPropBag } from "./options";
 import { getProjectImports, linkProjectPlugin } from "./imports";
@@ -11,15 +11,12 @@ import { resolveLocalPlugin } from "./local-plugins";
 import type {
     ApiType,
     InitValue,
+    PluginModule,
     PropertyBag,
 } from "@typeDefs/internal";
 import type { Transpiler } from "./transpiler";
 
 const apiTypeKeys = keys<Record<ApiType, any>>();
-
-const moduleResolver = resolve.create.sync({
-    extensions: [".js", ".ts"],
-});
 
 interface IProcessApiModuleOptions<T extends ApiType> {
     apiType: T;
@@ -51,7 +48,8 @@ export const processApiModule = <
     );
 
     if (apiType === "config") {
-        const gatsbyNodePath = moduleResolver(projectRoot, "./gatsby-node");
+        const gatsbyNodePath = resolveFilePath(projectRoot, "./gatsby-node");
+
         /**
          * We want to pre-process `gatsby-node` from `gatsby-config` because:
          *
@@ -101,13 +99,7 @@ export const processApiModule = <
 
             apiTypeKeys.forEach((type) => {
                 const gatsbyModuleName = `./gatsby-${type}`;
-                let apiPath: string | false = false;
-                try {
-                    apiPath = moduleResolver(pluginPath, gatsbyModuleName);
-                } catch (err) {
-                    // noop
-                }
-
+                const apiPath = resolveFilePath(pluginPath, gatsbyModuleName);
                 if (!apiPath) return; // This `gatsby-*` file doesn't exist for this local plugin
 
                 processApiModule({
@@ -122,5 +114,5 @@ export const processApiModule = <
         });
     }
 
-    return apiModule;
+    return apiModule as PluginModule<T>;
 };
