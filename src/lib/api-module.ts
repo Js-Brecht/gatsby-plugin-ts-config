@@ -14,6 +14,9 @@ import type {
     PluginModule,
     PropertyBag,
 } from "@typeDefs/internal";
+import type {
+    TSConfigFn,
+} from "@typeDefs/public";
 import type { Transpiler } from "./transpiler";
 
 const apiTypeKeys = keys<Record<ApiType, any>>();
@@ -24,6 +27,7 @@ interface IProcessApiModuleOptions<T extends ApiType> {
     projectName: string;
     projectRoot: string;
     propBag?: PropertyBag;
+    resolveImmediate?: boolean;
     transpiler: Transpiler;
 }
 
@@ -35,15 +39,26 @@ export const processApiModule = <
     projectName,
     projectRoot,
     propBag: initPropBag = {},
+    resolveImmediate = false,
     transpiler,
 }: IProcessApiModuleOptions<T>) => {
     const propBag = getPropBag(apiType, projectRoot, initPropBag);
+
+    const resolveModuleFn = (cb: TSConfigFn<T>) => cb(
+        {
+            projectRoot,
+            imports: getProjectImports(projectName),
+        },
+        propBag,
+    );
+
     let apiModule = preferDefault(
         transpiler<T>(
             apiType,
             init,
             projectName,
             projectRoot,
+            resolveImmediate ? resolveModuleFn : undefined,
         ),
     );
 
@@ -65,18 +80,13 @@ export const processApiModule = <
                 projectRoot,
                 propBag,
                 transpiler,
+                resolveImmediate: true,
             });
         }
     }
 
     if (typeof apiModule === "function") {
-        apiModule = apiModule(
-            {
-                projectRoot,
-                imports: getProjectImports(projectName),
-            },
-            propBag,
-        );
+        apiModule = resolveModuleFn(apiModule);
     }
 
     /**
@@ -108,6 +118,7 @@ export const processApiModule = <
                     projectRoot: pluginPath,
                     projectName: pluginPath,
                     propBag,
+                    resolveImmediate: true,
                     transpiler,
                 });
             });

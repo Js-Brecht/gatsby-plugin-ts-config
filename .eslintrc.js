@@ -10,5 +10,6 @@ module.exports = typescript({
         "@typescript-eslint/ban-types": "off",
         "@typescript-eslint/no-non-null-assertion": "off",
         "@typescript-eslint/no-empty-interface": "off",
+        "valid-jsdoc": "off",
     },
 });

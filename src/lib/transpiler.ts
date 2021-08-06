@@ -12,6 +12,9 @@ import type {
     InitValue,
     PluginModule,
 } from "@typeDefs/internal";
+import type {
+    TSConfigFn,
+} from "@typeDefs/public";
 
 type IgnoreFn = (filename: string) => boolean;
 
@@ -38,13 +41,14 @@ export const getTranspiler = <T extends TranspileType>(
     let newExtensions: NodeJS.RequireExtensions;
 
     return function transpile<
-        T extends ApiType
+        TApiType extends ApiType
     >(
-        apiType: T,
+        apiType: TApiType,
         init: InitValue,
         pluginName: string,
         projectRoot: string,
-    ): PluginModule<T> {
+        resolveModuleFn?: (cb: TSConfigFn<TApiType>) => PluginModule<TApiType>,
+    ): PluginModule<TApiType> {
         const addChainedImport = getImportHandler(apiType, pluginName);
 
         const ignore: IgnoreFn = (filename) => {
@@ -86,18 +90,23 @@ export const getTranspiler = <T extends TranspileType>(
 
         try {
             if (typeof init === "function") {
-                return init() as PluginModule<T>;
+                return init() as PluginModule<TApiType>;
             } else {
                 const requirePath = path.resolve(
                     projectRoot,
                     init,
                 );
                 const mod = require(requirePath);
-                if (mod.default && typeof mod.default === "object" && flattenDefault) {
-                    const exports = require.cache[requirePath]?.exports;
-                    if (exports) {
-                        Object.assign(exports, mod.default);
-                        delete exports.default;
+                if (mod.default) {
+                    if (typeof mod.default === "function" && resolveModuleFn) {
+                        mod.default = resolveModuleFn(mod.default);
+                    }
+                    if (typeof mod.default === "object" && flattenDefault) {
+                        const exports = require.cache[requirePath]?.exports;
+                        if (exports) {
+                            Object.assign(exports, mod.default);
+                            delete exports.default;
+                        }
                     }
                 }
                 return mod;
