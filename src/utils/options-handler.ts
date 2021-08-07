@@ -47,29 +47,33 @@ class OptionsHandler {
     }
 
     private doResolvePlugins = <T extends IGatsbyPluginDef = IGatsbyPluginDef>(plugins: T[]): IPluginDetails[] => {
-        return plugins.reduce((acc, plugin) => {
-            const curPlugin = typeof plugin === 'string'
-                ? plugin as string
-                : plugin as IGatsbyPluginWithOpts;
-            const pluginDetails = (typeof curPlugin === 'string'
-                ? {
-                    name: curPlugin,
-                    options: {},
-                } : {
-                    name: curPlugin.resolve,
-                    options: curPlugin.options,
-                }) as IPluginDetails;
-            pluginDetails.path = resolvePluginPath({
-                projectRoot: this.opts.projectRoot,
-                pluginName: pluginDetails.name,
-            });
-            if (pluginDetails.path) {
-                acc.push(pluginDetails);
-            } else {
-                throw `[gatsby-plugin-ts-config] Unable to locate plugin ${pluginDetails.name}`;
-            }
-            return acc;
-        }, [] as IPluginDetails[]);
+        return plugins
+            .reduce((acc, plugin) => {
+                const curPlugin = typeof plugin === 'string'
+                    ? plugin as string
+                    : plugin as IGatsbyPluginWithOpts | false;
+                if (!curPlugin) return acc;
+
+                const pluginDetails = (typeof curPlugin === 'string'
+                    ? {
+                        name: curPlugin,
+                        options: {},
+                    } : {
+                        name: curPlugin.resolve,
+                        options: curPlugin.options,
+                    }) as IPluginDetails;
+                pluginDetails.path = resolvePluginPath({
+                    projectRoot: this.opts.projectRoot,
+                    pluginName: pluginDetails.name,
+                });
+                if (pluginDetails.path) {
+                    acc.push(pluginDetails);
+                } else {
+                    throw `[gatsby-plugin-ts-config] Unable to locate plugin ${pluginDetails.name}`;
+                }
+                return acc;
+            }, [] as IPluginDetails[])
+            .filter(Boolean);
     }
 
     public doExtendPlugins = (compile = false): void => {

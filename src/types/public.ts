@@ -120,4 +120,5 @@ export interface ITSConfigFn<
 export type IGatsbyPluginDef<TName extends string = string, TOptions extends Record<string, any> = Record<string, any>> = (
     | TName
     | IGatsbyPluginWithOpts<TName, TOptions>
+    | false
 )
