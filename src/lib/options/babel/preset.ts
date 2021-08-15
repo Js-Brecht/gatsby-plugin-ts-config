@@ -47,14 +47,22 @@ const preset = () => {
         overrides: [
             {
                 test: [`**/*.ts`],
-                presets: [[r(`@babel/preset-typescript`), { isTSX: false }]],
+                presets: [[
+                    r(`@babel/preset-typescript`),
+                    { isTSX: false },
+                    "simple-typescript-module-preset"],
+                ],
             },
             {
                 test: [`**/*.tsx`],
-                presets: [[r(`@babel/preset-typescript`), {
-                    isTSX: true,
-                    allExtensions: true,
-                }]],
+                presets: [[
+                    r(`@babel/preset-typescript`),
+                    {
+                        isTSX: true,
+                        allExtensions: true,
+                    },
+                    "tsx-typescript-module-preset",
+                ]],
             },
         ],
     };

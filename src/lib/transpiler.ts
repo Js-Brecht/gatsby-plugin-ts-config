@@ -2,8 +2,8 @@ import path from "path";
 import { register as tsNodeRegister } from "ts-node";
 import babelRegister from "@babel/register";
 
-import { Module } from "@util/node";
-import { getImportHandler } from "./imports";
+import { Module, preferDefault } from "@util/node";
+import { getImportHandler } from "./options/imports";
 
 import type {
     ApiType,
@@ -24,6 +24,13 @@ export interface ITranspilerProps<T extends TranspileType> {
     transpilerOpts: TranspilerOptions<T>;
     flattenDefault?: boolean;
 }
+
+const getIgnoreRules = (projectRoot: string): IgnoreFn[] => [
+    (fname) => !fname.startsWith(projectRoot),
+    (fname) => fname.startsWith(
+        path.join(projectRoot, "node_modules"),
+    ),
+];
 
 export const getTranspiler = <T extends TranspileType>(
     type: T,
@@ -47,16 +54,23 @@ export const getTranspiler = <T extends TranspileType>(
         init: InitValue,
         pluginName: string,
         projectRoot: string,
-        resolveModuleFn?: (cb: TSConfigFn<TApiType>) => PluginModule<TApiType>,
     ): PluginModule<TApiType> {
         const addChainedImport = getImportHandler(apiType, pluginName);
+
+        const ignoreRules: IgnoreFn[] = [
+            // Module must be a part of the current project
+            (fname) => !fname.startsWith(projectRoot),
+            // Module must not be a node_modules dependency of
+            // the current project
+            (fname) => fname.startsWith(
+                path.join(projectRoot, "node_modules"),
+            ),
+        ];
 
         const ignore: IgnoreFn = (filename) => {
             if (filename.endsWith(".pnp.js")) return true;
             addChainedImport(filename);
-
-            if (filename.indexOf("node_modules") > -1) return true;
-            return false;
+            return ignoreRules.some((rule) => rule(filename));
         };
 
         const only: IgnoreFn = (filename) => {
@@ -97,19 +111,29 @@ export const getTranspiler = <T extends TranspileType>(
                     init,
                 );
                 const mod = require(requirePath);
-                if (mod.default) {
-                    if (typeof mod.default === "function" && resolveModuleFn) {
-                        mod.default = resolveModuleFn(mod.default);
+
+                const resolveFn: TSConfigFn<any> = (opts, props) => {
+                    console.log("Resolving:", requirePath, require.cache[requirePath]?.exports);
+
+                    let resolvedMod = preferDefault(mod);
+                    const exports = require.cache[requirePath]?.exports;
+
+                    if (resolvedMod && typeof resolvedMod === "function") {
+                        resolvedMod = resolvedMod(opts, props);
                     }
-                    if (typeof mod.default === "object" && flattenDefault) {
-                        const exports = require.cache[requirePath]?.exports;
-                        if (exports) {
-                            Object.assign(exports, mod.default);
-                            delete exports.default;
-                        }
+
+                    if (exports && resolvedMod && typeof resolvedMod === "object") {
+                        Object.assign(exports, resolvedMod);
                     }
-                }
-                return mod;
+
+                    if (exports.default) delete exports.default;
+
+                    console.log("Resolved:", requirePath, require.cache[requirePath]?.exports);
+
+                    return mod;
+                };
+
+                return resolveFn as PluginModule<TApiType>;
             }
         } finally {
             Module._extensions = origExtensions;

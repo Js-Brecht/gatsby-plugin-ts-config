@@ -1,6 +1,6 @@
 {
 	"name": "gatsby-plugin-ts-config",
-	"version": "1.1.5",
+	"version": "2.0.0",
 	"description": "Configure Gatsby to use Typescript configuration files",
 	"main": "./index.js",
 	"types": "./dist/index",
@@ -69,16 +69,19 @@
 		"enhanced-resolve": "^5.8.0",
 		"find-up": "^5.0.0",
 		"fs-extra": "^8.1.0",
+		"lodash": "^4.17.21",
 		"lodash.mergewith": "^4.6.2",
 		"serialize-error": "^8.1.0",
 		"ts-node": "^9.0.0",
-		"tslog": "^3.2.0"
+		"tslog": "^3.2.0",
+		"type-fest": "^0.12.0"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.8.6",
 		"@jtechsvcs/eslint": "^1.0.1",
 		"@types/babel__core": "^7.1.6",
 		"@types/fs-extra": "^8.1.0",
+		"@types/lodash": "^4.14.172",
 		"@types/lodash.mergewith": "^4.6.6",
 		"@types/node": "^13.7.2",
 		"@types/webpack": "^4.41.6",
@@ -88,12 +91,11 @@
 		"@yarnpkg/pnpify": "^2.4.0",
 		"@yarnpkg/sdks": "^2.4.1-rc.4",
 		"@zerollup/ts-transform-paths": "^1.7.18",
-		"gatsby": "^2.19.18",
+		"gatsby": "^3.11.1",
 		"npm-run-all": "^4.1.5",
 		"rimraf": "^3.0.2",
 		"ts-transformer-keys": "^0.4.1",
 		"ttypescript": "^1.5.10",
-		"type-fest": "^0.12.0",
 		"typescript": "^4.2.4"
 	}
 }

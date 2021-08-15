@@ -1,49 +1,13 @@
 import path from "path";
-import merge from "lodash.mergewith";
+import merge from "lodash/mergeWith";
 
 import type { TransformOptions as BabelOptions } from "@babel/core";
 import type { RegisterOptions as TSNodeOptions } from "ts-node";
 import type {
-    ApiType,
     TranspileType,
     TranspilerOptions,
-    PropertyBag,
 } from "@typeDefs/internal";
 
-type ApiPropertyBags = {
-    [K in ApiType]: PropertyBag;
-}
-const propBags: Record<string, ApiPropertyBags> = {};
-
-const getProjectPropBags = (
-    projectRoot: string,
-) => {
-    if (!propBags[projectRoot]) {
-        const apiPropBag = {} as PropertyBag;
-        propBags[projectRoot] = {
-            config: apiPropBag,
-            node: apiPropBag,
-        };
-    }
-    return propBags[projectRoot];
-}
-
-export const getPropBag = (
-    apiType: ApiType,
-    projectRoot: string,
-    extendBag = {} as PropertyBag,
-): PropertyBag => {
-    const projectPropBags = getProjectPropBags(projectRoot);
-    const apiPropBag = projectPropBags[apiType];
-    if (extendBag) {
-        // We want to mutate the prop bag, not replace it
-        merge(
-            apiPropBag,
-            extendBag,
-        );
-    }
-    return projectPropBags[apiType];
-};
 
 const optionsRegister: Record<string, {
     "babel"?: BabelOptions;
@@ -56,12 +20,14 @@ const mergeOptions = <R>(
     defaultOptions: R,
     extendOptions?: R,
 ): R => {
+    let hasOptions = true;
     if (!(project in optionsRegister)) {
+        hasOptions = false;
         optionsRegister[project] = {};
     }
 
     return optionsRegister[project][type] = merge(
-        defaultOptions,
+        hasOptions ? {} : defaultOptions,
         optionsRegister[project][type] || {},
         extendOptions || {},
         (to: any, from: any): any => {
@@ -83,8 +49,8 @@ const getDefaultOptions = (
                 sourceRoot: projectRoot,
                 cwd: projectRoot,
                 presets: [
-                    require.resolve("@babel/preset-typescript"),
-                    require.resolve("../babel/preset"),
+                    // require.resolve("@babel/preset-typescript"),
+                    require.resolve("./babel/preset"),
                 ],
             } as BabelOptions;
         }

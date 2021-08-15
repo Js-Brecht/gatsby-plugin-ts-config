@@ -1,4 +1,4 @@
-import mergeWith from "lodash.mergewith";
+import mergeWith from "lodash/mergeWith";
 import { keys } from "ts-transformer-keys";
 import { TsConfigJson } from "type-fest";
 import { TransformOptions as BabelTransformOptions } from "@babel/core";

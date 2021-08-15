@@ -5,6 +5,7 @@
     "sourceMap": true,
     "declaration": true,
     "outDir": "./dist",
+    "preserveSymlinks": true,
     "removeComments": false,
     "skipLibCheck": true,
     "strict": true,

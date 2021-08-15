@@ -4,7 +4,7 @@ import {
     getCallSite,
     getProjectPkgJson,
 } from "@util/project";
-import { getRegisterOptions } from "@lib/options";
+import { getRegisterOptions } from "@lib/options/register";
 import { getTranspiler } from "@lib/transpiler";
 import { processApiModule } from "@lib/api-module";
 
@@ -13,6 +13,7 @@ import type {
     ApiType,
     TsConfigPluginOptions,
     NoFirstParameter,
+    PluginModule,
 } from "@typeDefs/internal";
 
 export * from "./types/public";
@@ -23,7 +24,7 @@ const useGatsbyPluginModule = (
     apiType: ApiType,
     init: InitValue,
     options = {} as TsConfigPluginOptions,
-) => {
+): PluginModule<ApiType> => {
     const callSite = getCallSite();
     const callFile = callSite?.getFileName();
     if (!callFile) {

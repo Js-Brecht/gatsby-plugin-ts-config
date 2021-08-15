@@ -4,8 +4,9 @@ import { isGatsbyConfig } from "@util/type-util";
 import { preferDefault } from "@util/node";
 import { resolveFilePath } from "@util/fs-tools";
 
-import { getPropBag } from "./options";
-import { getProjectImports, linkProjectPlugin } from "./imports";
+import { getPropBag } from "./options/prop-bag";
+import { getApiOption, setApiOption } from "./options/api";
+import { getProjectImports, linkProjectPlugin } from "./options/imports";
 import { resolveLocalPlugin } from "./local-plugins";
 
 import type {
@@ -19,6 +20,12 @@ import type {
 } from "@typeDefs/public";
 import type { Transpiler } from "./transpiler";
 
+type GetApiType<T extends TSConfigFn<any>> = (
+    T extends TSConfigFn<infer TApiType>
+        ? TApiType
+        : never
+)
+
 const apiTypeKeys = keys<Record<ApiType, any>>();
 
 interface IProcessApiModuleOptions<T extends ApiType> {
@@ -27,7 +34,6 @@ interface IProcessApiModuleOptions<T extends ApiType> {
     projectName: string;
     projectRoot: string;
     propBag?: PropertyBag;
-    resolveImmediate?: boolean;
     transpiler: Transpiler;
 }
 
@@ -39,17 +45,23 @@ export const processApiModule = <
     projectName,
     projectRoot,
     propBag: initPropBag = {},
-    resolveImmediate = false,
     transpiler,
 }: IProcessApiModuleOptions<T>) => {
+    const apiOptions = getApiOption(projectRoot, apiType);
+    const { resolveImmediate = true } = apiOptions;
+
     const propBag = getPropBag(apiType, projectRoot, initPropBag);
 
-    const resolveModuleFn = (cb: TSConfigFn<T>) => cb(
-        {
-            projectRoot,
-            imports: getProjectImports(projectName),
-        },
-        propBag,
+    const resolveModuleFn = <
+        C extends TSConfigFn<any>
+    >(cb: C): PluginModule<GetApiType<C>> => (
+        cb(
+            {
+                projectRoot,
+                imports: getProjectImports(projectName),
+            },
+            propBag,
+        ) as PluginModule<GetApiType<C>>
     );
 
     let apiModule = preferDefault(
@@ -58,9 +70,10 @@ export const processApiModule = <
             init,
             projectName,
             projectRoot,
-            resolveImmediate ? resolveModuleFn : undefined,
         ),
     );
+
+    let gatsbyNode: TSConfigFn<"node"> | undefined = undefined;
 
     if (apiType === "config") {
         const gatsbyNodePath = resolveFilePath(projectRoot, "./gatsby-node");
@@ -73,20 +86,26 @@ export const processApiModule = <
          *    can consume it.
          */
         if (gatsbyNodePath) {
-            processApiModule({
+            setApiOption(projectRoot, "node", { resolveImmediate: false });
+            gatsbyNode = processApiModule({
                 apiType: "node",
                 init: gatsbyNodePath,
                 projectName,
                 projectRoot,
                 propBag,
                 transpiler,
-                resolveImmediate: true,
-            });
+            }) as TSConfigFn<"node">;
+            setApiOption(projectRoot, "node", {});
         }
     }
 
-    if (typeof apiModule === "function") {
+
+    if (typeof apiModule === "function" && resolveImmediate) {
         apiModule = resolveModuleFn(apiModule);
+    }
+
+    if (typeof gatsbyNode === "function") {
+        resolveModuleFn(gatsbyNode);
     }
 
     /**
@@ -118,7 +137,6 @@ export const processApiModule = <
                     projectRoot: pluginPath,
                     projectName: pluginPath,
                     propBag,
-                    resolveImmediate: true,
                     transpiler,
                 });
             });
