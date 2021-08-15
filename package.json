@@ -36,7 +36,7 @@
 		"watch:dev": "run-s clean \"build:dev -- -w\"",
 		"lint": "eslint -c .eslintrc.js .",
 		"lint:fix": "eslint -c .eslintrc.js --fix .",
-		"prepublishOnly": "yarn build"
+		"prepublishOnly": "run-s build"
 	},
 	"peerDependencies": {
 		"@babel/core": "^7.9.0",
@@ -96,6 +96,14 @@
 		"rimraf": "^3.0.2",
 		"ts-transformer-keys": "^0.4.1",
 		"ttypescript": "^1.5.10",
-		"typescript": "^4.2.4"
+		"typescript": "4.3.5"
+	},
+	"dependenciesMeta": {
+		"@jtechsvcs/eslint-config-typescript": {
+			"unplugged": true
+		},
+		"eslint": {
+			"unplugged": true
+		}
 	}
 }

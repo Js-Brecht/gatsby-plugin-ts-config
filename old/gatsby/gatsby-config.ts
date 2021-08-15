@@ -102,6 +102,6 @@ export default (args = {} as ITSConfigPluginOptions): GatsbyConfig => {
                 resolve: `${plugin.path}/package.json`,
                 options: plugin.options,
             })),
-        ],
+        ].filter(Boolean),
     };
 };

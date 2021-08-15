@@ -104,4 +104,5 @@ export type TSConfigFn<
 export type GatsbyPlugin<TName extends string = string, TOptions extends Record<string, any> = Record<string, any>> = (
     | TName
     | IGatsbyPluginWithOpts<TName, TOptions>
+    | false
 )
