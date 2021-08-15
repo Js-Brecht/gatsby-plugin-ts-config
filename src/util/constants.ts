@@ -6,3 +6,5 @@ export const pkgJson: PackageJson = require(
     path.join(thisRoot, "package.json"),
 );
 export const pluginName = pkgJson.name;
+
+export const apiTypeKeys = ["config", "node"] as const;

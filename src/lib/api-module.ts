@@ -1,41 +1,35 @@
-import { keys } from "ts-transformer-keys";
-
 import { isGatsbyConfig } from "@util/type-util";
 import { preferDefault } from "@util/node";
 import { resolveFilePath } from "@util/fs-tools";
 
 import { getPropBag } from "./options/prop-bag";
 import { getApiOption, setApiOption } from "./options/api";
-import { getProjectImports, linkProjectPlugin } from "./options/imports";
-import { resolveLocalPlugin } from "./local-plugins";
+import { getProjectImports } from "./options/imports";
+import { transpileLocalPlugins } from "./local-plugins";
+import { getPluginsCache } from "./include-plugins";
 
 import type {
     ApiType,
     InitValue,
     PluginModule,
     PropertyBag,
-} from "@typeDefs/internal";
-import type {
     TSConfigFn,
-} from "@typeDefs/public";
+    GatsbyPlugin,
+    TsConfigPluginOptions,
+} from "@typeDefs";
 import type { Transpiler } from "./transpiler";
-
-type GetApiType<T extends TSConfigFn<any>> = (
-    T extends TSConfigFn<infer TApiType>
-        ? TApiType
-        : never
-)
-
-const apiTypeKeys = keys<Record<ApiType, any>>();
 
 interface IProcessApiModuleOptions<T extends ApiType> {
     apiType: T;
     init: InitValue;
     projectName: string;
     projectRoot: string;
+    options: TsConfigPluginOptions;
     propBag?: PropertyBag;
     transpiler: Transpiler;
 }
+
+export type ApiModuleProcessor = typeof processApiModule;
 
 export const processApiModule = <
     T extends ApiType
@@ -44,6 +38,7 @@ export const processApiModule = <
     init,
     projectName,
     projectRoot,
+    options,
     propBag: initPropBag = {},
     transpiler,
 }: IProcessApiModuleOptions<T>) => {
@@ -54,14 +49,14 @@ export const processApiModule = <
 
     const resolveModuleFn = <
         C extends TSConfigFn<any>
-    >(cb: C): PluginModule<GetApiType<C>> => (
+    >(cb: C) => (
         cb(
             {
                 projectRoot,
                 imports: getProjectImports(projectName),
             },
             propBag,
-        ) as PluginModule<GetApiType<C>>
+        )
     );
 
     let apiModule = preferDefault(
@@ -93,6 +88,7 @@ export const processApiModule = <
                 projectName,
                 projectRoot,
                 propBag,
+                options,
                 transpiler,
             }) as TSConfigFn<"node">;
             setApiOption(projectRoot, "node", {});
@@ -101,46 +97,42 @@ export const processApiModule = <
 
 
     if (typeof apiModule === "function" && resolveImmediate) {
-        apiModule = resolveModuleFn(apiModule);
+        apiModule = resolveModuleFn(apiModule) as PluginModule<T>;
     }
 
     if (typeof gatsbyNode === "function") {
         resolveModuleFn(gatsbyNode);
     }
 
+    if (!apiModule) apiModule = {};
+
     /**
      * Time to transpile/process local plugins
      */
     if (isGatsbyConfig(apiType, apiModule)) {
-        apiModule?.plugins?.forEach((plugin) => {
-            const localPluginName = typeof plugin === "string"
-                ? plugin
-                : plugin.resolve;
-            if (!localPluginName) return;
+        const pluginsCache = getPluginsCache(projectRoot);
 
-            const pluginPath = resolveLocalPlugin({
+        const localPluginTranspiler = (plugins: GatsbyPlugin[]) => {
+            transpileLocalPlugins(
+                projectName,
                 projectRoot,
-                pluginName: localPluginName,
-            });
-            if (!pluginPath) return; // This isn't a "local" plugin
+                options,
+                processApiModule,
+                propBag,
+                plugins,
+            );
+        };
 
-            linkProjectPlugin(projectName, localPluginName);
+        apiModule.plugins = pluginsCache.normal.concat(
+            apiModule.plugins || [],
+        );
 
-            apiTypeKeys.forEach((type) => {
-                const gatsbyModuleName = `./gatsby-${type}`;
-                const apiPath = resolveFilePath(pluginPath, gatsbyModuleName);
-                if (!apiPath) return; // This `gatsby-*` file doesn't exist for this local plugin
+        localPluginTranspiler(apiModule.plugins);
 
-                processApiModule({
-                    apiType: type,
-                    init: apiPath,
-                    projectRoot: pluginPath,
-                    projectName: pluginPath,
-                    propBag,
-                    transpiler,
-                });
-            });
-        });
+        for (const resolver of pluginsCache.resolver) {
+            const plugins = resolveModuleFn(resolver) as GatsbyPlugin[];
+            apiModule.plugins.push(...plugins);
+        }
     }
 
     return apiModule as PluginModule<T>;

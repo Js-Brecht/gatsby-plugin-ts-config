@@ -4,41 +4,33 @@ import babelRegister from "@babel/register";
 
 import { Module, preferDefault } from "@util/node";
 import { getImportHandler } from "./options/imports";
+import { getRegisterOptions } from "./options/register";
 
 import type {
     ApiType,
     TranspilerOptions,
-    TranspileType,
     InitValue,
     PluginModule,
-} from "@typeDefs/internal";
-import type {
     TSConfigFn,
-} from "@typeDefs/public";
+    TsConfigPluginOptions,
+} from "@typeDefs";
 
 type IgnoreFn = (filename: string) => boolean;
 
 export type Transpiler = ReturnType<typeof getTranspiler>;
 
-export interface ITranspilerProps<T extends TranspileType> {
-    transpilerOpts: TranspilerOptions<T>;
-    flattenDefault?: boolean;
-}
-
-const getIgnoreRules = (projectRoot: string): IgnoreFn[] => [
-    (fname) => !fname.startsWith(projectRoot),
-    (fname) => fname.startsWith(
-        path.join(projectRoot, "node_modules"),
-    ),
-];
-
-export const getTranspiler = <T extends TranspileType>(
-    type: T,
-    {
-        transpilerOpts,
-        flattenDefault,
-    }: ITranspilerProps<T>,
+export const getTranspiler = (
+    projectRoot: string,
+    pluginOptions: TsConfigPluginOptions,
 ) => {
+    const transpileType = pluginOptions.type || "babel";
+
+    const transpilerOpts = getRegisterOptions(
+        projectRoot,
+        transpileType,
+        pluginOptions.transpilerOptions,
+    );
+
     const extensions = [".ts", ".tsx", ".js", ".jsx"];
     const origExtensions = {
         ...Module._extensions,
@@ -80,7 +72,7 @@ export const getTranspiler = <T extends TranspileType>(
         if (newExtensions) {
             Module._extensions = newExtensions;
         } else {
-            switch (type) {
+            switch (transpileType) {
                 case "ts-node": {
                     const opts = transpilerOpts as TranspilerOptions<"ts-node">;
                     const tsNodeService = tsNodeRegister(opts);
@@ -113,7 +105,7 @@ export const getTranspiler = <T extends TranspileType>(
                 const mod = require(requirePath);
 
                 const resolveFn: TSConfigFn<any> = (opts, props) => {
-                    console.log("Resolving:", requirePath, require.cache[requirePath]?.exports);
+                    // console.log("Resolving:", requirePath, require.cache[requirePath]?.exports);
 
                     let resolvedMod = preferDefault(mod);
                     const exports = require.cache[requirePath]?.exports;
@@ -128,7 +120,7 @@ export const getTranspiler = <T extends TranspileType>(
 
                     if (exports.default) delete exports.default;
 
-                    console.log("Resolved:", requirePath, require.cache[requirePath]?.exports);
+                    // console.log("Resolved:", requirePath, require.cache[requirePath]?.exports);
 
                     return mod;
                 };

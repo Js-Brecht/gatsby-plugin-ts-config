@@ -8,11 +8,9 @@ import type {
 const importsCache: ImportsCache = {};
 
 export const getProjectImports = (projectName: string): RootPluginImports => {
-    return projectName in importsCache
-        ? importsCache[projectName]
-        : (
-            importsCache[projectName] = {}
-        );
+    return importsCache[projectName] || (
+        importsCache[projectName] = {}
+    );
 };
 
 export const linkProjectPlugin = (projectName: string, pluginName: string): void => {

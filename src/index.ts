@@ -1,9 +1,5 @@
-import path from "path";
 import { PluginError } from "@util/output";
-import {
-    getCallSite,
-    getProjectPkgJson,
-} from "@util/project";
+import { getProject } from "@util/project";
 import { getRegisterOptions } from "@lib/options/register";
 import { getTranspiler } from "@lib/transpiler";
 import { processApiModule } from "@lib/api-module";
@@ -18,6 +14,8 @@ import type {
 
 export * from "./types/public";
 
+export { includePlugins } from "./lib/include-plugins";
+
 type UsePluginModule = NoFirstParameter<typeof useGatsbyPluginModule>;
 
 const useGatsbyPluginModule = (
@@ -25,35 +23,15 @@ const useGatsbyPluginModule = (
     init: InitValue,
     options = {} as TsConfigPluginOptions,
 ): PluginModule<ApiType> => {
-    const callSite = getCallSite();
-    const callFile = callSite?.getFileName();
-    if (!callFile) {
-        throw new PluginError("Unable to determine call site");
-    }
-
-    const callDir = path.dirname(callFile);
-    const [projectRoot, pkgJson] = getProjectPkgJson(callDir) || [];
-    if (!pkgJson || !projectRoot) {
-        throw new PluginError("Unable to locate project root");
-    }
-
-    const projectName = pkgJson.name;
-    if (!projectName) {
-        throw new PluginError("Unable to determine caller's project name");
-    }
-
-    const transpileType = options.type || "babel";
-
-    const transpilerOpts = getRegisterOptions(
+    const {
         projectRoot,
-        transpileType,
-        options.transpilerOptions,
-    );
+        projectName,
+    } = getProject();
 
-    const transpiler = getTranspiler(transpileType, {
-        transpilerOpts,
-        flattenDefault: true,
-    });
+    const transpiler = getTranspiler(
+        projectRoot,
+        options,
+    );
 
     try {
         return processApiModule({
@@ -63,6 +41,7 @@ const useGatsbyPluginModule = (
 
             projectRoot,
             projectName,
+            options,
             propBag: options.props,
         });
     } catch (err) {

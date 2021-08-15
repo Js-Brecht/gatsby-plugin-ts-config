@@ -12,7 +12,7 @@ import type {
  */
 export interface PublicOpts {
     imports: RootPluginImports;
-    projectRoot?: string;
+    projectRoot: string;
 }
 
 /**

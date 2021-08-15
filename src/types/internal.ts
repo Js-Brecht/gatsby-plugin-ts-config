@@ -3,8 +3,11 @@ import type { TransformOptions as BabelOptions } from "@babel/core";
 import type { RegisterOptions as TSNodeOptions } from "ts-node";
 import type { JsonObject } from "type-fest";
 
+import type { apiTypeKeys } from "@util/constants";
+import type { PublicOpts, GatsbyPlugin } from "./public";
+
 export type PropertyBag = JsonObject;
-export type ApiType = "config" | "node";
+export type ApiType = typeof apiTypeKeys[number];
 export type TranspileType = "babel" | "ts-node";
 export interface IInternalOptions {
     props?: PropertyBag;
@@ -54,6 +57,13 @@ export type PluginModule<T extends ApiType> =
         : T extends "node"
             ? GatsbyNode
             : unknown;
+
+export interface IPluginDetailsCallback<
+    TReturn extends GatsbyPlugin = GatsbyPlugin,
+    TProps extends PropertyBag = PropertyBag,
+> {
+    (args: PublicOpts, props: TProps): TReturn[];
+}
 
 export interface IGatsbyPluginWithOpts<
     TName extends string = string,
