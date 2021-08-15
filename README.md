@@ -33,7 +33,7 @@ To point `gatsby-config.js` and/or `gatsby-node.js` to `.ts` files:
 // gatsby-config.js
 const { useGatsbyConfig } = require("gatsby-plugin-ts-config");
 
-// If static analysis purposes, you can use a callback with a require() statement
+// For static analysis purposes, you can use a callback with a require() statement
 module.exports = useGatsbyConfig(() => require("./config/gatsby-config"), opts);
 
 // A simpler method is to just use the filename
@@ -94,7 +94,7 @@ module.exports = useGatsbyNode(() => require("./config/gatsby-node"), opts);
   Any additional options you'd like to provide to the transpiler
 
   * When `type === "babel"`: See the [babel options documentation][babel-docs]
-  * When `type === "ts-node"`: See the [ts-node options documentation][https://github.com/TypeStrong/ts-node#cli-and-programmatic-options]
+  * When `type === "ts-node"`: See the [ts-node options documentation][tsnode-docs]
 
 ### Default exports
 
