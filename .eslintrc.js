@@ -1,4 +1,4 @@
-const { typescript } = require("@jtechsvcs/eslint");
+const { typescript } = require("eslint");
 
 module.exports = typescript({
     "rules": {

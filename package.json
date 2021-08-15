@@ -48,6 +48,9 @@
 		"@babel/runtime": {
 			"optional": true
 		},
+		"eslint": {
+			"optional": true
+		},
 		"typescript": {
 			"optional": true
 		}
@@ -78,19 +81,16 @@
 	},
 	"devDependencies": {
 		"@babel/core": "^7.8.6",
-		"@jtechsvcs/eslint": "^1.0.1",
 		"@types/babel__core": "^7.1.6",
 		"@types/fs-extra": "^8.1.0",
 		"@types/lodash": "^4.14.172",
 		"@types/lodash.mergewith": "^4.6.6",
 		"@types/node": "^13.7.2",
 		"@types/webpack": "^4.41.6",
-		"@typescript-eslint/eslint-plugin": "^2.21.0",
-		"@typescript-eslint/parser": "^2.21.0",
-		"@typescript-eslint/typescript-estree": "^2.21.0",
 		"@yarnpkg/pnpify": "^2.4.0",
 		"@yarnpkg/sdks": "^2.4.1-rc.4",
 		"@zerollup/ts-transform-paths": "^1.7.18",
+		"eslint": "npm:@jtechsvcs/eslint@^1.0.5",
 		"gatsby": "^3.11.1",
 		"npm-run-all": "^4.1.5",
 		"rimraf": "^3.0.2",
@@ -99,10 +99,7 @@
 		"typescript": "4.3.5"
 	},
 	"dependenciesMeta": {
-		"@jtechsvcs/eslint-config-typescript": {
-			"unplugged": true
-		},
-		"eslint": {
+		"@jtechsvcs/eslint@1.0.5": {
 			"unplugged": true
 		}
 	}
