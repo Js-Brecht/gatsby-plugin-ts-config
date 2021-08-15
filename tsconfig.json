@@ -2,8 +2,10 @@
   "compilerOptions": {
     "target": "es5",
     "module": "commonjs",
+    "sourceMap": true,
     "declaration": true,
     "outDir": "./dist",
+    "preserveSymlinks": true,
     "removeComments": false,
     "skipLibCheck": true,
     "strict": true,
@@ -16,16 +18,21 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "plugins": [
-      {
-        "transform": "ts-transformer-keys/transformer"
-      },
-      {
-        "transform": "ts-transformer-enumerate/transformer"
-      }
-    ]
+      { "transform": "@zerollup/ts-transform-paths" },
+      { "transform": "ts-transformer-keys/transformer" }
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@lib/*": ["src/lib/*"],
+      "@util/*": ["src/util/*"],
+      "@typeDefs/*": ["src/types/*"],
+      "@typeDefs": ["src/types"],
+      "@/*": ["src/*"]
+    }
   },
   "include": [
-    "./src/**/*"
+    "./src/**/*",
+    "./old/**/*"
   ],
   "exclude": []
 }

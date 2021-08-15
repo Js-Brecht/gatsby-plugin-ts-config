@@ -1,3 +1,6 @@
+[babel-docs]: https://babeljs.io/docs/en/options#config-loading-options
+[tsnode-docs]: https://github.com/TypeStrong/ts-node#cli-and-programmatic-options
+
 ## Configure Gatsby to use Typescript for configuration files
 
 [![paypal](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=J3ZGS46A4C5QA&currency_code=USD&source=url)
@@ -6,25 +9,11 @@
 
 ---
 
-Table of Contents:
-1. Basic Information
-    1. [Installation](#installation)
-    2. [Usage](#usage)
-    3. [Plugin Options](#plugin-options)
-    4. [Determining the Interpreter](#determining-the-interpreter)
-    5. [Site Implementation](#site-implementation)
-
-2. Additional Information
-    1. [Extended Usage](./docs/EXTENDED-USAGE.md)
-    2. [Gatsby API](./docs/GATSBY-API.md)
-    3. [Property Bag](./docs/PROPERTY-BAG.md)
-    4. [Gatsby Config Utilities](./docs/GATSBY-CONFIG-UTILS.md)
-
----
+> For v1 documentation, see the [old docs](./old/README.md)
 
 ### Installation
 
-* Install using your project manager
+* Install using your package manager
 
   ```shell
   npm install -D gatsby-plugin-ts-config
@@ -32,163 +21,122 @@ Table of Contents:
 
 ---
 
-> ## IMPORTANT:
->
-> Before reading below, please note that it is recommended for you to define a `configDir` in
-> the plugin options.
->
-> Because of the process this plugin has to follow so that it can interpret your typescript
-> configuration files, some conflicts may occur regarding node ownership if you keep your
-> `gatsby-node.ts` in the project root.  In order to place that file in a sub-directory, you
-> will need to define a `configDir`, and you will also need to put the rest of your
-> configurations in the same place.
-
----
-
 ### Usage
 
-You will still need to define, at minimum, one `.js` Gatsby configuration: `gatsby-config.js`.
+The cleanest way to use this plugin is to use `gatsby-config.js` and `gatsby-node.js`
+as pointers to your `.ts` files that you keep in another directory.  This isn't required,
+though.  All you need initially is `gatsby-config.js`
 
-As usual, it needs to be in the root of your project.  You will then use _**it**_ to call
-this plugin, and the rest of your configuration will be in Typescript files.
+To point `gatsby-config.js` and/or `gatsby-node.js` to `.ts` files:
 
-* The easy way
+```js
+// gatsby-config.js
+const { useGatsbyConfig } = require("gatsby-plugin-ts-config");
 
-  * You can use the `generateConfig` utility that is exported by `gatsby-plugin-ts-config` to set
-    up the plugin array the way it needs to be.
+// If static analysis purposes, you can use a callback with a require() statement
+module.exports = useGatsbyConfig(() => require("./config/gatsby-config"), opts);
 
-  * Doing it this way allows your IDE to read the type interface for the options, so you can use
-    intellisense while defining the plugin options.
+// A simpler method is to just use the filename
+module.exports = useGatsbyConfig("./config/gatsby-config", opts);
 
-  ```js
-  // gatsby-config.js
-  const { generateConfig } = require('gatsby-plugin-ts-config');
-  module.exports = generateConfig();
-  ```
-
-* The common way
-
-  * _This can also be done the normal way.  The utility above just makes it easy_
-
-  ```js
-  // gatsby-config.js
-  module.exports = {
+// Or you can just return the `gatsby-config` object from the callback
+module.exports = useGatsbyConfig(
+  () => ({
+    siteMetadata: {
+      ...
+    },
     plugins: [
-      `gatsby-plugin-ts-config`,
+      {
+        resolve: ...,
+        options: ...,
+      }
     ]
-  }
-  ```
+  }),
+  opts
+)
+```
 
-* Configuration complete
+Once `useGatsbyConfig` is called from `gatsby-config`, `gatsby-node.ts` can exist in your site's
+root directory.  However, if you do not wish to have your `gatsby-config` in Typescript, `useGatsbyConfig` is
+not required.  You can use this plugin directly from `gatsby-node` if you wish.
 
-  * After that, all of your configuration files can be written in Typescript:
+```js
+// gatsby-node.js
+const { useGatsbyNode } = require("gatsby-plugin-ts-config");
 
-    * gatsby-browser.ts
-    * gatsby-config.ts
-    * gatsby-node.ts
-    * gatsby-ssr.ts
+// All of the same usage patterns for `useGatsbyConfig` are valid for `useGatsbyNode`
+// as well
+module.exports = useGatsbyNode(() => require("./config/gatsby-node"), opts);
+```
 
-**For extended usage examples, see the [Extended Usage](./docs/EXTENDED-USAGE.md) chapter**
+### Options
 
----
+* `props`: `Object`
 
-### Plugin Options
+  This "property bag" is an object that can take any shape you wish.  When a `gatsby-*` module is defined
+  with a function for a default export, these `props` will be passed in the second parameter.
 
-* `projectRoot`: `{string}`
-  * Default: `process.cwd()`
-  * This defines your project's root directory for the plugin.  All folder/file resolutions will be performed
-    relative to this directory.
+  The property bag is mutable, so any changes you make to it will be passed to the next module
 
-* `configDir`: `{string}`
-  * Default: `projectRoot`
-  * You can define a folder, relative to `projectRoot`, that will store your Typescript configuration files.
-    If you do not define this option, then it will automatically use `projectRoot`.
+  * Each project gets its own property bag.  They do not mix, which means `props` defined by your default
+    site will not be passed down to plugins.
+    * One difference when using local plugins: The property bag will be **_copied_** and then passed to the
+      local plugin.
+  * If `props` is defined in both `useGatsbyConfig` and `useGatsbyNode`, the values in `useGatsbyNode` will be
+    **_merged_** into the property bag before being passed on to default export of the module.
 
-* `babel`: `{boolean|TransformOptions}`
-  * Default: `true`
-  * Setting this to `true`, or an object, will cause the plugin to use `babel` for transforming
-    typescript configurations.
-  * If an object is defined, it must contain options valid for `babel`.  See the
-    [babel options documentation](https://babeljs.io/docs/en/options#config-loading-options) for
-    a description of the available options.  Anything you can put in `.babelrc` can be put here.
-  * See [Determining the interpreter](#determining-the-interpreter) below for details on how
-    the interpeter is chosen
+* `type`: `"babel" | "ts-node"`
 
-* `tsNode`: `{boolean|RegisterOptions}`
-  * Default: `false`
-  * Setting this to `true` or an object will cause `ts-node` to be used, so long as `babel` is
-    a falsy value.
-  * If an object, you may use any options that are valid for `ts-node`'s `register()` function.
-    See the [ts-node options documentation here](https://github.com/TypeStrong/ts-node#cli-and-programmatic-options)
-  * See [Determining the interpreter](#determining-the-interpreter) below for details on how
-    the interpeter is chosen
+  Determines which transpiler to use.
 
-* `props`: `{object}`
-  * Default: `{}`
-  * Reference: [docs](docs/PROPERTY-BAG.md)
-  * This object will be passed to the default functions that are exported from `gatsby-config` and `gatsby-node`,
-    as well as any `includePlugins()` calls.
-  * This is meant to contain a dynamic context; anything you may want to pass around to the various functions that
-    this plugin supports.
-    * This object is **mutable**, so any changes you make to it after it has been passed to a function will be
-      persistent.
-  * If you are using the `generateConfig()` plugin declaration, this will be represented by that function's
-    second parameter:
+* `transpilerOptions`: `Object`
 
-    ```js
-    // gatsby-config.js
-    module.exports = generateConfig({}, { test: 1234 });
-    ```
+  Any additional options you'd like to provide to the transpiler
 
-    ```ts
-    // .gatsby/gatsby-config.ts
-    export default ({ projectRoot }, { test }) => {
-      console.log(test) // 1234
-    }
-    ```
+  * When `type === "babel"`: See the [babel options documentation][babel-docs]
+  * When `type === "ts-node"`: See the [ts-node options documentation][https://github.com/TypeStrong/ts-node#cli-and-programmatic-options]
 
----
+### Default exports
 
-### Determining the interpreter
+The default export is supported for your `gatsby-*.ts` files.  This is important to note, because Typescript
+prefers that you use either the default export, or named exports.
 
-> Babel takes priority, so will be the default interpreter.
+While named exports are absolutely supported as well, some people may prefer to build their module object
+and then export it all at once.  In that case, you may use the default export.
 
-1. If `babel` is a truthy value, or `tsNode` is a falsy value, then `babel` will be chosen.
+In other cases, you may want to perform some more advanced actions during the module processing.  For this,
+you may export a function as the default export.  They will be called in order
+(`gatsby-config` -> `gatsby-node`), and used to set the module's exports so that Gatsby can read them.
 
-2. If `babel` is a truthy value, and `tsNode` is a truthy value, then `babel` will be chosen.
+#### Default export function
 
-3. If `babel` is a falsy value, and `tsNode` is a truthy value, then `ts-node` will be chosen.
+`gatsby-config.ts` or `gatsby-node.ts` may export a function as the default export.  This will be called with
+some details regarding the transpiling process, as well as some helpful information about the current project.
 
-_For the moment, there is no way to layer `ts-node` -> `babel`, but the feature may be included
-   in a later release_
+These modules may export this function as the default export whether or not they are in the root of your
+site, as is the Gatsby standard.  However, since this plugin needs to get kicked off by one of the
+`useGatsby*` plugins, `gatsby-config` may not be accessible from the root.
 
----
+These functions should return the object that Gatsby generally expects.  For `gatsby-config`, it would be
+the same object you would define in `gatsby-config.js`.  For `gatsby-node`, it would be the `gatsby-node`
+APIs.
 
-### Site Implementation
+#### Function parameters
 
-The primary purpose of this plugin is to allow you to write your `gatsby-config` and `gatsby-node`
-in Typescript.  To that end, your `gatsby-config` and `gatsby-node` may follow the standard
-Gatsby API pattern.
+The default export function will receive two parameters:
 
-However, this plugin also supports some more advanced features that you may find useful:
+1. The transpiler & project information
+    * `projectRoot`: The absolute path to the current project.
+    * `imports`: All of the imports used by your `gatsby-*` modules.
+      * This is structured by API Type, and then by plugin + API Type
+        * `config`: `string[]`
+        * `node`: `string[]`
+        * `plugins`: `Object`
+          * `[pluginName: string]`: `Object`
+            * `config`: `string[]`
+            * `node`: `string[]`
 
-* `gatsby-*` default export functions
-  * You are no longer restricted to exporting a simple object from your root project's
-    `gatsby-config`.  Your Typescript `gatsby-config` and `gatsby-node` may export a function
-    as the default export.
-  * The default export functions receive various parameters that may be useful to you.
-
-* Property Bag
-  * A mutable object that is passed around to all of the functions that this plugin supports
-  * Allows you to share information between `gatsby-config` functions and `gatsby-node`.
-
-* `includePlugins()`
-  * A utility function that allows more advanced declaration of Gatsby plugins.
-  * Adds support for transpiling local plugins
-
-**For more information, see the [Gatsby API](./docs/GATSBY-API.md) chapter**
-
----
+2. The property bag defined in the bootstrap (`useGatsby*`) functions.
 
 ### Contributing / Issues
 

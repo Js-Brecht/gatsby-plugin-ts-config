@@ -1,99 +1,104 @@
-import OptionsHandler from './utils/options-handler';
+import { PluginError } from "@util/output";
+import { getProject } from "@util/project";
+import { getRegisterOptions } from "@lib/options/register";
+import { getTranspiler } from "@lib/transpiler";
+import { processApiModule } from "@lib/api-module";
 
-import type { GatsbyConfig } from 'gatsby';
-import type { TSConfigSetupOptions, PropertyBag } from './types';
+import type {
+    InitValue,
+    ApiType,
+    TsConfigPluginOptions,
+    NoFirstParameter,
+    PluginModule,
+} from "@typeDefs/internal";
 
-type GeneratedGatsbyConfig = Pick<GatsbyConfig, 'plugins'>;
-interface IGenerateConfig {
-    (args: TSConfigSetupOptions, props?: PropertyBag): GeneratedGatsbyConfig;
-}
+export * from "./types/public";
 
-export const generateConfig: IGenerateConfig = (options, props = {}) => {
-    return {
-        plugins: [
-            {
-                resolve: `gatsby-plugin-ts-config`,
-                options: {
-                    props,
-                    ...(options as Record<string, any>),
-                },
-            },
-        ],
-    };
+export { includePlugins } from "./lib/include-plugins";
+
+type UsePluginModule = NoFirstParameter<typeof useGatsbyPluginModule>;
+
+const useGatsbyPluginModule = (
+    apiType: ApiType,
+    init: InitValue,
+    options = {} as TsConfigPluginOptions,
+): PluginModule<ApiType> => {
+    const {
+        projectRoot,
+        projectName,
+    } = getProject();
+
+    const transpiler = getTranspiler(
+        projectRoot,
+        options,
+    );
+
+    try {
+        return processApiModule({
+            apiType,
+            init,
+            transpiler,
+
+            projectRoot,
+            projectName,
+            options,
+            propBag: options.props,
+        });
+    } catch (err) {
+        throw new PluginError(err);
+    }
 };
 
+
 /**
- * Registers and processes plugins that will be provided to Gatsby when your site's
- * `gatsby-plugin` is read.
- *
- * * Resolves paths of each plugin relative to your default site's working directory
- * * Looks for plugins in the local `plugins` directory, as well as `node_modules`
- * * Compiles plugin endpoints that are written in Typescript
- * * Provides strong typing for plugin array/callback functions
- *
- * Can be used with two generic type parameters,
- *
- * * `PluginDefinitions` - Should be a union of various plugin declaration types,
- *   in the format:
- *
- *   ```
- *   string | {
- *     resolve: string;
- *     options: Record<string, any> | PluginOptions
- *   }
- *   ```
- *
- *  * `Props` - Defines the structure of the second parameter of the callback
- *    parameter type
- *
- * @example
- *
- * ```ts
- * includePlugins<(
- *     // Plugin Definitions
- *     | IGatsbyPluginDef<'foo', IFooPluginOptions>
- *     | 'bar'
- *     | { resolve: 'bar'; options: { qux: number }; }
- *   ),
- *
- *   // Property Bag
- *   {
- *     random: string;
- *     properties: number[];
- *   }
- * >(arrayOfPlugins, ({ projectRoot }, {random, properties}) => {
- *   // do something
- * })
- * ```
- *
- * @param {IGatsbyPluginDef[] | IPluginDetailsCallback} plugins - Can be either
- * a plugin array, or a callback function.  The callback function receives
- * the same parameters as the `gatsby-config` or `gatsby-node` default export
- * functions.  The plugin array must be in the same format that Gatsby itself
- * receives.
- *
- * @param {IPluginDetailsCallback} cb - (Optional) This second parameter can
- * only be a callback function.
+ * Imports/processes a `gatsby-config` module, and returns results to Gatsby
  *
  * @remarks
- * * `cb`:
  *
- *   `(args: PublicOpts, props: PropertyBag) => GatsbyPluginDef[]`
- *   * `PublicOpts` - A collection of options/parameters that provide context
- *     based on the runtime of this plugin
- *   * `PropertyBag` - A collection of properties passed down from props option in
- *     the original definition of this plugin.
+ * - When used alone, this will support a `gatsby-config.ts` in your
+ *   project's root directory.
  *
- * * Plugin ordering:
+ * - The `propBag` will the shared between `useGatsbyConfig` and `useGatsbyNode`,
+ *   and can be mutated by either.  After processing `gatsby-config` & `gatsby-node`
+ *   your project's local plugins will be transpiled as well, and a copy of this
+ *   `propBag` will be passed to each.
  *
- *   Plugins registered this way change the order that plugin's are included in the
- *   array fed to Gatsby.  This will effect the order they are called, so you must
- *   be aware of it.  They will be included in this order:
+ * @param {InitValue} initValue -
+ * - Can be a string, pointing to a `gatsby-config.ts` file.  Can be relative
+ *   or absolute.  When relative, it is relative to your project's `package.json`
  *
- *   1. Array form of the first parameter of this function
- *   2. Normal `gatsby-config` plugin array
- *   3. Plugins returned from the callback function parameter(s) in this function
+ * - Can be a callback function, which can either `require()` another module
+ *   (causing it to be transpiled; default exports supported), or directly return
+ *   the object needed to return to Gatsby.
+ *
+ * @param {TsConfigPluginOptions} options - The collection of options to use
+ * throughout this instance.  These options will be shared with `useGatsbyNode` for
+ * the current project or local plugin.
  */
-export const includePlugins = OptionsHandler.includePlugins;
+export const useGatsbyConfig: UsePluginModule = (...args) => (
+    useGatsbyPluginModule("config", ...args)
+);
 
-export * from './types/public';
+/**
+ * Imports/processes a `gatsby-node` module, and returns results to Gatsby
+ *
+ * @remarks
+ *
+ * - When used without `useGatsbyConfig`, your project's local plugins
+ *   will not be transpiled.
+ *
+ * @param {InitValue} initValue -
+ * - Can be a string, pointing to a `gatsby-node.ts` file.  Can be relative
+ *   or absolute.  When relative, it is relative to your project's `package.json`
+ *
+ * - Can be a callback function, which can either `require()` another module
+ *   (causing it to be transpiled; default exports supported), or directly return
+ *   the object needed to return to Gatsby.
+ *
+ * @param {TsConfigPluginOptions} options - The collection of options to use
+ * throughout this instance.  The same options defined in `useGatsbyConfig` will
+ * be passed to `useGatsbyNode`, and additional options defined here will extend them.
+ */
+export const useGatsbyNode: UsePluginModule = (...args) => (
+    useGatsbyPluginModule("node", ...args)
+);

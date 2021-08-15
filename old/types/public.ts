@@ -1,30 +1,46 @@
-import type {
-    ApiType,
-    RootPluginImports,
-    PropertyBag,
-    PluginModule,
+import { GatsbyConfig, GatsbyNode } from "gatsby";
+import { RegisterOptions as TSNodeRegisterOptions } from "ts-node";
+import { TransformOptions } from "@babel/core";
+import {
+    IGlobalOpts,
+    PickLiteral,
+    GatsbyConfigTypes,
     IGatsbyPluginWithOpts,
+    PropertyBag,
 } from "./internal";
 
-/**
- * Options passed in the first parameter of a `gatsby-*` default export,
- * if one is defined and it is a function.
- */
-export interface PublicOpts {
-    imports: RootPluginImports;
-    projectRoot: string;
+
+export interface ITSConfigPluginOptions {
+    configDir?: string;
+    projectRoot?: string;
+    props?: PropertyBag;
+    babel?: TransformOptions | boolean;
+    tsNode?: TSNodeRegisterOptions | boolean;
 }
+export type TSConfigSetupOptions = Omit<ITSConfigPluginOptions, "props">;
+
+export type PublicOpts = Pick<IGlobalOpts,
+    | "endpoints"
+    | "projectRoot"
+    | "configDir"
+    | "cacheDir"
+>
+
+type ITSConfigFnTypes = PickLiteral<GatsbyConfigTypes, "config" | "node">;
+type ITSConfigFnReturn<T extends ITSConfigFnTypes> = T extends "config"
+    ? GatsbyConfig
+    : GatsbyNode;
 
 /**
  * This interface can be used to define the function-style default
  * export of `gatsby-config` or `gatsby-node`
  *
- * @param {ApiType} TConfigType - What type of function this represents:
+ * @param {string} TConfigType - What type of function this represents:
  *
  * * `config`
  * * `node`
  *
- * @param {JsonObject} TProps - Defines the second parameter of the function,
+ * @param {Record<string, any>} TProps - Defines the second parameter of the function,
  * which represents an arbitrary property bag as defined by the plugin definition in
  * the original gatsby plugin array
  *
@@ -48,11 +64,11 @@ export interface PublicOpts {
  * export default gatsbyConfig;
  * ```
  */
-export type TSConfigFn<
-    TConfigType extends ApiType,
+export interface ITSConfigFn<
+    TConfigType extends ITSConfigFnTypes,
     TProps extends PropertyBag = PropertyBag
-> = {
-    (args: PublicOpts, props: TProps): PluginModule<TConfigType>;
+> {
+    (args: PublicOpts, props: TProps): ITSConfigFnReturn<TConfigType>;
 }
 
 /**
@@ -71,8 +87,8 @@ export type TSConfigFn<
  *  }
  *
  *  includePlugins<
- *      | GatsbyPlugin<'fooPlugin'>
- *      | GatsbyPlugin<'barPlugin', IBarPluginOptions>
+ *      | IGatsbyPluginDef<'fooPlugin'>
+ *      | IGatsbyPluginDef<'barPlugin', IBarPluginOptions>
  *  >([
  *      // These strings will be strongly typed
  *      'fooPlugin',
@@ -99,10 +115,9 @@ export type TSConfigFn<
  *  }
  * ```
  *
- * It may be used in the place of an `GatsbyPlugin` definition
+ * It may be used in the place of an `IGatsbyPluginDef` definition
  */
-export type GatsbyPlugin<TName extends string = string, TOptions extends Record<string, any> = Record<string, any>> = (
+export type IGatsbyPluginDef<TName extends string = string, TOptions extends Record<string, any> = Record<string, any>> = (
     | TName
     | IGatsbyPluginWithOpts<TName, TOptions>
-    | false
 )

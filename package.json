@@ -1,6 +1,6 @@
 {
 	"name": "gatsby-plugin-ts-config",
-	"version": "1.1.6",
+	"version": "2.0.0",
 	"description": "Configure Gatsby to use Typescript configuration files",
 	"main": "./index.js",
 	"types": "./dist/index",
@@ -12,9 +12,6 @@
 		"gatsby",
 		"typescript"
 	],
-	"installConfig": {
-		"pnp": true
-	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Js-Brecht/gatsby-plugin-ts-config"
@@ -26,32 +23,32 @@
 	"files": [
 		"dist",
 		"index.js",
-		"gatsby-node.js",
-		"gatsby-config.js",
-		"gatsby-browser.js",
-		"gatsby-ssr.js",
 		"README.md",
 		"LICENSE"
 	],
 	"scripts": {
 		"purge": "rimraf node_modules && yarn clean",
-		"clean": "rimraf ./dist/*",
+		"clean": "rimraf './dist/*'",
 		"build": "run-s clean build:prod",
-		"build:prod": "ttsc",
-		"build:dev": "ttsc --sourceMap",
+		"build:prod": "ttsc -p tsconfig.build.json",
+		"build:dev": "ttsc --sourceMap -p tsconfig.build.json",
 		"watch": "run-s clean \"build:prod -- -w\"",
 		"watch:dev": "run-s clean \"build:dev -- -w\"",
-		"lint": "eslint -c .eslintrc ./src/**/*",
+		"lint": "eslint -c .eslintrc.js .",
+		"lint:fix": "eslint -c .eslintrc.js --fix .",
 		"prepublishOnly": "run-s build"
 	},
 	"peerDependencies": {
 		"@babel/core": "^7.9.0",
 		"@babel/runtime": "^7.8.7",
-		"gatsby": "~2.x.x",
-		"typescript": "~3.x.x"
+		"gatsby": "~2.x.x || ~3.x.x",
+		"typescript": "~4.x.x"
 	},
 	"peerDependenciesMeta": {
 		"@babel/runtime": {
+			"optional": true
+		},
+		"eslint": {
 			"optional": true
 		},
 		"typescript": {
@@ -71,37 +68,38 @@
 		"@babel/register": "^7.8.6",
 		"@babel/runtime": "^7.8.7",
 		"babel-plugin-dynamic-import-node": "^2.3.3",
+		"callsites": "^3.1.0",
+		"enhanced-resolve": "^5.8.0",
+		"find-up": "^5.0.0",
 		"fs-extra": "^8.1.0",
+		"lodash": "^4.17.21",
 		"lodash.mergewith": "^4.6.2",
-		"ts-node": "^9.0.0"
+		"serialize-error": "^8.1.0",
+		"ts-node": "^9.0.0",
+		"tslog": "^3.2.0",
+		"type-fest": "^0.12.0"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.8.6",
-		"@jtechsvcs/eslint-config-typescript": "^2.0.3",
 		"@types/babel__core": "^7.1.6",
 		"@types/fs-extra": "^8.1.0",
+		"@types/lodash": "^4.14.172",
 		"@types/lodash.mergewith": "^4.6.6",
 		"@types/node": "^13.7.2",
 		"@types/webpack": "^4.41.6",
-		"@typescript-eslint/eslint-plugin": "^2.21.0",
-		"@typescript-eslint/parser": "^2.21.0",
-		"@typescript-eslint/typescript-estree": "^2.21.0",
-		"@yarnpkg/pnpify": "^2.0.0-rc.18",
-		"eslint": "^6.8.0",
-		"gatsby": "^2.19.18",
+		"@yarnpkg/pnpify": "^2.4.0",
+		"@yarnpkg/sdks": "^2.4.1-rc.4",
+		"@zerollup/ts-transform-paths": "^1.7.18",
+		"eslint": "npm:@jtechsvcs/eslint@^1.0.5",
+		"gatsby": "^3.11.1",
 		"npm-run-all": "^4.1.5",
 		"rimraf": "^3.0.2",
-		"ts-transformer-enumerate": "^0.5.1",
 		"ts-transformer-keys": "^0.4.1",
 		"ttypescript": "^1.5.10",
-		"type-fest": "^0.12.0",
 		"typescript": "4.3.5"
 	},
 	"dependenciesMeta": {
-		"@jtechsvcs/eslint-config-typescript": {
-			"unplugged": true
-		},
-		"eslint": {
+		"@jtechsvcs/eslint@1.0.5": {
 			"unplugged": true
 		}
 	}

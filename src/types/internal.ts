@@ -1,102 +1,74 @@
-import type { GatsbyConfig, GatsbyNode, GatsbyBrowser, GatsbySSR } from 'gatsby';
-import type { TransformOptions } from '@babel/core';
-import type { RegisterOptions as TSNodeRegisterOptions } from 'ts-node';
-import type { ITSConfigFn, PublicOpts, IGatsbyPluginDef } from './public';
+import type { GatsbyConfig, GatsbyNode } from "gatsby";
+import type { TransformOptions as BabelOptions } from "@babel/core";
+import type { RegisterOptions as TSNodeOptions } from "ts-node";
+import type { JsonObject } from "type-fest";
 
-export type PropertyBag = Record<string, any>;
-export type ValidExts = '.js' | '.ts' | '.jsx' | '.tsx';
-export type RegisterType = 'ts-node' | 'babel';
-export type GatsbyConfigTypes = 'config' | 'node' | 'browser' | 'ssr'
-export type ConfigTypes =  GatsbyConfigTypes | 'plugin';
-export type EndpointResolutionSpec = GatsbyConfigTypes | {
-    type: GatsbyConfigTypes;
-    ext: ValidExts[];
+import type { apiTypeKeys } from "@util/constants";
+import type { PublicOpts, GatsbyPlugin } from "./public";
+
+export type PropertyBag = JsonObject;
+export type ApiType = typeof apiTypeKeys[number];
+export type TranspileType = "babel" | "ts-node";
+export interface IInternalOptions {
+    props?: PropertyBag;
+    type?: TranspileType;
 }
 
-export type EndpointReturnTypes<T extends GatsbyConfigTypes = GatsbyConfigTypes> =
-    T extends 'config'
-        ? GatsbyConfig | ITSConfigFn<'config'>
-        : T extends 'node'
-            ? GatsbyNode | ITSConfigFn<'node'>
-            : T extends 'browser'
-                ? GatsbyBrowser
-                : T extends 'ssr'
-                    ? GatsbySSR
-                    : unknown;
-
-export type EndpointReturnObject<T extends GatsbyConfigTypes> =
-    T extends 'config'
-        ? GatsbyConfig
-        : T extends 'node'
-            ? GatsbyNode
-            : T extends 'browser'
-                ? GatsbyBrowser
-                : T extends 'ssr'
-                    ? GatsbySSR
-                    : unknown;
-
-export type InferredConfigType<T extends EndpointReturnTypes> =
-    T extends GatsbyConfig | ITSConfigFn<'config'>
-        ? 'config'
-        : T extends GatsbyNode | ITSConfigFn<'node'>
-            ? 'node'
-            : T extends GatsbyBrowser
-                ? 'browser'
-                : T extends GatsbySSR
-                    ? 'ssr'
-                    : unknown;
-
-export type PickLiteral<T, K extends T> = K extends T ? K : T;
-
-export type GatsbyEndpointResolverMapKeys = PickLiteral<ConfigTypes, 'plugin'>;
-export type GatsbyEndpointResolverKeys = Exclude<ConfigTypes, GatsbyEndpointResolverMapKeys>;
-
-export type GatsbyEndpoints = {
-    [K in GatsbyEndpointResolverKeys]?: string[];
+interface IInternalBabelOptions extends IInternalOptions {
+    type?: "babel";
+    transpilerOptions?: BabelOptions;
 }
-export interface IGatsbyEndpointResolverMap {
-    [K: string]: GatsbyEndpoints;
+interface IInternalTsNodeOptions extends IInternalOptions {
+    type?: "ts-node";
+    transpilerOptions?: TSNodeOptions;
 }
-export type GatsbyResolveChain = GatsbyEndpoints & {
-    [K in GatsbyEndpointResolverMapKeys]?: IGatsbyEndpointResolverMap;
+
+export type TsConfigPluginOptions = (
+    | IInternalBabelOptions
+    | IInternalTsNodeOptions
+);
+
+export type InitValue = string | (() => Record<string, unknown>);
+export type NoFirstParameter<T> = (
+    T extends (first: any, ...args: infer U) => infer R
+        ? (...args: U) => R
+        : T
+);
+
+export type TranspilerOptions<T extends TranspileType> =
+    T extends "babel"
+        ? BabelOptions
+        : T extends "ts-node"
+            ? TSNodeOptions
+            : never;
+
+export type ApiImports = {
+    [K in ApiType]?: string[];
 };
+export type PluginImports<T = ApiImports> = Record<string, T>;
+export type RootPluginImports = ApiImports & {
+    plugins?: PluginImports;
+};
+export type ImportsCache = PluginImports<RootPluginImports>;
+
+export type PluginModule<T extends ApiType> =
+    T extends "config"
+        ? GatsbyConfig
+        : T extends "node"
+            ? GatsbyNode
+            : unknown;
+
+export interface IPluginDetailsCallback<
+    TReturn extends GatsbyPlugin = GatsbyPlugin,
+    TProps extends PropertyBag = PropertyBag,
+> {
+    (args: PublicOpts, props: TProps): TReturn[];
+}
+
 export interface IGatsbyPluginWithOpts<
     TName extends string = string,
     TOptions extends Record<string, any> = Record<string, any>
 > {
     resolve: TName;
     options?: TOptions;
-}
-
-export interface IPluginDetails {
-    name: string;
-    path: string;
-    options: Record<string, any>;
-}
-export interface IPluginDetailsCallback<
-    TReturn extends IGatsbyPluginDef = IGatsbyPluginDef,
-    TProps extends PropertyBag = PropertyBag,
-> {
-    (args: PublicOpts, props: TProps): TReturn[];
-}
-
-export type RegisterOptions<T extends RegisterType> =
-    T extends 'ts-node'
-        ? TSNodeRegisterOptions
-        : T extends 'babel'
-            ? TransformOptions
-            : never;
-
-export interface ICommonDirectories {
-    projectRoot: string;
-    configDir: string;
-    cacheDir: string;
-    pluginDir: string;
-}
-
-export interface IGlobalOpts extends ICommonDirectories {
-    endpoints: GatsbyResolveChain;
-    props: PropertyBag;
-    babelOpts?: RegisterOptions<"babel">;
-    tsNodeOpts?: RegisterOptions<"ts-node">;
 }

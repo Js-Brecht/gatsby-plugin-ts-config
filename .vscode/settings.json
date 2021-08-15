@@ -1,4 +1,9 @@
 {
-  "eslint.nodePath": ".vscode/pnpify",
-  "typescript.tsdk": ".vscode/pnpify/typescript/lib"
+  "eslint.nodePath": ".yarn/sdks",
+  "typescript.tsdk": ".yarn/sdks/typescript/lib",
+  "search.exclude": {
+    "**/.yarn": true,
+    "**/.pnp.*": true
+  },
+  "typescript.enablePromptUseWorkspaceTsdk": true
 }
