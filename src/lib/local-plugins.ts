@@ -5,13 +5,12 @@ import { createRequire } from "@util/node";
 import { apiTypeKeys } from "@util/constants";
 
 import { linkProjectPlugin } from "./options/imports";
-import { getRegisterOptions } from "./options/register";
 import { getTranspiler } from "./transpiler";
 
 import type {
     PropertyBag,
-    GatsbyPlugin,
     TsConfigPluginOptions,
+    IGatsbyPluginWithOpts,
 } from "@typeDefs";
 import type { ApiModuleProcessor } from "./api-module";
 
@@ -47,12 +46,10 @@ export const transpileLocalPlugins = (
     options: TsConfigPluginOptions,
     processApiModule: ApiModuleProcessor,
     propBag?: PropertyBag,
-    plugins = [] as GatsbyPlugin[],
+    plugins = [] as IGatsbyPluginWithOpts[],
 ) => {
     plugins.forEach((plugin) => {
-        const localPluginName = typeof plugin === "string"
-            ? plugin
-            : plugin.resolve;
+        const localPluginName = plugin.resolve;
         if (!localPluginName) return;
 
         const pluginPath = resolveLocalPlugin(

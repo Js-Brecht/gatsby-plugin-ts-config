@@ -6,7 +6,7 @@ import { getPropBag } from "./options/prop-bag";
 import { getApiOption, setApiOption } from "./options/api";
 import { getProjectImports } from "./options/imports";
 import { transpileLocalPlugins } from "./local-plugins";
-import { getPluginsCache } from "./include-plugins";
+import { getPluginsCache, expandPlugins } from "./include-plugins";
 
 import type {
     ApiType,
@@ -110,28 +110,34 @@ export const processApiModule = <
      * Time to transpile/process local plugins
      */
     if (isGatsbyConfig(apiType, apiModule)) {
+        const gatsbyConfig = apiModule as PluginModule<"config">;
         const pluginsCache = getPluginsCache(projectRoot);
 
-        const localPluginTranspiler = (plugins: GatsbyPlugin[]) => {
+        const processPlugins = (plugins: GatsbyPlugin[]) => {
+            const usePlugins = expandPlugins(plugins);
+
             transpileLocalPlugins(
                 projectName,
                 projectRoot,
                 options,
                 processApiModule,
                 propBag,
-                plugins,
+                usePlugins,
             );
+
+            return usePlugins;
         };
 
-        apiModule.plugins = pluginsCache.normal.concat(
-            apiModule.plugins || [],
-        );
-
-        localPluginTranspiler(apiModule.plugins);
+        const pluginsList = gatsbyConfig.plugins = processPlugins([
+            ...pluginsCache.normal,
+            ...gatsbyConfig.plugins || [],
+        ]);
 
         for (const resolver of pluginsCache.resolver) {
-            const plugins = resolveModuleFn(resolver) as GatsbyPlugin[];
-            apiModule.plugins.push(...plugins);
+            const plugins = processPlugins(
+                resolveModuleFn(resolver) as GatsbyPlugin[],
+            );
+            pluginsList.push(...plugins);
         }
     }
 

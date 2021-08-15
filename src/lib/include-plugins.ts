@@ -3,6 +3,7 @@ import type {
     PropertyBag,
     GatsbyPlugin,
     IPluginDetailsCallback,
+    IGatsbyPluginWithOpts,
 } from "@typeDefs";
 
 export interface IResolvePlugins {
@@ -18,19 +19,21 @@ export interface IResolvePlugins {
 
 type PluginCache = {
     [project: string]: {
-        normal: GatsbyPlugin[];
+        normal: IGatsbyPluginWithOpts[];
         resolver: IPluginDetailsCallback[];
     }
 }
 
 const pluginCache: PluginCache = {};
 
-const expandPlugins = (plugins: GatsbyPlugin[]) => (
-    plugins.map((p) => (
-        typeof p === "string"
-            ? { resolve: p, options: {} }
-            : p
-    ))
+export const expandPlugins = (plugins: GatsbyPlugin[]): IGatsbyPluginWithOpts[] => (
+    plugins
+        .filter(Boolean)
+        .map((p) => (
+            typeof p === "string"
+                ? { resolve: p, options: {} }
+                : p
+        )) as IGatsbyPluginWithOpts[]
 );
 
 const wrapPluginResolver = (resolver: IPluginDetailsCallback) => (
