@@ -13,7 +13,7 @@ import type {
     ApiType,
     TsConfigPluginOptions,
     NoFirstParameter,
-} from "@/types/internal";
+} from "@typeDefs/internal";
 
 export * from "./types/public";
 
@@ -46,7 +46,7 @@ const useGatsbyPluginModule = (
     const transpilerOpts = getRegisterOptions(
         projectRoot,
         transpileType,
-        options.options,
+        options.transpilerOptions,
     );
 
     const transpiler = getTranspiler(transpileType, {

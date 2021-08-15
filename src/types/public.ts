@@ -5,6 +5,10 @@ import type {
     PluginModule,
 } from "./internal";
 
+/**
+ * Options passed in the first parameter of a `gatsby-*` default export,
+ * if one is defined and it is a function.
+ */
 export interface PublicOpts {
     imports: RootPluginImports;
     projectRoot?: string;

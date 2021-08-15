@@ -13,11 +13,11 @@ export interface IInternalOptions {
 
 interface IInternalBabelOptions extends IInternalOptions {
     type?: "babel";
-    options?: BabelOptions;
+    transpilerOptions?: BabelOptions;
 }
 interface IInternalTsNodeOptions extends IInternalOptions {
     type?: "ts-node";
-    options?: TSNodeOptions;
+    transpilerOptions?: TSNodeOptions;
 }
 
 export type TsConfigPluginOptions = (
