@@ -54,3 +54,11 @@ export type PluginModule<T extends ApiType> =
         : T extends "node"
             ? GatsbyNode
             : unknown;
+
+export interface IGatsbyPluginWithOpts<
+    TName extends string = string,
+    TOptions extends Record<string, any> = Record<string, any>
+> {
+    resolve: TName;
+    options?: TOptions;
+}
