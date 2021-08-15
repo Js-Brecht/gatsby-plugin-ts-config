@@ -26,6 +26,7 @@
       "@lib/*": ["src/lib/*"],
       "@util/*": ["src/util/*"],
       "@typeDefs/*": ["src/types/*"],
+      "@typeDefs": ["src/types"],
       "@/*": ["src/*"]
     }
   },
