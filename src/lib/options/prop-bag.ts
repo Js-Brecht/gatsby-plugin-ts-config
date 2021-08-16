@@ -1,4 +1,4 @@
-import merge from "lodash/mergeWith";
+import { merge } from "@util/obj";
 import type {
     ApiType,
     PropertyBag,

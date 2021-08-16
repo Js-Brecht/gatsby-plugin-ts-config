@@ -1,6 +1,7 @@
 import path from "path";
 import { register as tsNodeRegister } from "ts-node";
 import babelRegister from "@babel/register";
+import omit from "lodash/omit";
 
 import { Module, preferDefault } from "@util/node";
 import { getImportHandler } from "./options/imports";
@@ -96,17 +97,12 @@ export const getTranspiler = (
 
         try {
             if (typeof init === "function") {
-                return init() as PluginModule<TApiType>;
+                return omit(init(), ["__esModule"]) as PluginModule<TApiType>;
             } else {
-                const requirePath = path.resolve(
-                    projectRoot,
-                    init,
-                );
+                const requirePath = path.resolve(projectRoot, init);
                 const mod = require(requirePath);
 
                 const resolveFn: TSConfigFn<any> = (opts, props) => {
-                    // console.log("Resolving:", requirePath, require.cache[requirePath]?.exports);
-
                     let resolvedMod = preferDefault(mod);
                     const exports = require.cache[requirePath]?.exports;
 
@@ -114,15 +110,10 @@ export const getTranspiler = (
                         resolvedMod = resolvedMod(opts, props);
                     }
 
-                    if (exports && resolvedMod && typeof resolvedMod === "object") {
-                        Object.assign(exports, resolvedMod);
-                    }
+                    resolvedMod = Object.assign({}, exports, resolvedMod);
+                    require.cache[requirePath]!.exports = omit(resolvedMod, ["__esModule", "default"]);
 
-                    if (exports.default) delete exports.default;
-
-                    // console.log("Resolved:", requirePath, require.cache[requirePath]?.exports);
-
-                    return mod;
+                    return resolvedMod;
                 };
 
                 return resolveFn as PluginModule<TApiType>;

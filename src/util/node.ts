@@ -10,8 +10,15 @@ type ModuleType<T extends ApiType> = PluginModule<T> | {
     default: TSConfigFn<T>;
 }
 
-export const preferDefault = <T extends ApiType>(mod: ModuleType<T>) => (
-    mod && "default" in mod && mod.default || mod
+export const preferDefault = <
+    T extends ApiType
+>(mod: ModuleType<T>): PluginModule<T> | TSConfigFn<T> => (
+    (
+        mod &&
+        "default" in mod &&
+        mod.default ||
+        mod
+    ) as PluginModule<T> | TSConfigFn<T>
 );
 
 export const createRequire = nodeCreateRequire || nodeCreateRequireFromPath;

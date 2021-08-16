@@ -14,14 +14,35 @@ export const getFile: typeof fileExists = (fpath) => (
     fileExists(fpath)
 );
 
-const moduleResolver = resolve.create.sync({
-    extensions: [".js", ".ts"],
+export const extensions = [".ts", ".tsx", ".js", ".jsx"] as const;
+
+const resolveModuleSync = resolve.create.sync({
+    extensions,
+});
+const resolveModuleAsync = resolve.create({
+    extensions,
 });
 
-export const resolveFilePath = (startDir: string, moduleName: string): false | string => {
+type FilePathRet = false | string;
+type FilePathResolver<TReturn = Promise<FilePathRet>> = (startDir: string, moduleName: string) => TReturn;
+
+interface IResolveFilePath extends FilePathResolver {
+    sync: FilePathResolver<FilePathRet>;
+}
+
+export const resolveFilePath: IResolveFilePath = (startDir, moduleName) => {
+    return new Promise<FilePathRet>((resolve) => {
+        resolveModuleAsync(startDir, moduleName, (err: Error | string, found?: string) => {
+            if (err || !found) return resolve(false);
+            resolve(found);
+        });
+    });
+};
+
+resolveFilePath.sync = (startDir, moduleName) => {
     try {
-        return moduleResolver(startDir, moduleName);
+        return resolveModuleSync(startDir, moduleName);
     } catch (err) {
         return false;
     }
-}
+};

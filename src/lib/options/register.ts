@@ -1,5 +1,6 @@
 import path from "path";
-import merge from "lodash/mergeWith";
+
+import { merge } from "@util/obj";
 
 import type { TransformOptions as BabelOptions } from "@babel/core";
 import type { RegisterOptions as TSNodeOptions } from "ts-node";
@@ -30,11 +31,6 @@ const mergeOptions = <R>(
         hasOptions ? {} : defaultOptions,
         optionsRegister[project][type] || {},
         extendOptions || {},
-        (to: any, from: any): any => {
-            if (to instanceof Array) {
-                return to.concat(from);
-            }
-        },
     ) as R;
 };
 
@@ -84,10 +80,12 @@ export const getRegisterOptions = <
     const defaultOptions = (
         getDefaultOptions(type, projectRoot) as TranspilerOptions<T>
     );
-    return mergeOptions<TranspilerOptions<T>>(
+    const options = mergeOptions<TranspilerOptions<T>>(
         projectRoot,
         type,
         defaultOptions,
         addOptions,
     );
+
+    return options;
 };
