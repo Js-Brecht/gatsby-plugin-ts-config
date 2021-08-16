@@ -3,6 +3,9 @@
 	"version": "2.0.0",
 	"description": "Configure Gatsby to use Typescript configuration files",
 	"main": "./index.js",
+	"bin": {
+		"gatsby-ts": "./bin/cli.js"
+	},
 	"types": "./dist/index",
 	"author": "Jeremy Albright",
 	"license": "MIT",
