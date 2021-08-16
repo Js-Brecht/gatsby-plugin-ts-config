@@ -4180,6 +4180,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/resolve-bin@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "@types/resolve-bin@npm:0.4.1"
+  checksum: 47d8cce751da7bf3b46ce502f289d469f7f2aee5aa4fbd78e3f17b9cfe71d99eeb500dfe54b07fc2fd95a759bba742741aefe4fb4db9d8caa719e7654e365a18
+  languageName: node
+  linkType: hard
+
 "@types/responselike@npm:*, @types/responselike@npm:^1.0.0":
   version: 1.0.0
   resolution: "@types/responselike@npm:1.0.0"
@@ -9060,6 +9067,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"find-parent-dir@npm:~0.3.0":
+  version: 0.3.1
+  resolution: "find-parent-dir@npm:0.3.1"
+  checksum: 55e722584760cfbc6611901c7ced5081345cf629e2ecd6a4f6704b13b5a1876c8d9d9db5fd4965ba23e1ecbc24a8b62af40379cfef1ffa0231719b9d924eebdd
+  languageName: node
+  linkType: hard
+
 "find-up@npm:4.1.0, find-up@npm:^4.0.0, find-up@npm:^4.1.0":
   version: 4.1.0
   resolution: "find-up@npm:4.1.0"
@@ -9514,6 +9528,7 @@ fsevents@~2.3.2:
     "@types/lodash": ^4.14.172
     "@types/lodash.mergewith": ^4.6.6
     "@types/node": ^13.7.2
+    "@types/resolve-bin": ^0.4.1
     "@types/webpack": ^4.41.6
     "@yarnpkg/pnpify": ^2.4.0
     "@yarnpkg/sdks": ^2.4.1-rc.4
@@ -9528,6 +9543,7 @@ fsevents@~2.3.2:
     lodash: ^4.17.21
     lodash.mergewith: ^4.6.2
     npm-run-all: ^4.1.5
+    resolve-bin: ^0.4.1
     rimraf: ^3.0.2
     serialize-error: ^8.1.0
     ts-node: ^9.0.0
@@ -15758,6 +15774,15 @@ fsevents@~2.3.2:
   version: 1.1.1
   resolution: "resolve-alpn@npm:1.1.1"
   checksum: 3ecec687d42135783eb380d03fc7d42fd06b06d2a4ff249ed868f8c207fad87690ad2ef56666c0ec3bb3385bd1150641cca4b4e8474e391d149ed6faba8a0c7f
+  languageName: node
+  linkType: hard
+
+"resolve-bin@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "resolve-bin@npm:0.4.1"
+  dependencies:
+    find-parent-dir: ~0.3.0
+  checksum: 26f912bfd5fa798d4e4d7f3d2365619342ea7bd48336900e1f5817e8405072eb11e840f08fcf1bb6569c4659fd9d4d07a9a0289b593988b684a49a9718abb0f6
   languageName: node
   linkType: hard
 
