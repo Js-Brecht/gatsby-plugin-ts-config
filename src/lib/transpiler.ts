@@ -136,8 +136,11 @@ export const getTranspiler = (
                         resolvedMod = resolvedMod(opts, props);
                     }
 
-                    resolvedMod = Object.assign({}, exports, resolvedMod);
-                    require.cache[requirePath].exports = omit(resolvedMod, ["__esModule", "default"]);
+                    resolvedMod = omit(
+                        Object.assign({}, exports, resolvedMod),
+                        ["__esModule", "default"]
+                    );
+                    require.cache[requirePath]!.exports = resolvedMod;
 
                     return resolvedMod;
                 };
