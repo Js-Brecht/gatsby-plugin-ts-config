@@ -36,7 +36,8 @@
 		"watch:dev": "run-s clean \"build:dev -- -w\"",
 		"lint": "eslint -c .eslintrc.js .",
 		"lint:fix": "eslint -c .eslintrc.js --fix .",
-		"prepublishOnly": "run-s build"
+    "publish:exec": "npm publish",
+    "publish": "run-s build publish:exec"
 	},
 	"peerDependencies": {
 		"@babel/core": "^7.9.0",
