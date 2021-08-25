@@ -14,9 +14,9 @@ import type {
     PluginModule,
     TSConfigFn,
     TsConfigPluginOptions,
+    IgnoreFn,
+    IgnoreHookFn,
 } from "@typeDefs";
-
-type IgnoreFn = (filename: string) => boolean;
 
 export type Transpiler = ReturnType<typeof getTranspiler>;
 
@@ -60,10 +60,24 @@ export const getTranspiler = (
             ),
         ];
 
+        const getIgnore = (
+            filename: string,
+            rules: (IgnoreFn | IgnoreHookFn)[],
+            orig: boolean
+        ) => (
+            rules.some((rule) => rule(filename, !!orig))
+        );
+
         const ignore: IgnoreFn = (filename) => {
             if (filename.endsWith(".pnp.js")) return true;
             addChainedImport(filename);
-            return ignoreRules.some((rule) => rule(filename));
+
+            const origIgnore = getIgnore(filename, ignoreRules, false);
+            const ignoreFile = pluginOptions.hooks?.ignore
+                ? getIgnore(filename, pluginOptions.hooks.ignore, origIgnore)
+                : origIgnore;
+
+            return ignoreFile;
         };
 
         const only: IgnoreFn = (filename) => {

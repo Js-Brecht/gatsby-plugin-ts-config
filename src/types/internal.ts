@@ -6,12 +6,22 @@ import type { JsonObject } from "type-fest";
 import type { apiTypeKeys } from "@util/constants";
 import type { PublicOpts, GatsbyPlugin } from "./public";
 
+export type IgnoreFn = (filename: string) => boolean;
+export type IgnoreHookFn = (filename: string, original: boolean) => (
+    boolean | void
+);
+
+export type Hooks = {
+    ignore?: IgnoreHookFn[];
+}
+
 export type PropertyBag = JsonObject;
 export type ApiType = typeof apiTypeKeys[number];
 export type TranspileType = "babel" | "ts-node";
 export interface IInternalOptions {
     props?: PropertyBag;
     type?: TranspileType;
+    hooks?: Hooks;
 }
 
 interface IInternalBabelOptions extends IInternalOptions {
