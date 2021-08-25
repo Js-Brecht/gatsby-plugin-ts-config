@@ -77,7 +77,7 @@ export const getTranspiler = (
                 ? getIgnore(filename, pluginOptions.hooks.ignore, origIgnore)
                 : origIgnore;
 
-            return ignoreFile;
+            return !!ignoreFile;
         };
 
         const only: IgnoreFn = (filename) => {
