@@ -4,6 +4,7 @@ import babelRegister from "@babel/register";
 import omit from "lodash/omit";
 
 import { Module, preferDefault } from "@util/node";
+import { extensions } from "@util/fs-tools";
 import { getImportHandler } from "./options/imports";
 import { getRegisterOptions } from "./options/register";
 
@@ -32,7 +33,6 @@ export const getTranspiler = (
         pluginOptions.transpilerOptions,
     );
 
-    const extensions = [".ts", ".tsx", ".js", ".jsx"];
     const origExtensions = {
         ...Module._extensions,
         ".ts": Module._extensions[".js"],
@@ -84,7 +84,7 @@ export const getTranspiler = (
                     const opts = transpilerOpts as TranspilerOptions<"babel">;
                     babelRegister({
                         ...opts,
-                        extensions,
+                        extensions: extensions as unknown as string[],
                         only: [only],
                     });
                     break;
