@@ -66,7 +66,7 @@ export const transpilePlugins = (
         );
 
         apiTypeKeys.forEach((type) => {
-            const gatsbyModuleName = `./gatsby-${type}`;
+            const gatsbyModuleName = `./gatsby-${type}.ts`;
             const apiPath = resolveFilePath(pluginPath, gatsbyModuleName);
             if (!apiPath) return; // This `gatsby-*` file doesn't exist for this local plugin
 
