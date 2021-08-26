@@ -1,6 +1,6 @@
 {
 	"name": "gatsby-plugin-ts-config",
-	"version": "2.0.0-hooks.3",
+	"version": "2.0.1-hooks.1",
 	"description": "Configure Gatsby to use Typescript configuration files",
 	"main": "./index.js",
 	"types": "./dist/index",
@@ -36,8 +36,8 @@
 		"watch:dev": "run-s clean \"build:dev -- -w\"",
 		"lint": "eslint -c .eslintrc.js .",
 		"lint:fix": "eslint -c .eslintrc.js --fix .",
-    "publish:exec": "npm publish",
-    "publish": "run-s build publish:exec"
+		"publish:exec": "npm publish",
+		"publish": "run-s build publish:exec"
 	},
 	"peerDependencies": {
 		"@babel/core": "^7.9.0",
