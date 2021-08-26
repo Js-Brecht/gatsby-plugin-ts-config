@@ -24,4 +24,4 @@ export const resolveFilePath = (startDir: string, moduleName: string): false | s
     } catch (err) {
         return false;
     }
-}
+};

@@ -5,7 +5,7 @@ import { resolveFilePath } from "@util/fs-tools";
 import { getPropBag } from "./options/prop-bag";
 import { getApiOption, setApiOption } from "./options/api";
 import { getProjectImports } from "./options/imports";
-import { transpileLocalPlugins } from "./local-plugins";
+import { transpilePlugins } from "./plugin-transpiler";
 import { getPluginsCache, expandPlugins } from "./include-plugins";
 
 import type {
@@ -15,6 +15,7 @@ import type {
     PropertyBag,
     TSConfigFn,
     GatsbyPlugin,
+    IGatsbyPluginWithOpts,
     TsConfigPluginOptions,
 } from "@typeDefs";
 import type { Transpiler } from "./transpiler";
@@ -113,13 +114,14 @@ export const processApiModule = <
         const gatsbyConfig = apiModule as PluginModule<"config">;
         const pluginsCache = getPluginsCache(projectRoot);
 
-        const processPlugins = (plugins: GatsbyPlugin[]) => {
+        const processPlugins = (plugins: GatsbyPlugin[], forceTranspile: boolean) => {
             const usePlugins = expandPlugins(plugins);
 
-            transpileLocalPlugins(
+            transpilePlugins(
                 projectName,
                 projectRoot,
                 options,
+                forceTranspile ? "all" : "local-only",
                 processApiModule,
                 propBag,
                 usePlugins,
@@ -128,17 +130,18 @@ export const processApiModule = <
             return usePlugins;
         };
 
-        const pluginsList = gatsbyConfig.plugins = processPlugins([
-            ...pluginsCache.normal,
-            ...gatsbyConfig.plugins || [],
-        ]);
-
-        for (const resolver of pluginsCache.resolver) {
-            const plugins = processPlugins(
-                resolveModuleFn(resolver) as GatsbyPlugin[],
-            );
-            pluginsList.push(...plugins);
-        }
+        gatsbyConfig.plugins = [
+            ...processPlugins(pluginsCache.normal, true),
+            ...processPlugins(gatsbyConfig.plugins || [], false),
+            ...pluginsCache.resolver.reduce((arr, resolver) => {
+                const plugins = processPlugins(
+                    resolveModuleFn(resolver) as GatsbyPlugin[],
+                    true,
+                );
+                arr.push(...plugins);
+                return arr;
+            }, [] as IGatsbyPluginWithOpts[]),
+        ];
     }
 
     return apiModule as PluginModule<T>;

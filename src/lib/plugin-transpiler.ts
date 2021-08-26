@@ -1,5 +1,4 @@
 import path from "path";
-import fs from "fs-extra";
 import { getFile, resolveFilePath } from "@util/fs-tools";
 import { createRequire } from "@util/node";
 import { apiTypeKeys } from "@util/constants";
@@ -14,36 +13,36 @@ import type {
 } from "@typeDefs";
 import type { ApiModuleProcessor } from "./api-module";
 
-export const resolveLocalPlugin = (
+export const resolvePlugin = (
     relativeTo: string,
     pluginName: string,
+    localOnly: boolean,
 ): string => {
     const scopedRequire = createRequire(`${relativeTo}/:internal:`);
     try {
-        scopedRequire.resolve(`${pluginName}/package.json`);
-        return "";
+        const pluginPath = path.dirname(
+            scopedRequire.resolve(`${pluginName}/package.json`),
+        );
+        return localOnly ? "" : pluginPath;
     } catch (err) {
         const pluginDir = path.resolve(relativeTo, "plugins", pluginName);
+        const pkgJson = getFile(
+            path.join(pluginDir, "package.json"),
+        );
 
-        if (
-            fs.pathExistsSync(pluginDir) &&
-            fs.statSync(pluginDir).isDirectory()
-        ) {
-            const pkgJson = getFile(
-                path.join(pluginDir, "package.json"),
-            );
-            if (pkgJson && pkgJson.isFile()) {
-                return pluginDir;
-            }
+        if (pkgJson && pkgJson.isFile()) {
+            return pluginDir;
         }
+
         return "";
     }
 };
 
-export const transpileLocalPlugins = (
+export const transpilePlugins = (
     projectName: string,
     projectRoot: string,
     options: TsConfigPluginOptions,
+    type: "local-only" | "all",
     processApiModule: ApiModuleProcessor,
     propBag?: PropertyBag,
     plugins = [] as IGatsbyPluginWithOpts[],
@@ -52,11 +51,12 @@ export const transpileLocalPlugins = (
         const localPluginName = plugin.resolve;
         if (!localPluginName) return;
 
-        const pluginPath = resolveLocalPlugin(
+        const pluginPath = resolvePlugin(
             projectRoot,
             localPluginName,
+            type === "local-only",
         );
-        if (!pluginPath) return; // This isn't a "local" plugin
+        if (!pluginPath) return; // We shouldn't transpile this plugin
 
         linkProjectPlugin(projectName, localPluginName);
 
