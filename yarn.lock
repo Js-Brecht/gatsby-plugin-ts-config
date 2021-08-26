@@ -4070,22 +4070,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash.mergewith@npm:^4.6.6":
-  version: 4.6.6
-  resolution: "@types/lodash.mergewith@npm:4.6.6"
-  dependencies:
-    "@types/lodash": "*"
-  checksum: d57d0404679308893f89fbf66e2a70f569f701ddcd895e642388977664a7e1df6212698818598537ed0d0f5ccd0eb121c778260a3697b7e6b965d23526c60fe2
-  languageName: node
-  linkType: hard
-
-"@types/lodash@npm:*":
-  version: 4.14.149
-  resolution: "@types/lodash@npm:4.14.149"
-  checksum: 6caf68cf38d9672851490cdb0a9ef25a90495c05903ca16e62d1d78ebb8b12ee46b20c2a5e29b7667612baedca0087c10f56debc305e486aba08b3dbefb93865
-  languageName: node
-  linkType: hard
-
 "@types/lodash@npm:^4.14.172, @types/lodash@npm:^4.14.92":
   version: 4.14.172
   resolution: "@types/lodash@npm:4.14.172"
@@ -9512,7 +9496,6 @@ fsevents@~2.3.2:
     "@types/babel__core": ^7.1.6
     "@types/fs-extra": ^8.1.0
     "@types/lodash": ^4.14.172
-    "@types/lodash.mergewith": ^4.6.6
     "@types/node": ^13.7.2
     "@types/webpack": ^4.41.6
     "@yarnpkg/pnpify": ^2.4.0
@@ -9526,7 +9509,6 @@ fsevents@~2.3.2:
     fs-extra: ^8.1.0
     gatsby: ^3.11.1
     lodash: ^4.17.21
-    lodash.mergewith: ^4.6.2
     npm-run-all: ^4.1.5
     rimraf: ^3.0.2
     serialize-error: ^8.1.0
@@ -12365,13 +12347,6 @@ fsevents@~2.3.2:
   version: 4.1.2
   resolution: "lodash.memoize@npm:4.1.2"
   checksum: 9ff3942feeccffa4f1fafa88d32f0d24fdc62fd15ded5a74a5f950ff5f0c6f61916157246744c620173dddf38d37095a92327d5fd3861e2063e736a5c207d089
-  languageName: node
-  linkType: hard
-
-"lodash.mergewith@npm:^4.6.2":
-  version: 4.6.2
-  resolution: "lodash.mergewith@npm:4.6.2"
-  checksum: a6db2a9339752411f21b956908c404ec1e088e783a65c8b29e30ae5b3b6384f82517662d6f425cc97c2070b546cc2c7daaa8d33f78db7b6e9be06cd834abdeb8
   languageName: node
   linkType: hard
 

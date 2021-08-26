@@ -1,5 +1,6 @@
 import path from "path";
 import { register as tsNodeRegister } from "ts-node";
+import omit from "lodash/omit";
 import babelRegister from "@babel/register";
 
 import { Module, preferDefault } from "@util/node";
@@ -96,33 +97,38 @@ export const getTranspiler = (
 
         try {
             if (typeof init === "function") {
-                return init() as PluginModule<TApiType>;
+                return omit(init(), ["__esModule"]) as PluginModule<TApiType>;
             } else {
-                const requirePath = path.resolve(
-                    projectRoot,
-                    init,
+                const requirePath = require.resolve(
+                    path.resolve(
+                        projectRoot,
+                        init,
+                    )
                 );
                 const mod = require(requirePath);
 
                 const resolveFn: TSConfigFn<any> = (opts, props) => {
-                    // console.log("Resolving:", requirePath, require.cache[requirePath]?.exports);
-
                     let resolvedMod = preferDefault(mod);
                     const exports = require.cache[requirePath]?.exports;
+
+                    if (!exports) {
+                        throw new Error([
+                            `Unable to retrieve require cache for module '${requirePath}'.`,
+                            'This may indicate a serious issue'
+                        ].join("\n"))
+                    }
 
                     if (resolvedMod && typeof resolvedMod === "function") {
                         resolvedMod = resolvedMod(opts, props);
                     }
 
-                    if (exports && resolvedMod && typeof resolvedMod === "object") {
-                        Object.assign(exports, resolvedMod);
-                    }
+                    resolvedMod = omit(
+                        Object.assign({}, exports, resolvedMod),
+                        ["__esModule", "default"]
+                    );
+                    require.cache[requirePath]!.exports = resolvedMod;
 
-                    if (exports.default) delete exports.default;
-
-                    // console.log("Resolved:", requirePath, require.cache[requirePath]?.exports);
-
-                    return mod;
+                    return resolvedMod;
                 };
 
                 return resolveFn as PluginModule<TApiType>;

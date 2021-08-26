@@ -50,7 +50,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/babel__core", "npm:7.1.6"],
             ["@types/fs-extra", "npm:8.1.0"],
             ["@types/lodash", "npm:4.14.172"],
-            ["@types/lodash.mergewith", "npm:4.6.6"],
             ["@types/node", "npm:13.7.6"],
             ["@types/webpack", "npm:4.41.7"],
             ["@yarnpkg/pnpify", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:2.4.0"],
@@ -67,7 +66,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["fs-extra", "npm:8.1.0"],
             ["gatsby", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:3.11.1"],
             ["lodash", "npm:4.17.21"],
-            ["lodash.mergewith", "npm:4.6.2"],
             ["npm-run-all", "npm:4.1.5"],
             ["rimraf", "npm:3.0.2"],
             ["serialize-error", "npm:8.1.0"],
@@ -7338,27 +7336,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["@types/lodash", [
-        ["npm:4.14.149", {
-          "packageLocation": "../../../.yarncache/berry/cache/@types-lodash-npm-4.14.149-d92d0adff6-8.zip/node_modules/@types/lodash/",
-          "packageDependencies": [
-            ["@types/lodash", "npm:4.14.149"]
-          ],
-          "linkType": "HARD",
-        }],
         ["npm:4.14.172", {
           "packageLocation": "../../../.yarncache/berry/cache/@types-lodash-npm-4.14.172-e52063c461-8.zip/node_modules/@types/lodash/",
           "packageDependencies": [
             ["@types/lodash", "npm:4.14.172"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
-      ["@types/lodash.mergewith", [
-        ["npm:4.6.6", {
-          "packageLocation": "../../../.yarncache/berry/cache/@types-lodash.mergewith-npm-4.6.6-bfa2ee5d9a-8.zip/node_modules/@types/lodash.mergewith/",
-          "packageDependencies": [
-            ["@types/lodash.mergewith", "npm:4.6.6"],
-            ["@types/lodash", "npm:4.14.149"]
           ],
           "linkType": "HARD",
         }]
@@ -14065,7 +14046,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/babel__core", "npm:7.1.6"],
             ["@types/fs-extra", "npm:8.1.0"],
             ["@types/lodash", "npm:4.14.172"],
-            ["@types/lodash.mergewith", "npm:4.6.6"],
             ["@types/node", "npm:13.7.6"],
             ["@types/webpack", "npm:4.41.7"],
             ["@yarnpkg/pnpify", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:2.4.0"],
@@ -14082,7 +14062,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["fs-extra", "npm:8.1.0"],
             ["gatsby", "virtual:455ed1d2464b485cc86ccc4ab476e3f5467d6e4b22bcd693bb203b6cd5a170f39c93cb8846df1485e5f45852a3adfd0d5db454abd799e7e78a57a9d40b32555c#npm:3.11.1"],
             ["lodash", "npm:4.17.21"],
-            ["lodash.mergewith", "npm:4.6.2"],
             ["npm-run-all", "npm:4.1.5"],
             ["rimraf", "npm:3.0.2"],
             ["serialize-error", "npm:8.1.0"],
@@ -17225,15 +17204,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "../../../.yarncache/berry/cache/lodash.memoize-npm-4.1.2-0e6250041f-8.zip/node_modules/lodash.memoize/",
           "packageDependencies": [
             ["lodash.memoize", "npm:4.1.2"]
-          ],
-          "linkType": "HARD",
-        }]
-      ]],
-      ["lodash.mergewith", [
-        ["npm:4.6.2", {
-          "packageLocation": "../../../.yarncache/berry/cache/lodash.mergewith-npm-4.6.2-7d2d4201ec-8.zip/node_modules/lodash.mergewith/",
-          "packageDependencies": [
-            ["lodash.mergewith", "npm:4.6.2"]
           ],
           "linkType": "HARD",
         }]
