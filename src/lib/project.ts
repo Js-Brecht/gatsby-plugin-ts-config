@@ -40,8 +40,12 @@ interface IModuleOptions {
 }
 
 type ApiOptions = {
-    [api in ApiType]?: IModuleOptions;
+    [projectRoot: string]: {
+        [api in ApiType]?: IModuleOptions;
+    }
 }
+
+const apiOptionsCache: ApiOptions = {};
 
 type ProjectCache = {
     [projectRoot: string]: {
@@ -77,6 +81,13 @@ export class Project {
         if (!settings.apiType) settings.apiType = "config";
         if (!settings.options) settings.options = {};
 
+        const propBag = (
+            settings.propBag ||
+            (settings.options as TsConfigPluginOptions).props
+        );
+        settings.propBag = propBag;
+        delete (settings.options as TsConfigPluginOptions).props;
+
         const apiType = settings.apiType;
         if (!settings.projectMeta) {
             settings.projectMeta = getProject();
@@ -96,6 +107,8 @@ export class Project {
             projectRoot,
             apiType,
         );
+
+        console.log(projectRoot, initialProject, project, input);
 
         if (
             initialProject && (
@@ -131,7 +144,7 @@ export class Project {
             }
         }
 
-        return project || setProjectCache(
+        return project?.merge(settings) || setProjectCache(
             projectRoot,
             apiType,
             new Project(settings),
@@ -150,7 +163,6 @@ export class Project {
 
     private _transpiler!: Transpiler;
     private _registerOptions!: TranspilerOptions<TranspileType>;
-    private _apiOptions: ApiOptions = {};
 
     private constructor(settings: IBaseProjectSettings) {
         this.projectMeta = settings.projectMeta;
@@ -195,7 +207,7 @@ export class Project {
 
     public setApiOptions(apiType: ApiType, opts: IModuleOptions) {
         const { projectRoot } = this.projectMeta;
-        set(this._apiOptions, [projectRoot, apiType], merge(
+        set(apiOptionsCache, [projectRoot, apiType], merge(
             {},
             this.getApiOptions(apiType),
             opts,
@@ -203,7 +215,7 @@ export class Project {
     }
     public getApiOptions(apiType: ApiType): IModuleOptions {
         const { projectRoot } = this.projectMeta;
-        return get(this._apiOptions, [projectRoot, apiType], {});
+        return get(apiOptionsCache, [projectRoot, apiType], {});
     }
 
     public importHandler(apiType: ApiType, pluginName: string) {

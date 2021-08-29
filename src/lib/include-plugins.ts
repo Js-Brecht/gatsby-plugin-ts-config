@@ -129,7 +129,7 @@ export const includePlugins: IResolvePlugins<void> = <
 };
 
 
-type GetPluginOpts = Omit<TsConfigPluginOptions, "props">;
+type GetPluginOpts = TsConfigPluginOptions;
 
 /**
  * Immediately processes and returns a collection of plugins, or a
