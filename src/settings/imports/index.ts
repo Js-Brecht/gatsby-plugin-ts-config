@@ -1,9 +1,12 @@
 import { PluginError } from "@util/output";
+import { ImportHandler } from "./handler";
 import type {
     ApiType,
     ImportsCache,
     RootPluginImports,
 } from "@typeDefs/internal";
+
+export type ImportHandlerFn = (filename: string) => void;
 
 const importsCache: ImportsCache = {};
 
@@ -31,16 +34,27 @@ export const linkProjectPlugin = (projectName: string, pluginName: string): void
     pluginLinks[pluginName] = pluginProject;
 };
 
+const importHandlerCache: Record<string, ImportHandlerFn> = {};
+
+export type GetImportHandlerFn = typeof getImportHandler;
+
 export const getImportHandler = (
     apiType: ApiType,
     projectName: string,
 ) => {
+    const cacheKey = `${apiType}:${projectName}`;
+    if (importHandlerCache[cacheKey]) {
+        return importHandlerCache[cacheKey];
+    }
+
     const projectImports = getProjectImports(projectName);
     const apiImports = projectImports[apiType] || (
         projectImports[apiType] = []
     );
 
-    return (filename: string) => {
+    return importHandlerCache[cacheKey] = (filename: string) => {
         apiImports.push(filename);
     };
 };
+
+export const importHandler = new ImportHandler(getImportHandler);

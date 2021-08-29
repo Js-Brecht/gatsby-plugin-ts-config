@@ -8,7 +8,7 @@ import { getProject, ProjectMeta } from "@util/project";
 import { getTranspiler, Transpiler } from "@lib/transpiler";
 
 import {
-    getImportHandler,
+    importHandler,
     getProjectImports,
     linkProjectPlugin,
 } from "@settings/imports";
@@ -108,8 +108,6 @@ export class Project {
             apiType,
         );
 
-        console.log(projectRoot, initialProject, project, input);
-
         if (
             initialProject && (
                 !project ||
@@ -160,6 +158,7 @@ export class Project {
     public readonly options: ProjectOptions;
     public readonly projectMeta: ProjectMeta;
     public readonly propBag: PropertyBag;
+    public readonly importHandler = importHandler;
 
     private _transpiler!: Transpiler;
     private _registerOptions!: TranspilerOptions<TranspileType>;
@@ -216,10 +215,6 @@ export class Project {
     public getApiOptions(apiType: ApiType): IModuleOptions {
         const { projectRoot } = this.projectMeta;
         return get(apiOptionsCache, [projectRoot, apiType], {});
-    }
-
-    public importHandler(apiType: ApiType, pluginName: string) {
-        return getImportHandler(apiType, pluginName);
     }
 
     public linkPluginImports(pluginName: string) {

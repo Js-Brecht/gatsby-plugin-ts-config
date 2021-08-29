@@ -5,11 +5,10 @@ import babelRegister from "@babel/register";
 
 import {
     serializeObject,
-    objectsAreEqual,
 } from "@util/objects";
 import { Module, preferDefault } from "@util/node";
 
-import type { Project } from "./project";
+import type { Project } from "@lib/project";
 import type {
     ApiType,
     TranspileType,
@@ -35,16 +34,27 @@ const origExtensions = {
 };
 let baseExtensions: NodeJS.RequireExtensions;
 
+const extensionCache = new Map<
+    string,
+    NodeJS.RequireExtensions
+>();
+
+const getExtensions = (key: string) => {
+    for (const [savedKey, extensions] of extensionCache.entries()) {
+        if (key === savedKey) {
+            return extensions
+        };
+    }
+    return;
+};
+
 export const getTranspiler = (
     project: Project,
     rootArgs: TranspilerArgs<TranspileType>,
 ) => {
     const rootKey = serializeObject(rootArgs);
     const options = project.options;
-    const myExtensions = new Map<
-        string,
-        NodeJS.RequireExtensions
-    >();
+    const importHandler = project.importHandler;
     const allowDirs: string[] = [];
 
     const addDir = (dir: string) => {
@@ -64,13 +74,6 @@ export const getTranspiler = (
         allowDirs.some((cur) => dir.startsWith(cur))
     );
 
-    const getExtensions = (key: string) => {
-        for (const [savedKey, extensions] of myExtensions.entries()) {
-            if (key === savedKey) return extensions;
-        }
-        return;
-    };
-
     return function transpile<
         TApiType extends ApiType,
         T extends TranspileType = "babel"
@@ -82,7 +85,7 @@ export const getTranspiler = (
         transpileRoot: string,
         overrideArgs?: TranspilerArgs<T>,
     ): PluginModule<TApiType> {
-        const addChainedImport = project.importHandler(apiType, pluginName);
+        importHandler.set(apiType, pluginName);
         addDir(transpileRoot);
 
         const ignoreRules: IgnoreFn[] = [
@@ -102,13 +105,12 @@ export const getTranspiler = (
 
         const ignore: IgnoreFn = (filename) => {
             if (filename.endsWith(".pnp.js")) return true;
-            addChainedImport(filename);
+            importHandler.addImport(filename);
 
             const origIgnore = getIgnore(filename, ignoreRules, false);
             const ignoreFile = options.hooks?.ignore
                 ? getIgnore(filename, options.hooks.ignore, origIgnore)
                 : origIgnore;
-
             return !!ignoreFile;
         };
 
@@ -149,7 +151,7 @@ export const getTranspiler = (
          * run
          */
         if (baseExtensions) {
-            restoreExtensions = { ...Module._extensions };
+            restoreExtensions = Module._extensions;
             Module._extensions = { ...origExtensions };
         }
 
@@ -181,14 +183,18 @@ export const getTranspiler = (
              * Every transpilation chain after this one should (ultimately) resolve
              * extensions back to the `baseExtensions`
              */
-            if (!baseExtensions) {
+            if (!baseExtensions || transpileType === "babel") {
+                if (transpileType === "babel") {
+                    extensionCache.clear();
+                }
+
                 baseExtensions = {
                     ...Module._extensions,
                 };
                 restoreExtensions = baseExtensions;
             }
 
-            myExtensions.set(
+            extensionCache.set(
                 transpilerKey,
                 { ...Module._extensions },
             );
@@ -239,6 +245,7 @@ export const getTranspiler = (
              */
             Module._extensions = restoreExtensions || origExtensions;
             removeDir(transpileRoot);
+            importHandler.pop();
         }
     };
 };
