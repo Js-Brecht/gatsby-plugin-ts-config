@@ -7,11 +7,9 @@ export const getPropBag = (
     projectRoot: string,
     extendBag = {} as PropertyBag,
 ): PropertyBag => {
-    if (!propBags[projectRoot]) {
-        propBags[projectRoot] = {} as PropertyBag;
-    }
-
-    const propBag = propBags[projectRoot];
+    const propBag = propBags[projectRoot] = (
+        propBags[projectRoot] || {} as PropertyBag
+    );
     if (extendBag) {
         // We want to mutate the prop bag, not replace it
         merge(
