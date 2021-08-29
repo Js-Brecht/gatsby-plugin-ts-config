@@ -52,15 +52,15 @@ export const processPlugins = <
     transpileType: PluginTranspileType,
 ): IGatsbyPluginWithOpts[] => {
     const usePlugins = expandPlugins(plugins.reduce((arr, pluginSet) => {
-        if (typeof pluginSet === "object") {
-            arr.push(pluginSet);
-            return arr;
+        if (typeof pluginSet === "function") {
+            return arr.concat(
+                project.resolveConfigFn(
+                    pluginSet as IPluginDetailsCallback<any, any>,
+                ) as GatsbyPlugin[],
+            );
         }
-        return arr.concat(
-            project.resolveConfigFn(
-                plugins as unknown as IPluginDetailsCallback,
-            ) as GatsbyPlugin[],
-        );
+        arr.push(pluginSet);
+        return arr;
     }, [] as GatsbyPlugin[]));
 
     transpilePlugins(
