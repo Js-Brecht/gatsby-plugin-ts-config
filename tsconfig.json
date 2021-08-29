@@ -17,6 +17,7 @@
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
+    "downlevelIteration": true,
     "plugins": [
       { "transform": "@zerollup/ts-transform-paths" },
       { "transform": "ts-transformer-keys/transformer" }
@@ -25,6 +26,8 @@
     "paths": {
       "@lib/*": ["src/lib/*"],
       "@util/*": ["src/util/*"],
+      "@settings": ["src/settings"],
+      "@settings/*": ["src/settings/*"],
       "@typeDefs/*": ["src/types/*"],
       "@typeDefs": ["src/types"],
       "@/*": ["src/*"]
