@@ -16,6 +16,7 @@ interface IProcessApiModuleOptions<T extends ApiType> {
     apiType: T;
     init: InitValue;
     project: Project;
+    resolveApi: boolean;
 }
 
 export type ApiModuleProcessor = typeof processApiModule;
@@ -26,6 +27,7 @@ export const processApiModule = <
     apiType,
     init,
     project,
+    resolveApi,
 }: IProcessApiModuleOptions<T>) => {
     const { projectRoot } = project.projectMeta;
 
@@ -37,6 +39,7 @@ export const processApiModule = <
             init,
             projectRoot,
             projectRoot,
+            resolveApi,
         ),
     );
 
@@ -58,6 +61,7 @@ export const processApiModule = <
                 apiType: "node",
                 init: gatsbyNodePath,
                 project,
+                resolveApi: true,
             }) as TSConfigFn<"node">;
             project.setApiOptions("node", {});
         }

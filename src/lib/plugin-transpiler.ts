@@ -95,6 +95,7 @@ export const transpilePlugins = (
                     options: project.options,
                     propBag: project.propBag,
                 }),
+                resolveApi: type === "node",
             });
         });
     });

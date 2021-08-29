@@ -32,6 +32,7 @@ const useGatsbyPluginModule = (
             apiType,
             init,
             project,
+            resolveApi: true,
         });
     } catch (err) {
         throw new PluginError(err);

@@ -34,6 +34,7 @@ export const getTranspiler = (
         init: InitValue,
         projectRoot: string,
         transpileRoot: string,
+        resolveApi: boolean,
         overrideArgs?: TranspilerArgs<T>,
     ): PluginModule<TApiType> {
         const overrideKey = (
@@ -78,6 +79,12 @@ export const getTranspiler = (
                             `Unable to retrieve require cache for module '${requirePath}'.`,
                             "This may indicate a serious issue",
                         ].join("\n"));
+                    }
+
+                    if (!resolveApi) {
+                        return (
+                            require.cache[requirePath]!.exports = omit(mod, ["__esModule"])
+                        );
                     }
 
                     if (resolvedMod && typeof resolvedMod === "function") {
