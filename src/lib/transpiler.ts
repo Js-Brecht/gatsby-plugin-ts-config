@@ -3,69 +3,101 @@ import { register as tsNodeRegister } from "ts-node";
 import omit from "lodash/omit";
 import babelRegister from "@babel/register";
 
+import {
+    serializeObject,
+    objectsAreEqual,
+} from "@util/objects";
 import { Module, preferDefault } from "@util/node";
-import { getImportHandler } from "./options/imports";
-import { getRegisterOptions } from "./options/register";
 
+import type { Project } from "./project";
 import type {
     ApiType,
+    TranspileType,
     TranspilerOptions,
     InitValue,
     PluginModule,
     TSConfigFn,
-    TsConfigPluginOptions,
     IgnoreFn,
     IgnoreHookFn,
 } from "@typeDefs";
 
 export type Transpiler = ReturnType<typeof getTranspiler>;
+export type TranspilerArgs<
+    T extends TranspileType = "babel"
+> = {
+    type: T;
+    options: TranspilerOptions<T>
+}
+
+const extensions = [".ts", ".tsx", ".js", ".jsx"];
+const origExtensions = {
+    ...Module._extensions,
+};
+let baseExtensions: NodeJS.RequireExtensions;
 
 export const getTranspiler = (
-    projectRoot: string,
-    pluginOptions: TsConfigPluginOptions,
+    project: Project,
+    rootArgs: TranspilerArgs<TranspileType>,
 ) => {
-    const transpileType = pluginOptions.type || "babel";
+    const rootKey = serializeObject(rootArgs);
+    const options = project.options;
+    const myExtensions = new Map<
+        string,
+        NodeJS.RequireExtensions
+    >();
+    const allowDirs: string[] = [];
 
-    const transpilerOpts = getRegisterOptions(
-        projectRoot,
-        transpileType,
-        pluginOptions.transpilerOptions,
+    const addDir = (dir: string) => {
+        allowDirs.push(dir);
+    };
+    const removeDir = (dir: string) => {
+        const len = allowDirs.length - 1;
+        allowDirs.forEach((_, i) => {
+            const idx = len - i;
+            const cur = allowDirs[idx];
+            if (cur === dir) {
+                allowDirs.splice(idx, 1);
+            }
+        });
+    };
+    const validDir = (dir: string) => (
+        allowDirs.some((cur) => dir.startsWith(cur))
     );
 
-    const extensions = [".ts", ".tsx", ".js", ".jsx"];
-    const origExtensions = {
-        ...Module._extensions,
-        ".ts": Module._extensions[".js"],
-        ".tsx": Module._extensions[".jsx"],
+    const getExtensions = (key: string) => {
+        for (const [savedKey, extensions] of myExtensions.entries()) {
+            if (key === savedKey) return extensions;
+        }
+        return;
     };
-    let newExtensions: NodeJS.RequireExtensions;
 
     return function transpile<
-        TApiType extends ApiType
+        TApiType extends ApiType,
+        T extends TranspileType = "babel"
     >(
         apiType: TApiType,
         init: InitValue,
         pluginName: string,
         projectRoot: string,
+        transpileRoot: string,
+        overrideArgs?: TranspilerArgs<T>,
     ): PluginModule<TApiType> {
-        const addChainedImport = getImportHandler(apiType, pluginName);
+        const addChainedImport = project.importHandler(apiType, pluginName);
+        addDir(transpileRoot);
 
         const ignoreRules: IgnoreFn[] = [
-            // Module must be a part of the current project
-            (fname) => !fname.startsWith(projectRoot),
-            // Module must not be a node_modules dependency of
-            // the current project
-            (fname) => fname.startsWith(
-                path.join(projectRoot, "node_modules"),
-            ),
+            // Module must not be a node_modules dependency
+            (fname) => /node_modules/.test(fname),
         ];
 
         const getIgnore = (
             filename: string,
             rules: (IgnoreFn | IgnoreHookFn)[],
-            orig: boolean
+            orig: boolean,
         ) => (
-            rules.some((rule) => rule(filename, !!orig))
+            validDir(filename)
+                ? false
+                : rules.some((rule) => rule(filename, !!orig))
         );
 
         const ignore: IgnoreFn = (filename) => {
@@ -73,8 +105,8 @@ export const getTranspiler = (
             addChainedImport(filename);
 
             const origIgnore = getIgnore(filename, ignoreRules, false);
-            const ignoreFile = pluginOptions.hooks?.ignore
-                ? getIgnore(filename, pluginOptions.hooks.ignore, origIgnore)
+            const ignoreFile = options.hooks?.ignore
+                ? getIgnore(filename, options.hooks.ignore, origIgnore)
                 : origIgnore;
 
             return !!ignoreFile;
@@ -84,8 +116,45 @@ export const getTranspiler = (
             return !ignore(filename);
         };
 
-        if (newExtensions) {
-            Module._extensions = newExtensions;
+        const overrideKey = (
+            overrideArgs && serializeObject(overrideArgs)
+        );
+
+        const newTranspiler = !!(
+            overrideKey &&
+            overrideKey !== rootKey
+        );
+
+        const [transpilerKey, transpilerArgs] = newTranspiler
+            ? [overrideKey!, overrideArgs!] as const
+            : [rootKey, rootArgs] as const;
+
+        const {
+            type: transpileType,
+            options: transpilerOpts,
+        } = transpilerArgs;
+
+        const useExtensions = getExtensions(transpilerKey);
+        let restoreExtensions: NodeJS.RequireExtensions | undefined;
+
+        /**
+         * We've registered an initial base set of extensions, which
+         * means this function has run before.  This means we can always
+         * restore back to those base extensions, or to the ones for
+         * the transpiler that is wrapping this one.
+         *
+         * This makes it so we can restore the prior extensions
+         * when we're done.  This should always resolve back
+         * to the `baseExtensions` once all transpiler functions have
+         * run
+         */
+        if (baseExtensions) {
+            restoreExtensions = { ...Module._extensions };
+            Module._extensions = { ...origExtensions };
+        }
+
+        if (useExtensions && baseExtensions) {
+            Module._extensions = useExtensions;
         } else {
             switch (transpileType) {
                 case "ts-node": {
@@ -104,9 +173,25 @@ export const getTranspiler = (
                     break;
                 }
             }
-            newExtensions = {
-                ...Module._extensions,
-            };
+
+            /**
+             * This is the initial extensions setup; no transpiler ran before
+             * this one (at least none that this program is aware of).
+             *
+             * Every transpilation chain after this one should (ultimately) resolve
+             * extensions back to the `baseExtensions`
+             */
+            if (!baseExtensions) {
+                baseExtensions = {
+                    ...Module._extensions,
+                };
+                restoreExtensions = baseExtensions;
+            }
+
+            myExtensions.set(
+                transpilerKey,
+                { ...Module._extensions },
+            );
         }
 
         try {
@@ -117,7 +202,7 @@ export const getTranspiler = (
                     path.resolve(
                         projectRoot,
                         init,
-                    )
+                    ),
                 );
                 const mod = require(requirePath);
 
@@ -128,8 +213,8 @@ export const getTranspiler = (
                     if (!exports) {
                         throw new Error([
                             `Unable to retrieve require cache for module '${requirePath}'.`,
-                            'This may indicate a serious issue'
-                        ].join("\n"))
+                            "This may indicate a serious issue",
+                        ].join("\n"));
                     }
 
                     if (resolvedMod && typeof resolvedMod === "function") {
@@ -138,7 +223,7 @@ export const getTranspiler = (
 
                     resolvedMod = omit(
                         Object.assign({}, exports, resolvedMod),
-                        ["__esModule", "default"]
+                        ["__esModule", "default"],
                     );
                     require.cache[requirePath]!.exports = resolvedMod;
 
@@ -148,7 +233,12 @@ export const getTranspiler = (
                 return resolveFn as PluginModule<TApiType>;
             }
         } finally {
-            Module._extensions = origExtensions;
+            /**
+             * `restoreExtensions` should never be undefined here,
+             * but we restore back to the original extensions if all else fails
+             */
+            Module._extensions = restoreExtensions || origExtensions;
+            removeDir(transpileRoot);
         }
     };
 };

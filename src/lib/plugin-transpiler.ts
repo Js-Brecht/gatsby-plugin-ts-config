@@ -3,67 +3,78 @@ import { getFile, resolveFilePath } from "@util/fs-tools";
 import { createRequire } from "@util/node";
 import { apiTypeKeys } from "@util/constants";
 
-import { linkProjectPlugin } from "./options/imports";
-import { getTranspiler } from "./transpiler";
+import { Project } from "@lib/project";
 
+import type { PackageJson } from "type-fest";
 import type {
-    PropertyBag,
-    TsConfigPluginOptions,
     IGatsbyPluginWithOpts,
 } from "@typeDefs";
 import type { ApiModuleProcessor } from "./api-module";
+
+type ResolvePluginResult = {
+    path: string;
+    pkgJson: PackageJson;
+}
 
 export const resolvePlugin = (
     relativeTo: string,
     pluginName: string,
     localOnly: boolean,
-): string => {
+): ResolvePluginResult | void => {
     const scopedRequire = createRequire(`${relativeTo}/:internal:`);
     try {
         const pluginPath = path.dirname(
             scopedRequire.resolve(`${pluginName}/package.json`),
         );
-        return localOnly ? "" : pluginPath;
+        return localOnly ? void 0 : {
+            path: pluginPath,
+            pkgJson: require(`${pluginPath}/package.json`),
+        };
     } catch (err) {
         const pluginDir = path.resolve(relativeTo, "plugins", pluginName);
-        const pkgJson = getFile(
-            path.join(pluginDir, "package.json"),
-        );
+        const pkgJsonPath = path.join(pluginDir, "package.json");
+        const pkgJson = getFile(pkgJsonPath);
 
         if (pkgJson && pkgJson.isFile()) {
-            return pluginDir;
+            return {
+                path: pluginDir,
+                pkgJson: require(pkgJsonPath),
+            };
         }
 
-        return "";
+        return;
     }
 };
 
+export type PluginTranspileType = "all" | "local-only";
+
 export const transpilePlugins = (
-    projectName: string,
-    projectRoot: string,
-    options: TsConfigPluginOptions,
-    type: "local-only" | "all",
+    project: Project,
+    type: PluginTranspileType,
     processApiModule: ApiModuleProcessor,
-    propBag?: PropertyBag,
     plugins = [] as IGatsbyPluginWithOpts[],
 ) => {
     plugins.forEach((plugin) => {
-        const localPluginName = plugin.resolve;
-        if (!localPluginName) return;
+        const pluginName = plugin.resolve;
+        if (!pluginName) return;
 
-        const pluginPath = resolvePlugin(
+        const {
             projectRoot,
-            localPluginName,
+        } = project.projectMeta;
+
+        const pluginDetails = resolvePlugin(
+            projectRoot,
+            pluginName,
             type === "local-only",
         );
-        if (!pluginPath) return; // We shouldn't transpile this plugin
+        if (!pluginDetails) return; // We shouldn't transpile this plugin
 
-        linkProjectPlugin(projectName, localPluginName);
+        const {
+            path: pluginPath,
+            pkgJson,
+        } = pluginDetails;
 
-        const transpiler = getTranspiler(
-            projectRoot,
-            options,
-        );
+        project.linkPluginImports(pluginName);
 
         apiTypeKeys.forEach((type) => {
             const gatsbyModuleName = `./gatsby-${type}.ts`;
@@ -73,11 +84,16 @@ export const transpilePlugins = (
             processApiModule({
                 apiType: type,
                 init: apiPath,
-                projectRoot: pluginPath,
-                projectName: localPluginName,
-                propBag,
-                options,
-                transpiler,
+                project: Project.getProject({
+                    apiType: type,
+                    projectMeta: {
+                        projectRoot: pluginPath,
+                        projectName: pluginName,
+                        pkgJson,
+                    },
+                    options: project.options,
+                    propBag: project.propBag,
+                }),
             });
         });
     });

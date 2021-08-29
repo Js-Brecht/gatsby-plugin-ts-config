@@ -1,8 +1,7 @@
 import { PluginError } from "@util/output";
-import { getProject } from "@util/project";
-import { getRegisterOptions } from "@lib/options/register";
-import { getTranspiler } from "@lib/transpiler";
 import { processApiModule } from "@lib/api-module";
+
+import { Project } from "@lib/project";
 
 import type {
     InitValue,
@@ -14,7 +13,7 @@ import type {
 
 export * from "./types/public";
 
-export { includePlugins } from "./lib/include-plugins";
+export { includePlugins, getPlugins } from "@lib/include-plugins";
 
 type UsePluginModule = NoFirstParameter<typeof useGatsbyPluginModule>;
 
@@ -23,26 +22,16 @@ const useGatsbyPluginModule = (
     init: InitValue,
     options = {} as TsConfigPluginOptions,
 ): PluginModule<ApiType> => {
-    const {
-        projectRoot,
-        projectName,
-    } = getProject();
-
-    const transpiler = getTranspiler(
-        projectRoot,
+    const project = Project.getProject({
+        apiType,
         options,
-    );
+    });
 
     try {
         return processApiModule({
             apiType,
             init,
-            transpiler,
-
-            projectRoot,
-            projectName,
-            options,
-            propBag: options.props,
+            project,
         });
     } catch (err) {
         throw new PluginError(err);
