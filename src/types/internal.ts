@@ -18,6 +18,12 @@ export type Hooks = {
 export type PropertyBag = JsonObject;
 export type ApiType = typeof apiTypeKeys[number];
 export type TranspileType = "babel" | "ts-node";
+export type TranspilerArgs<
+    T extends TranspileType = "babel"
+> = {
+    type: T;
+    options: TranspilerOptions<T>
+}
 export interface IInternalOptions {
     props?: PropertyBag;
     type?: TranspileType;

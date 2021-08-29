@@ -46,7 +46,7 @@ export const resolvePlugin = (
     }
 };
 
-export type PluginTranspileType = "all" | "local-only";
+export type PluginTranspileType = "all" | "local-only" | "none";
 
 export const transpilePlugins = (
     project: Project,
@@ -54,6 +54,7 @@ export const transpilePlugins = (
     processApiModule: ApiModuleProcessor,
     plugins = [] as IGatsbyPluginWithOpts[],
 ) => {
+    if (type === "none") return;
     plugins.forEach((plugin) => {
         const pluginName = plugin.resolve;
         if (!pluginName) return;

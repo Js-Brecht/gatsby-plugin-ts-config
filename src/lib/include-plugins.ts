@@ -3,6 +3,7 @@ import {
     expandPlugins,
     getPluginsCache,
     processPlugins,
+    PluginTranspileType,
 } from "@lib/process-plugins";
 import { processApiModule } from "@lib/api-module";
 
@@ -27,12 +28,6 @@ export interface IResolvePlugins<TReturn = void> {
         P extends PropertyBag = PropertyBag,
     >(plugins: T[], pluginsCb?: IPluginDetailsCallback<T, P>): TReturn;
 }
-
-const wrapPluginResolver = (resolver: IPluginDetailsCallback) => (
-    (...args: Parameters<IPluginDetailsCallback>) => (
-        expandPlugins(resolver(...args))
-    )
-);
 
 /**
  * Registers and processes plugins that will be provided to Gatsby when your site's
@@ -123,11 +118,33 @@ export const includePlugins: IResolvePlugins<void> = <
 
     if (pluginsCb) {
         cache.resolver.push(
-            wrapPluginResolver(pluginsCb as unknown as IPluginDetailsCallback),
+            pluginsCb as unknown as IPluginDetailsCallback,
         );
     }
 };
 
+const doProcessPlugins = (
+    type: PluginTranspileType,
+    plugins: GatsbyPlugin[] | IPluginDetailsCallback<any, any>,
+    opts?: GetPluginOpts,
+): IGatsbyPluginWithOpts[] => {
+    const project = Project.getProject({
+        apiType: "config",
+        options: opts,
+    });
+
+    const usePlugins = (
+        Array.isArray(plugins) ||
+        typeof plugins === "function"
+    ) && arrayify(plugins) || [];
+
+    return processPlugins(
+        usePlugins,
+        project,
+        processApiModule,
+        type,
+    );
+};
 
 type GetPluginOpts = TsConfigPluginOptions;
 
@@ -144,20 +161,23 @@ export function getPlugins<
     plugins: T[] | IPluginDetailsCallback<T, P>,
     opts?: GetPluginOpts,
 ): IGatsbyPluginWithOpts[] {
-    const project = Project.getProject({
-        apiType: "config",
-        options: opts,
-    });
-
-    const usePlugins = (
-        Array.isArray(plugins) ||
-        typeof plugins === "function"
-    ) && arrayify(plugins) || [];
-
-    return processPlugins(
-        usePlugins,
-        project,
-        processApiModule,
+    return doProcessPlugins(
         "all",
+        plugins,
+        opts,
     );
 }
+
+/**
+ * Immediately processes a collection of plugins, or a plugin resolver
+ * function, and returns the array.
+ *
+ * These plugins will not be transpiled immediately, so that they are
+ * not treated like api modules related to this plugin.
+ */
+export const getStandardPlugins: typeof getPlugins = (...args) => {
+    return doProcessPlugins(
+        "none",
+        ...args,
+    );
+};

@@ -7,8 +7,9 @@ import type {
     GatsbyPlugin,
     IPluginDetailsCallback,
     IGatsbyPluginWithOpts,
-    TsConfigPluginOptions,
 } from "@typeDefs";
+
+export type { PluginTranspileType };
 
 export interface IResolvePlugins<TReturn = void> {
     <

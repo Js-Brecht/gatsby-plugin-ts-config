@@ -7,11 +7,7 @@ import { merge } from "@util/objects";
 import { getProject, ProjectMeta } from "@util/project";
 import { getTranspiler, Transpiler } from "@lib/transpiler";
 
-import {
-    importHandler,
-    getProjectImports,
-    linkProjectPlugin,
-} from "@settings/imports";
+import { ImportHandler, ImportHandlerFn } from "@settings/import-handler";
 import { getRegisterOptions } from "@settings/register";
 import { getPropBag } from "@settings/prop-bag";
 
@@ -152,13 +148,12 @@ export class Project {
     /**
      * This is only used for tracking how this Project instance was created.
      * It should not be used externally, because `getProject()` may not return
-     * the `Project` with an `apiType` your are expecting.
+     * the `Project` with an `apiType` you are expecting.
      */
     protected readonly apiType: ApiType;
     public readonly options: ProjectOptions;
     public readonly projectMeta: ProjectMeta;
     public readonly propBag: PropertyBag;
-    public readonly importHandler = importHandler;
 
     private _transpiler!: Transpiler;
     private _registerOptions!: TranspilerOptions<TranspileType>;
@@ -217,9 +212,18 @@ export class Project {
         return get(apiOptionsCache, [projectRoot, apiType], {});
     }
 
+    public get importHandler() {
+        return ImportHandler.getCurrent(this.projectMeta.projectName);
+    }
+    public pushImportHandler(apiType: ApiType) {
+        return ImportHandler.push(apiType, this.projectMeta.projectName);
+    }
+    public popImportHandler() {
+        ImportHandler.pop();
+    }
     public linkPluginImports(pluginName: string) {
         const { projectName } = this.projectMeta;
-        return linkProjectPlugin(projectName, pluginName);
+        return ImportHandler.linkProjectPlugin(projectName, pluginName);
     }
 
     public resolveConfigFn<
@@ -232,7 +236,7 @@ export class Project {
         return cb(
             {
                 projectRoot,
-                imports: getProjectImports(projectName),
+                imports: ImportHandler.getProjectImports(projectName),
             },
             this.propBag,
         );

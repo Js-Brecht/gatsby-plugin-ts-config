@@ -27,7 +27,7 @@ export const processApiModule = <
     init,
     project,
 }: IProcessApiModuleOptions<T>) => {
-    const { projectRoot, projectName } = project.projectMeta;
+    const { projectRoot } = project.projectMeta;
 
     const { resolveImmediate = true } = project.getApiOptions(apiType);
 
@@ -35,7 +35,6 @@ export const processApiModule = <
         project.transpiler<T>(
             apiType,
             init,
-            projectName,
             projectRoot,
             projectRoot,
         ),
@@ -63,7 +62,6 @@ export const processApiModule = <
             project.setApiOptions("node", {});
         }
     }
-
 
     if (typeof apiModule === "function" && resolveImmediate) {
         apiModule = project.resolveConfigFn(apiModule) as PluginModule<T>;
