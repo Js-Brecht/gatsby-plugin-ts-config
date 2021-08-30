@@ -4,7 +4,7 @@ import pick from "lodash/pick";
 import isEqual from "lodash/isEqual";
 
 import { merge } from "@util/objects";
-import { getProject, ProjectMeta } from "@util/project";
+import { getProject, ProjectMeta } from "@util/project-meta";
 import { getTranspiler, Transpiler } from "@lib/transpiler";
 
 import { ImportHandler, ImportHandlerFn } from "@settings/import-handler";

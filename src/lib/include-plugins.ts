@@ -7,7 +7,7 @@ import {
 } from "@lib/process-plugins";
 import { processApiModule } from "@lib/api-module";
 
-import { getProject } from "@util/project";
+import { getProject } from "@util/project-meta";
 import { arrayify } from "@util/objects";
 
 import type {
