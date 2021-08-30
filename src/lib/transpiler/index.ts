@@ -7,33 +7,31 @@ import { setTranspiler } from "./set-transpiler";
 
 import type { Project } from "@lib/project";
 import type {
-    ApiType,
     TranspilerArgs,
     TranspileType,
     InitValue,
-    PluginModule,
+    TranspilerReturn,
     TSConfigFn,
 } from "@typeDefs";
 
-export type Transpiler = ReturnType<typeof getTranspiler>;
 
-export const getTranspiler = (
-    project: Project,
+export type Transpiler<TProject extends Project<any> = Project> = <
+    T extends TranspileType = "babel"
+>(
+    init: InitValue,
+    unwrapApi: boolean,
+    overrideArgs?: TranspilerArgs<T>,
+) => TranspilerReturn<TProject>;
+
+export const getTranspiler = <TProject extends Project<any>>(
+    project: TProject,
     rootArgs: TranspilerArgs<TranspileType>,
-) => {
+): Transpiler<TProject> => {
     const rootKey = Serializer.serialize(rootArgs)!;
 
-    return function transpile<
-        TApiType extends ApiType,
-        T extends TranspileType = "babel"
-    >(
-        apiType: TApiType,
-        init: InitValue,
-        projectRoot: string,
-        transpileRoot: string,
-        unwrapApi: boolean,
-        overrideArgs?: TranspilerArgs<T>,
-    ): PluginModule<TApiType> {
+    return function transpile(init, unwrapApi, overrideArgs) {
+        const projectRoot = project.projectRoot;
+
         const overrideKey = (
             overrideArgs && Serializer.serialize(overrideArgs)
         );
@@ -48,16 +46,14 @@ export const getTranspiler = (
             : [rootKey, rootArgs] as const;
 
         const restore = setTranspiler(
-            apiType,
             transpilerKey,
             transpilerArgs,
-            transpileRoot,
             project,
         );
 
         try {
             if (typeof init === "function") {
-                return omit(init(), ["__esModule"]) as PluginModule<TApiType>;
+                return omit(init(), ["__esModule"]) as TranspilerReturn<TProject>;
             } else {
                 const requirePath = require.resolve(
                     path.resolve(
@@ -96,7 +92,7 @@ export const getTranspiler = (
                     );
                 };
 
-                return resolveFn as PluginModule<TApiType>;
+                return resolveFn as TranspilerReturn<TProject>;
             }
         } finally {
             if (restore) restore();

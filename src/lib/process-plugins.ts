@@ -91,7 +91,7 @@ export const processPluginCache = (
         )
     );
 
-    const pluginCache = getPluginsCache(project.projectMeta.projectRoot);
+    const pluginCache = getPluginsCache(project.projectRoot);
     return [
         ...doProcessPlugins(pluginCache.normal, true),
         ...doProcessPlugins(insertPlugins, false),

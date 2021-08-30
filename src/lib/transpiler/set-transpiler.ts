@@ -11,7 +11,6 @@ import type {
     TranspilerOptions,
     IgnoreFn,
     IgnoreHookFn,
-    ApiType,
 } from "@typeDefs";
 import { Module } from "@util/node";
 
@@ -85,12 +84,12 @@ const register = (args: GenericArgs) => {
 };
 
 export const setTranspiler = (
-    apiType: ApiType,
     optKey: string,
     transpileArgs: TranspilerArgs<TranspileType>,
-    transpileRoot: string,
     project: Project,
 ) => {
+    const transpileRoot = project.projectRoot;
+
     const initialSettings = TranspilerSettings.push(
         optKey,
         transpileArgs,
@@ -98,7 +97,7 @@ export const setTranspiler = (
     );
 
     AllowedDirs.add(transpileRoot);
-    project.pushImportHandler(apiType);
+    const removeImportHandler = project.pushImportHandler();
 
     if (initialSettings) {
         const {
@@ -110,7 +109,7 @@ export const setTranspiler = (
 
     return () => {
         AllowedDirs.remove(transpileRoot);
-        project.popImportHandler();
+        removeImportHandler();
 
         if (!initialSettings) return;
         const restoreSettings = TranspilerSettings.pop();

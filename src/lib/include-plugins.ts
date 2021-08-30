@@ -128,10 +128,13 @@ const doProcessPlugins = (
     plugins: GatsbyPlugin[] | IPluginDetailsCallback<any, any>,
     opts?: GetPluginOpts,
 ): IGatsbyPluginWithOpts[] => {
-    const project = Project.getProject({
-        apiType: "config",
-        options: opts,
-    });
+    const project = Project.getProject(
+        {
+            apiType: "config",
+            options: opts,
+        },
+        false,
+    );
 
     const usePlugins = (
         Array.isArray(plugins) ||

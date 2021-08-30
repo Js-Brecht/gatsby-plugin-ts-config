@@ -40,3 +40,17 @@ export const objectsAreEqual = (obj1: any, obj2: any) => {
     obj2 = serializeObject(obj2);
     return obj1 === obj2;
 };
+
+export const removeFromArray = <T>(arr: T[], val: T, firstOnly = false) => {
+    for (let idx = arr.length - 1; idx >= 0; --idx) {
+        const cur = arr[idx];
+        if (cur === val) {
+            arr.splice(idx, 1);
+            if (firstOnly) return;
+        }
+    }
+};
+
+export const popArray = <T>(arr: T[], val: T) => {
+    removeFromArray(arr, val, true);
+};

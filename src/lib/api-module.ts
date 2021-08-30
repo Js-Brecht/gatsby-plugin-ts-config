@@ -6,44 +6,39 @@ import { processPluginCache } from "./process-plugins";
 
 import type { Project } from "@lib/project";
 import type {
-    ApiType,
     InitValue,
     PluginModule,
+    ProjectPluginModule,
     TSConfigFn,
+    TranspilerReturn,
 } from "@typeDefs";
 
-interface IProcessApiModuleOptions<T extends ApiType> {
-    apiType: T;
+interface IProcessApiModuleOptions<T extends Project> {
     init: InitValue;
-    project: Project;
+    project: T;
     unwrapApi: boolean;
 }
 
 export type ApiModuleProcessor = typeof processApiModule;
 
-export const processApiModule = <
-    T extends ApiType
->({
-    apiType,
+export const processApiModule = <T extends Project>({
     init,
     project,
     unwrapApi,
 }: IProcessApiModuleOptions<T>) => {
-    const { projectRoot } = project.projectMeta;
+    const projectRoot = project.projectRoot;
+    const apiType = project.apiType;
 
     const {
         resolveImmediate = true,
     } = project.getApiOptions(apiType);
 
     let apiModule = preferDefault(
-        project.transpiler<T>(
-            apiType,
+        project.transpiler(
             init,
-            projectRoot,
-            projectRoot,
             unwrapApi,
         ),
-    );
+    ) as TranspilerReturn<T>;
 
     let gatsbyNode: TSConfigFn<"node"> | undefined = undefined;
 
@@ -60,9 +55,8 @@ export const processApiModule = <
         if (gatsbyNodePath) {
             project.setApiOption("node", "resolveImmediate", false);
             gatsbyNode = processApiModule({
-                apiType: "node",
                 init: gatsbyNodePath,
-                project,
+                project: project.clone("node"),
                 unwrapApi: true,
             }) as TSConfigFn<"node">;
             project.setApiOption("node", "resolveImmediate", true);
@@ -70,7 +64,7 @@ export const processApiModule = <
     }
 
     if (typeof apiModule === "function" && resolveImmediate) {
-        apiModule = project.resolveConfigFn(apiModule) as PluginModule<T>;
+        apiModule = project.resolveConfigFn(apiModule) as ProjectPluginModule<T>;
     }
 
     if (typeof gatsbyNode === "function") {
@@ -91,5 +85,5 @@ export const processApiModule = <
         );
     }
 
-    return apiModule as PluginModule<T>;
+    return apiModule as ProjectPluginModule<T>;
 };

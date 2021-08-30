@@ -4,7 +4,8 @@ import type { RegisterOptions as TSNodeOptions } from "ts-node";
 import type { JsonObject } from "type-fest";
 
 import type { apiTypeKeys } from "@util/constants";
-import type { PublicOpts, GatsbyPlugin } from "./public";
+import type { Project, ProjectApiType } from "@lib/project";
+import type { PublicOpts, GatsbyPlugin, TSConfigFn } from "./public";
 
 export type IgnoreFn = (filename: string) => boolean;
 export type IgnoreHookFn = (filename: string, original: boolean) => (
@@ -43,6 +44,7 @@ export type TsConfigPluginOptions = (
     | IInternalBabelOptions
     | IInternalTsNodeOptions
 );
+export type PluginOptionDiff = Omit<TsConfigPluginOptions, "props">;
 
 export type InitValue = string | (() => Record<string, unknown>);
 export type NoFirstParameter<T> = (
@@ -51,12 +53,21 @@ export type NoFirstParameter<T> = (
         : T
 );
 
+
+export type BaseModuleType<T extends ApiType> = PluginModule<T> | {
+    default: TSConfigFn<T>;
+}
+
 export type TranspilerOptions<T extends TranspileType> =
     T extends "babel"
         ? BabelOptions
         : T extends "ts-node"
             ? TSNodeOptions
             : never;
+
+export type TranspilerReturn<TProject extends Project<any>> = (
+    BaseModuleType<ProjectApiType<TProject>>
+)
 
 export type ApiImports = {
     [K in ApiType]?: string[];
@@ -73,6 +84,9 @@ export type PluginModule<T extends ApiType> =
         : T extends "node"
             ? GatsbyNode
             : unknown;
+export type ProjectPluginModule<T extends Project> = (
+    PluginModule<ProjectApiType<T>>
+)
 
 export interface IPluginDetailsCallback<
     TReturn extends GatsbyPlugin = GatsbyPlugin,

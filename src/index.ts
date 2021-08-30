@@ -22,14 +22,18 @@ const useGatsbyPluginModule = (
     init: InitValue,
     options = {} as TsConfigPluginOptions,
 ): PluginModule<ApiType> => {
-    const project = Project.getProject({
-        apiType,
-        options,
-    });
+    const project = Project.getProject(
+        {
+            apiType,
+            options,
+            propBag: options.props,
+        },
+        true,
+        true,
+    );
 
     try {
         return processApiModule({
-            apiType,
             init,
             project,
             unwrapApi: true,

@@ -1,4 +1,5 @@
 import { PluginError } from "@util/output";
+import { popArray } from "@util/objects";
 import type {
     ApiType,
     ImportsCache,
@@ -8,18 +9,26 @@ import type {
 export type ImportHandlerFn = (filename: string) => void;
 
 type HandlerCacheMeta = {
+    type: ApiType;
     plugin: string;
     handler: ImportHandlerFn;
 }
+
 type ImportHandlerCache = {
+    prevIndex: Record<string, HandlerCacheMeta[]>
     previous: HandlerCacheMeta[];
     current?: HandlerCacheMeta;
 }
 
 const importHandlers: Record<string, ImportHandlerFn> = {};
 const handlerCache: ImportHandlerCache = {
+    prevIndex: {},
     previous: [],
 };
+
+const getPrevKey = (apiType: ApiType, pluginName: string) => (
+    `${pluginName}:${apiType}`
+);
 
 const importsCache: ImportsCache = {};
 
@@ -67,29 +76,70 @@ export class ImportHandler {
         pluginLinks[pluginName] = pluginProject;
     }
 
-    public static getCurrent(pluginName: string) {
-        if (handlerCache.current && handlerCache.current.plugin === pluginName) {
-            return handlerCache.current.handler;
+    private static pushPrev(handlerMeta: HandlerCacheMeta) {
+        const key = getPrevKey(handlerMeta.type, handlerMeta.plugin);
+        const prev = handlerCache.prevIndex[key] = (
+            handlerCache.prevIndex[key] || []
+        );
+        prev.push(handlerMeta);
+        handlerCache.previous.push(handlerMeta);
+    }
+    private static getPrev(apiType: ApiType, pluginName: string) {
+        const key = getPrevKey(apiType, pluginName);
+        return handlerCache.prevIndex[key] || [];
+    }
+    private static popPrev() {
+        const last = handlerCache.previous.pop();
+        if (!last) return;
+
+        const { type, plugin } = last;
+        const index = ImportHandler.getPrev(type, plugin);
+        popArray(index, last);
+
+        return last;
+    }
+
+    public static getCurrent(apiType: ApiType, pluginName: string) {
+        const current = handlerCache.current;
+        if (current) {
+            if (current.type === apiType && current.plugin === pluginName) {
+                return current.handler;
+            }
         }
-        return;
+
+        const prev = ImportHandler.getPrev(apiType, pluginName);
+        return prev[prev.length - 1]?.handler;
     }
 
     public static push(apiType: ApiType, pluginName: string) {
         const newHandler = ImportHandler.getImportHandler(apiType, pluginName);
+        const current = handlerCache.current;
 
-        if (handlerCache.current && handlerCache.current.handler !== newHandler) {
-            handlerCache.previous.push(handlerCache.current);
+        if (current && current.handler !== newHandler) {
+            ImportHandler.pushPrev(current);
         }
 
-        handlerCache.current = {
+        const myMeta: HandlerCacheMeta = {
+            type: apiType,
             plugin: pluginName,
             handler: newHandler,
         };
-        return newHandler;
+
+        handlerCache.current = myMeta;
+        return () => {
+            if (handlerCache.current === myMeta) {
+                ImportHandler.pop();
+                return;
+            }
+
+            const index = ImportHandler.getPrev(apiType, pluginName);
+            popArray(index, myMeta);
+            popArray(handlerCache.previous, myMeta);
+        };
     }
 
     public static pop() {
-        handlerCache.current = handlerCache.previous.pop();
+        handlerCache.current = ImportHandler.popPrev();
     }
 
     public static addImport: ImportHandlerFn = (filename) => {

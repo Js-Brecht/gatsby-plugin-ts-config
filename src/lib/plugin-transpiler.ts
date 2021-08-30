@@ -58,9 +58,7 @@ export const transpilePlugins = (
         const pluginName = plugin.resolve;
         if (!pluginName) return;
 
-        const {
-            projectRoot,
-        } = project.projectMeta;
+        const projectRoot = project.projectRoot;
 
         const pluginDetails = resolvePlugin(
             projectRoot,
@@ -82,18 +80,20 @@ export const transpilePlugins = (
             if (!apiPath) return; // This `gatsby-*` file doesn't exist for this local plugin
 
             processApiModule({
-                apiType: type,
                 init: apiPath,
-                project: Project.getProject({
-                    apiType: type,
-                    projectMeta: {
-                        projectRoot: pluginPath,
-                        projectName: pluginName,
-                        pkgJson,
+                project: Project.getProject(
+                    {
+                        apiType: type,
+                        projectMeta: {
+                            projectRoot: pluginPath,
+                            projectName: pluginName,
+                            pkgJson,
+                        },
+                        options: project.options,
+                        propBag: project.propBag,
                     },
-                    options: project.options,
-                    propBag: project.propBag,
-                }),
+                    true,
+                ),
                 unwrapApi: type === "node",
             });
         });
