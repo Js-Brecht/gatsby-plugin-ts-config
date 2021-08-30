@@ -1,9 +1,6 @@
 import path from "path";
 import omit from "lodash/omit";
 
-import {
-    serializeObject,
-} from "@util/objects";
 import { preferDefault } from "@util/node";
 import { Serializer } from "./serializer";
 import { setTranspiler } from "./set-transpiler";
@@ -24,7 +21,7 @@ export const getTranspiler = (
     project: Project,
     rootArgs: TranspilerArgs<TranspileType>,
 ) => {
-    const rootKey = serializeObject(rootArgs);
+    const rootKey = Serializer.serialize(rootArgs)!;
 
     return function transpile<
         TApiType extends ApiType,
