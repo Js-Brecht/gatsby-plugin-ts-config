@@ -199,17 +199,21 @@ export class Project {
         return this._registerOptions;
     }
 
-    public setApiOptions(apiType: ApiType, opts: IModuleOptions) {
+    public setApiOption<K extends keyof IModuleOptions>(
+        apiType: ApiType,
+        option: K,
+        value: IModuleOptions[K],
+    ) {
         const { projectRoot } = this.projectMeta;
-        set(apiOptionsCache, [projectRoot, apiType], merge(
-            {},
-            this.getApiOptions(apiType),
-            opts,
-        ));
+        set(apiOptionsCache, [projectRoot, apiType, option], value);
     }
     public getApiOptions(apiType: ApiType): IModuleOptions {
         const { projectRoot } = this.projectMeta;
         return get(apiOptionsCache, [projectRoot, apiType], {});
+    }
+    public getApiOption<K extends keyof IModuleOptions>(apiType: ApiType, option: K): IModuleOptions[K] {
+        const { projectRoot } = this.projectMeta;
+        return get(apiOptionsCache, [projectRoot, apiType, option]);
     }
 
     public get importHandler() {

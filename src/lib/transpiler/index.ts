@@ -34,7 +34,7 @@ export const getTranspiler = (
         init: InitValue,
         projectRoot: string,
         transpileRoot: string,
-        resolveApi: boolean,
+        unwrapApi: boolean,
         overrideArgs?: TranspilerArgs<T>,
     ): PluginModule<TApiType> {
         const overrideKey = (
@@ -81,7 +81,7 @@ export const getTranspiler = (
                         ].join("\n"));
                     }
 
-                    if (!resolveApi) {
+                    if (!unwrapApi) {
                         return (
                             require.cache[requirePath]!.exports = omit(mod, ["__esModule"])
                         );
@@ -91,13 +91,12 @@ export const getTranspiler = (
                         resolvedMod = resolvedMod(opts, props);
                     }
 
-                    resolvedMod = omit(
-                        Object.assign({}, exports, resolvedMod),
-                        ["__esModule", "default"],
+                    return (
+                        require.cache[requirePath]!.exports = omit(
+                            Object.assign({}, exports, resolvedMod),
+                            ["__esModule", "default"],
+                        )
                     );
-                    require.cache[requirePath]!.exports = resolvedMod;
-
-                    return resolvedMod;
                 };
 
                 return resolveFn as PluginModule<TApiType>;

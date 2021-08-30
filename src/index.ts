@@ -32,7 +32,7 @@ const useGatsbyPluginModule = (
             apiType,
             init,
             project,
-            resolveApi: true,
+            unwrapApi: true,
         });
     } catch (err) {
         throw new PluginError(err);
@@ -53,7 +53,7 @@ const useGatsbyPluginModule = (
  *   your project's local plugins will be transpiled as well, and a copy of this
  *   `propBag` will be passed to each.
  *
- * @param {InitValue} initValue -
+ * @param {InitValue} initValue
  * - Can be a string, pointing to a `gatsby-config.ts` file.  Can be relative
  *   or absolute.  When relative, it is relative to your project's `package.json`
  *

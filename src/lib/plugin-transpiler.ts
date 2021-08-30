@@ -46,7 +46,7 @@ export const resolvePlugin = (
     }
 };
 
-export type PluginTranspileType = "all" | "local-only" | "none";
+export type PluginTranspileType = "all" | "local-only";
 
 export const transpilePlugins = (
     project: Project,
@@ -54,7 +54,6 @@ export const transpilePlugins = (
     processApiModule: ApiModuleProcessor,
     plugins = [] as IGatsbyPluginWithOpts[],
 ) => {
-    if (type === "none") return;
     plugins.forEach((plugin) => {
         const pluginName = plugin.resolve;
         if (!pluginName) return;
@@ -78,7 +77,7 @@ export const transpilePlugins = (
         project.linkPluginImports(pluginName);
 
         apiTypeKeys.forEach((type) => {
-            const gatsbyModuleName = `./gatsby-${type}.ts`;
+            const gatsbyModuleName = `./gatsby-${type}`;
             const apiPath = resolveFilePath(pluginPath, gatsbyModuleName);
             if (!apiPath) return; // This `gatsby-*` file doesn't exist for this local plugin
 
@@ -95,7 +94,7 @@ export const transpilePlugins = (
                     options: project.options,
                     propBag: project.propBag,
                 }),
-                resolveApi: type === "node",
+                unwrapApi: type === "node",
             });
         });
     });

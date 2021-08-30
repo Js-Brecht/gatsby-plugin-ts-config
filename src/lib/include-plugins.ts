@@ -167,17 +167,3 @@ export function getPlugins<
         opts,
     );
 }
-
-/**
- * Immediately processes a collection of plugins, or a plugin resolver
- * function, and returns the array.
- *
- * These plugins will not be transpiled immediately, so that they are
- * not treated like api modules related to this plugin.
- */
-export const getStandardPlugins: typeof getPlugins = (...args) => {
-    return doProcessPlugins(
-        "none",
-        ...args,
-    );
-};

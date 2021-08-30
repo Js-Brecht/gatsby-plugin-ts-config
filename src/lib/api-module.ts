@@ -16,7 +16,7 @@ interface IProcessApiModuleOptions<T extends ApiType> {
     apiType: T;
     init: InitValue;
     project: Project;
-    resolveApi: boolean;
+    unwrapApi: boolean;
 }
 
 export type ApiModuleProcessor = typeof processApiModule;
@@ -27,11 +27,13 @@ export const processApiModule = <
     apiType,
     init,
     project,
-    resolveApi,
+    unwrapApi,
 }: IProcessApiModuleOptions<T>) => {
     const { projectRoot } = project.projectMeta;
 
-    const { resolveImmediate = true } = project.getApiOptions(apiType);
+    const {
+        resolveImmediate = true,
+    } = project.getApiOptions(apiType);
 
     let apiModule = preferDefault(
         project.transpiler<T>(
@@ -39,7 +41,7 @@ export const processApiModule = <
             init,
             projectRoot,
             projectRoot,
-            resolveApi,
+            unwrapApi,
         ),
     );
 
@@ -56,14 +58,14 @@ export const processApiModule = <
          *    can consume it.
          */
         if (gatsbyNodePath) {
-            project.setApiOptions("node", { resolveImmediate: false });
+            project.setApiOption("node", "resolveImmediate", false);
             gatsbyNode = processApiModule({
                 apiType: "node",
                 init: gatsbyNodePath,
                 project,
-                resolveApi: true,
+                unwrapApi: true,
             }) as TSConfigFn<"node">;
-            project.setApiOptions("node", {});
+            project.setApiOption("node", "resolveImmediate", true);
         }
     }
 

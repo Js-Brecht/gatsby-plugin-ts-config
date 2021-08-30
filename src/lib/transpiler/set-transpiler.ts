@@ -114,6 +114,7 @@ export const setTranspiler = (
 
         if (!initialSettings) return;
         const restoreSettings = TranspilerSettings.pop();
+
         // No prior transpiler set.  Just restore the original
         // module extensions
         if (restoreSettings === -1) {
