@@ -2,6 +2,7 @@ import path from "path";
 import omit from "lodash/omit";
 
 import { preferDefault } from "@util/node";
+import { resolveFilePath } from "@util/fs-tools";
 import { Serializer } from "./serializer";
 import { setTranspiler } from "./set-transpiler";
 
@@ -55,12 +56,18 @@ export const getTranspiler = <TProject extends Project<any>>(
             if (typeof init === "function") {
                 return omit(init(), ["__esModule"]) as TranspilerReturn<TProject>;
             } else {
-                const requirePath = require.resolve(
-                    path.resolve(
-                        projectRoot,
-                        init,
-                    ),
+                const requirePath = resolveFilePath(
+                    projectRoot,
+                    path.resolve(projectRoot, init)
                 );
+
+                if (!requirePath) {
+                    throw new Error([
+                        `Unable to resolve module '${init}' from`,
+                        `Path: ${projectRoot}`
+                    ].join("\n"))
+                }
+
                 const mod = require(requirePath);
 
                 const resolveFn: TSConfigFn<any> = (opts, props) => {

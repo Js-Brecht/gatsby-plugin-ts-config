@@ -15,7 +15,7 @@ export const getFile: typeof fileExists = (fpath) => (
 );
 
 const moduleResolver = resolve.create.sync({
-    extensions: [".js", ".ts"],
+    extensions: [".ts", ".js"],
 });
 
 export const resolveFilePath = (startDir: string, moduleName: string): false | string => {
