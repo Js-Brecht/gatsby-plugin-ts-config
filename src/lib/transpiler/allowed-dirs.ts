@@ -1,3 +1,5 @@
+import path from "path";
+
 export class AllowedDirs {
     private static allowedDirs: string[] = [];
 
@@ -20,7 +22,7 @@ export class AllowedDirs {
     }
     public static allowed(dir: string) {
         return AllowedDirs.allowedDirs.some((cur) => (
-            dir.startsWith(cur)
+            dir.startsWith(cur + path.sep)
         ));
     }
 }
