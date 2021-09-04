@@ -101,5 +101,6 @@
 		"@jtechsvcs/eslint@1.0.5": {
 			"unplugged": true
 		}
-	}
+	},
+	"packageManager": "yarn@3.0.2"
 }

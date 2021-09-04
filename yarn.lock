@@ -9305,20 +9305,20 @@ fsevents@^1.2.7:
 
 "fsevents@patch:fsevents@^1.2.7#~builtin<compat/fsevents>":
   version: 1.2.13
-  resolution: "fsevents@patch:fsevents@npm%3A1.2.13#~builtin<compat/fsevents>::version=1.2.13&hash=18f3a7"
+  resolution: "fsevents@patch:fsevents@npm%3A1.2.13#~builtin<compat/fsevents>::version=1.2.13&hash=1cc4b2"
   dependencies:
     bindings: ^1.5.0
     nan: ^2.12.1
-  checksum: 2587e64097c1251ae549440b6347954ef3c5ce390061f9e0f0810e83d5d604bb7222c382e7e3c39fc2ba4da53f115b118ea5359ca3bb0bcb96576596bc685d5a
+  checksum: b264407498db2cfdcc2a05287334a4160c985a88e4a989e2f2f8dcc6afc8b04a4fcd82c797266442452e11c1fb07d7747d138b078fe4bb1f8f4fd2a6f2484d7e
   languageName: node
   linkType: hard
 
 "fsevents@patch:fsevents@~2.3.2#~builtin<compat/fsevents>":
   version: 2.3.2
-  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=18f3a7"
+  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=1cc4b2"
   dependencies:
     node-gyp: latest
-  checksum: edbd0fd80be379c14409605f77e52fdc78a119e17f875e8b90a220c3e5b29e54a1477c21d91fd30b957ea4866406dc3ff87b61432d2840ff8866b309e5866140
+  checksum: 78db9daf1f6526a49cefee3917cc988f62dc7f25b5dd80ad6de4ffc4af7f0cab7491ac737626ff53e482a111bc53aac9e411fe3602458eca36f6a003ecf69c16
   languageName: node
   linkType: hard
 
@@ -9477,65 +9477,6 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"gatsby-plugin-ts-config@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "gatsby-plugin-ts-config@workspace:."
-  dependencies:
-    "@babel/core": ^7.8.6
-    "@babel/plugin-proposal-nullish-coalescing-operator": ^7.10.1
-    "@babel/plugin-proposal-optional-chaining": ^7.10.3
-    "@babel/plugin-syntax-dynamic-import": ^7.8.3
-    "@babel/plugin-transform-runtime": ^7.10.3
-    "@babel/plugin-transform-typescript": ^7.10.3
-    "@babel/preset-env": ^7.10.3
-    "@babel/preset-flow": ^7.10.1
-    "@babel/preset-react": ^7.10.1
-    "@babel/preset-typescript": ^7.8.3
-    "@babel/register": ^7.8.6
-    "@babel/runtime": ^7.8.7
-    "@types/babel__core": ^7.1.6
-    "@types/fs-extra": ^8.1.0
-    "@types/lodash": ^4.14.172
-    "@types/node": ^13.7.2
-    "@types/webpack": ^4.41.6
-    "@yarnpkg/pnpify": ^2.4.0
-    "@yarnpkg/sdks": ^2.4.1-rc.4
-    "@zerollup/ts-transform-paths": ^1.7.18
-    babel-plugin-dynamic-import-node: ^2.3.3
-    callsites: ^3.1.0
-    enhanced-resolve: ^5.8.0
-    eslint: "npm:@jtechsvcs/eslint@^1.0.5"
-    find-up: ^5.0.0
-    fs-extra: ^8.1.0
-    gatsby: ^3.11.1
-    lodash: ^4.17.21
-    npm-run-all: ^4.1.5
-    rimraf: ^3.0.2
-    serialize-error: ^8.1.0
-    ts-node: ^9.0.0
-    ts-transformer-keys: ^0.4.1
-    tslog: ^3.2.0
-    ttypescript: ^1.5.10
-    type-fest: ^0.12.0
-    typescript: 4.4.2
-  peerDependencies:
-    "@babel/core": ^7.9.0
-    "@babel/runtime": ^7.8.7
-    gatsby: ~2.x.x || ~3.x.x
-    typescript: ~4.x.x
-  dependenciesMeta:
-    "@jtechsvcs/eslint@1.0.5":
-      unplugged: true
-  peerDependenciesMeta:
-    "@babel/runtime":
-      optional: true
-    eslint:
-      optional: true
-    typescript:
-      optional: true
-  languageName: unknown
-  linkType: soft
-
 "gatsby-plugin-typescript@npm:^3.11.0":
   version: 3.11.0
   resolution: "gatsby-plugin-typescript@npm:3.11.0"
@@ -9664,6 +9605,65 @@ fsevents@~2.3.2:
   checksum: c6548ad5c8e6de5c7379fe856f777b53c849230eae48ef69c3fa472756aa7a542f689580558f65e6fc72125e12b1e0d67e6daa0223f75041e22f172ec99abb4d
   languageName: node
   linkType: hard
+
+"gatsby-ts@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "gatsby-ts@workspace:."
+  dependencies:
+    "@babel/core": ^7.8.6
+    "@babel/plugin-proposal-nullish-coalescing-operator": ^7.10.1
+    "@babel/plugin-proposal-optional-chaining": ^7.10.3
+    "@babel/plugin-syntax-dynamic-import": ^7.8.3
+    "@babel/plugin-transform-runtime": ^7.10.3
+    "@babel/plugin-transform-typescript": ^7.10.3
+    "@babel/preset-env": ^7.10.3
+    "@babel/preset-flow": ^7.10.1
+    "@babel/preset-react": ^7.10.1
+    "@babel/preset-typescript": ^7.8.3
+    "@babel/register": ^7.8.6
+    "@babel/runtime": ^7.8.7
+    "@types/babel__core": ^7.1.6
+    "@types/fs-extra": ^8.1.0
+    "@types/lodash": ^4.14.172
+    "@types/node": ^13.7.2
+    "@types/webpack": ^4.41.6
+    "@yarnpkg/pnpify": ^2.4.0
+    "@yarnpkg/sdks": ^2.4.1-rc.4
+    "@zerollup/ts-transform-paths": ^1.7.18
+    babel-plugin-dynamic-import-node: ^2.3.3
+    callsites: ^3.1.0
+    enhanced-resolve: ^5.8.0
+    eslint: "npm:@jtechsvcs/eslint@^1.0.5"
+    find-up: ^5.0.0
+    fs-extra: ^8.1.0
+    gatsby: ^3.11.1
+    lodash: ^4.17.21
+    npm-run-all: ^4.1.5
+    rimraf: ^3.0.2
+    serialize-error: ^8.1.0
+    ts-node: ^9.0.0
+    ts-transformer-keys: ^0.4.1
+    tslog: ^3.2.0
+    ttypescript: ^1.5.10
+    type-fest: ^0.12.0
+    typescript: 4.4.2
+  peerDependencies:
+    "@babel/core": ^7.9.0
+    "@babel/runtime": ^7.8.7
+    gatsby: ~2.x.x || ~3.x.x
+    typescript: ~4.x.x
+  dependenciesMeta:
+    "@jtechsvcs/eslint@1.0.5":
+      unplugged: true
+  peerDependenciesMeta:
+    "@babel/runtime":
+      optional: true
+    eslint:
+      optional: true
+    typescript:
+      optional: true
+  languageName: unknown
+  linkType: soft
 
 "gatsby-worker@npm:^0.2.0":
   version: 0.2.0
@@ -15811,21 +15811,21 @@ resolve@^2.0.0-next.3:
 
 "resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.12.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.3.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.8.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.9.0#~builtin<compat/resolve>":
   version: 1.20.0
-  resolution: "resolve@patch:resolve@npm%3A1.20.0#~builtin<compat/resolve>::version=1.20.0&hash=d4691f"
+  resolution: "resolve@patch:resolve@npm%3A1.20.0#~builtin<compat/resolve>::version=1.20.0&hash=00b1ff"
   dependencies:
     is-core-module: ^2.2.0
     path-parse: ^1.0.6
-  checksum: 028141533a81a4515c8ac07e38a0ccde5e2722a0fa6bb83ac53ec463a764f1b7c021dcb98fc9a511a4f6e403f354d034bf250fcf9b7b8399bceb2a889ddf78ff
+  checksum: bed00be983cd20a8af0e7840664f655c4b269786dbd9595c5f156cd9d8a0050e65cdbbbdafc30ee9b6245b230c78a2c8ab6447a52545b582f476c29adb188cc5
   languageName: node
   linkType: hard
 
 "resolve@patch:resolve@^2.0.0-next.3#~builtin<compat/resolve>":
   version: 2.0.0-next.3
-  resolution: "resolve@patch:resolve@npm%3A2.0.0-next.3#~builtin<compat/resolve>::version=2.0.0-next.3&hash=d4691f"
+  resolution: "resolve@patch:resolve@npm%3A2.0.0-next.3#~builtin<compat/resolve>::version=2.0.0-next.3&hash=00b1ff"
   dependencies:
     is-core-module: ^2.2.0
     path-parse: ^1.0.6
-  checksum: 2b145f11f797d477c355e53dc70a1b991d95e7954ea6ab258bc1905d4c1658d477a7bcf912eda56c9643080206fe1f44a53fe96559e8da17140347447ce9c025
+  checksum: eb88c5e53843bc022215744307a5f5664446c0fdb8f43c33456dce98d5ee6b3162d0cd0a177bb6f1c3d5c8bf01391ac7ab2de0e936e35318725fb40ba7efdaf6
   languageName: node
   linkType: hard
 
@@ -17654,11 +17654,11 @@ typescript@4.4.2:
 
 "typescript@patch:typescript@4.4.2#~builtin<compat/typescript>":
   version: 4.4.2
-  resolution: "typescript@patch:typescript@npm%3A4.4.2#~builtin<compat/typescript>::version=4.4.2&hash=ddd1e8"
+  resolution: "typescript@patch:typescript@npm%3A4.4.2#~builtin<compat/typescript>::version=4.4.2&hash=32657b"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 1f30617046271a94d6821fe9da9c4705111e0a2f5479269c82f65aa76b2421ff90def8838dd35b1aa464d015248b06c89ff867bd282f4822b5ee18b7f92f95ee
+  checksum: 3109ae25705746996007161cdd3271857db4f40356b894e34d4cabc216bf9e251f53e0bb6e48df2450b5e3fd948dcbee716a616a4ad4cf7251292025e6163cb1
   languageName: node
   linkType: hard
 

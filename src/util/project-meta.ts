@@ -40,9 +40,14 @@ export const getProjectPkgJson = (start = process.cwd()): PackageJsonDetails | n
     );
 };
 
-export type ProjectMeta = ReturnType<typeof getProject>;
+export type ProjectMeta = {
+    projectRoot: string;
+    projectName: string;
+    pkgJson: PackageJson;
+    callSite?: callsites.CallSite;
+}
 
-export const getProject = () => {
+export const getProject = (): ProjectMeta => {
     const callSite = getCallSite();
     const callFile = callSite?.getFileName();
     if (!callFile) {
