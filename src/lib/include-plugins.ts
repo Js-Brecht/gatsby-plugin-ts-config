@@ -1,46 +1,33 @@
-import { getProject } from "@util/project";
+import { Project } from "@lib/project";
+import {
+    expandPlugins,
+    getPluginsCache,
+    processPlugins,
+    PluginTranspileType,
+} from "@lib/process-plugins";
+import { processApiModule } from "@lib/api-module";
+
+import { getProject } from "@util/project-meta";
+import { arrayify } from "@util/objects";
+
 import type {
     PropertyBag,
     GatsbyPlugin,
     IPluginDetailsCallback,
     IGatsbyPluginWithOpts,
+    TsConfigPluginOptions,
 } from "@typeDefs";
 
-export interface IResolvePlugins {
+export interface IResolvePlugins<TReturn = void> {
     <
         T extends GatsbyPlugin = GatsbyPlugin,
         P extends PropertyBag = PropertyBag,
-    >(plugins: T[] | IPluginDetailsCallback<T, P>): void;
+    >(plugins: T[] | IPluginDetailsCallback<T, P>): TReturn;
     <
         T extends GatsbyPlugin = GatsbyPlugin,
         P extends PropertyBag = PropertyBag,
-    >(plugins: T[], pluginsCb?: IPluginDetailsCallback<T, P>): void;
+    >(plugins: T[], pluginsCb?: IPluginDetailsCallback<T, P>): TReturn;
 }
-
-type PluginCache = {
-    [project: string]: {
-        normal: IGatsbyPluginWithOpts[];
-        resolver: IPluginDetailsCallback[];
-    }
-}
-
-const pluginCache: PluginCache = {};
-
-export const expandPlugins = (plugins: GatsbyPlugin[]): IGatsbyPluginWithOpts[] => (
-    plugins
-        .filter(Boolean)
-        .map((p) => (
-            typeof p === "string"
-                ? { resolve: p, options: {} }
-                : p
-        )) as IGatsbyPluginWithOpts[]
-);
-
-const wrapPluginResolver = (resolver: IPluginDetailsCallback) => (
-    (...args: Parameters<IPluginDetailsCallback>) => (
-        expandPlugins(resolver(...args))
-    )
-);
 
 /**
  * Registers and processes plugins that will be provided to Gatsby when your site's
@@ -113,7 +100,7 @@ const wrapPluginResolver = (resolver: IPluginDetailsCallback) => (
  *   2. Normal `gatsby-config` plugin array
  *   3. Plugins returned from the callback function parameter(s) in this function
  */
-export const includePlugins: IResolvePlugins = <
+export const includePlugins: IResolvePlugins<void> = <
     T extends GatsbyPlugin = GatsbyPlugin,
     P extends PropertyBag = PropertyBag,
 >(
@@ -121,12 +108,7 @@ export const includePlugins: IResolvePlugins = <
     pluginsCb?: IPluginDetailsCallback<T, P>,
 ) => {
     const { projectRoot } = getProject();
-    const cache = pluginCache[projectRoot] = (
-        pluginCache[projectRoot] || {
-            normal: [],
-            resolver: [],
-        }
-    );
+    const cache = getPluginsCache(projectRoot);
 
     if (plugins instanceof Array) {
         cache.normal.push(...expandPlugins(plugins));
@@ -136,14 +118,55 @@ export const includePlugins: IResolvePlugins = <
 
     if (pluginsCb) {
         cache.resolver.push(
-            wrapPluginResolver(pluginsCb as unknown as IPluginDetailsCallback),
+            pluginsCb as unknown as IPluginDetailsCallback,
         );
     }
 };
 
-export const getPluginsCache = (projectRoot: string) => (
-    pluginCache[projectRoot] || {
-        normal: [],
-        resolver: [],
-    }
-);
+const doProcessPlugins = (
+    type: PluginTranspileType,
+    plugins: GatsbyPlugin[] | IPluginDetailsCallback<any, any>,
+    opts?: GetPluginOpts,
+): IGatsbyPluginWithOpts[] => {
+    const project = Project.getProject(
+        {
+            apiType: "config",
+            options: opts,
+        },
+        false,
+    );
+
+    const usePlugins = (
+        Array.isArray(plugins) ||
+        typeof plugins === "function"
+    ) && arrayify(plugins) || [];
+
+    return processPlugins(
+        usePlugins,
+        project,
+        processApiModule,
+        type,
+    );
+};
+
+type GetPluginOpts = TsConfigPluginOptions;
+
+/**
+ * Immediately processes and returns a collection of plugins, or a
+ * plugin resolver function.
+ *
+ * All plugins passed to this function will be transpiled immediately.
+ */
+export function getPlugins<
+    T extends GatsbyPlugin = GatsbyPlugin,
+    P extends PropertyBag = PropertyBag,
+>(
+    plugins: T[] | IPluginDetailsCallback<T, P>,
+    opts?: GetPluginOpts,
+): IGatsbyPluginWithOpts[] {
+    return doProcessPlugins(
+        "all",
+        plugins,
+        opts,
+    );
+}

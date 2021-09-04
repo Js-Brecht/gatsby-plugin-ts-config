@@ -96,6 +96,26 @@ module.exports = useGatsbyNode(() => require("./config/gatsby-node"), opts);
   * When `type === "babel"`: See the [babel options documentation][babel-docs]
   * When `type === "ts-node"`: See the [ts-node options documentation][tsnode-docs]
 
+* `hooks`: `Object`
+
+  Allows you to hook into certain processes.
+
+  * `ignore`: `Array<IgnoreHookFn>`
+
+    `IgnoreHookFn = (filename: string, origIgnore: boolean) => boolean`
+
+    Override the rule set used to tell the transpiler to ignore files.
+
+    * Receives two parameters:
+
+      1. The file name to check (fully qualified)
+      2. The original ignore value
+
+    * Return a falsy or truthy value.  It will be converted to boolean.
+    * To use the value that would have been chosen by the internal process, return the second parameter.
+    * The first `true` or truthy value to be returned from your rule set will be used.  The rest of the rule
+      set will be ignored
+
 ### Default exports
 
 The default export is supported for your `gatsby-*.ts` files.  This is important to note, because Typescript

@@ -1,8 +1,7 @@
 import { PluginError } from "@util/output";
-import { getProject } from "@util/project";
-import { getRegisterOptions } from "@lib/options/register";
-import { getTranspiler } from "@lib/transpiler";
 import { processApiModule } from "@lib/api-module";
+
+import { Project } from "@lib/project";
 
 import type {
     InitValue,
@@ -14,7 +13,7 @@ import type {
 
 export * from "./types/public";
 
-export { includePlugins } from "./lib/include-plugins";
+export { includePlugins, getPlugins } from "@lib/include-plugins";
 
 type UsePluginModule = NoFirstParameter<typeof useGatsbyPluginModule>;
 
@@ -23,28 +22,23 @@ const useGatsbyPluginModule = (
     init: InitValue,
     options = {} as TsConfigPluginOptions,
 ): PluginModule<ApiType> => {
-    const {
-        projectRoot,
-        projectName,
-    } = getProject();
-
-    const transpiler = getTranspiler(
-        projectRoot,
-        options,
+    const project = Project.getProject(
+        {
+            apiType,
+            options,
+            propBag: options.props,
+        },
+        true,
+        true,
     );
 
     try {
         return processApiModule({
-            apiType,
             init,
-            transpiler,
-
-            projectRoot,
-            projectName,
-            options,
-            propBag: options.props,
+            project,
+            unwrapApi: true,
         });
-    } catch (err) {
+    } catch (err: any) {
         throw new PluginError(err);
     }
 };
@@ -63,7 +57,7 @@ const useGatsbyPluginModule = (
  *   your project's local plugins will be transpiled as well, and a copy of this
  *   `propBag` will be passed to each.
  *
- * @param {InitValue} initValue -
+ * @param {InitValue} initValue
  * - Can be a string, pointing to a `gatsby-config.ts` file.  Can be relative
  *   or absolute.  When relative, it is relative to your project's `package.json`
  *

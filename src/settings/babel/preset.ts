@@ -50,8 +50,8 @@ const preset = () => {
                 presets: [[
                     r(`@babel/preset-typescript`),
                     { isTSX: false },
-                    "simple-typescript-module-preset"],
-                ],
+                    "simple-typescript-module-preset",
+                ]],
             },
             {
                 test: [`**/*.tsx`],

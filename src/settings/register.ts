@@ -1,5 +1,6 @@
 import path from "path";
-import merge from "lodash/mergeWith";
+
+import { merge } from "@util/objects";
 
 import type { TransformOptions as BabelOptions } from "@babel/core";
 import type { RegisterOptions as TSNodeOptions } from "ts-node";
@@ -7,36 +8,6 @@ import type {
     TranspileType,
     TranspilerOptions,
 } from "@typeDefs/internal";
-
-
-const optionsRegister: Record<string, {
-    "babel"?: BabelOptions;
-    "ts-node"?: TSNodeOptions;
-}> = {};
-
-const mergeOptions = <R>(
-    project: string,
-    type: TranspileType,
-    defaultOptions: R,
-    extendOptions?: R,
-): R => {
-    let hasOptions = true;
-    if (!(project in optionsRegister)) {
-        hasOptions = false;
-        optionsRegister[project] = {};
-    }
-
-    return optionsRegister[project][type] = merge(
-        hasOptions ? {} : defaultOptions,
-        optionsRegister[project][type] || {},
-        extendOptions || {},
-        (to: any, from: any): any => {
-            if (to instanceof Array) {
-                return to.concat(from);
-            }
-        },
-    ) as R;
-};
 
 const getDefaultOptions = (
     type: TranspileType,
@@ -48,6 +19,7 @@ const getDefaultOptions = (
                 sourceMaps: "inline",
                 sourceRoot: projectRoot,
                 cwd: projectRoot,
+                babelrc: false,
                 presets: [
                     // require.resolve("@babel/preset-typescript"),
                     require.resolve("./babel/preset"),
@@ -84,9 +56,8 @@ export const getRegisterOptions = <
     const defaultOptions = (
         getDefaultOptions(type, projectRoot) as TranspilerOptions<T>
     );
-    return mergeOptions<TranspilerOptions<T>>(
-        projectRoot,
-        type,
+    return merge(
+        {},
         defaultOptions,
         addOptions,
     );
