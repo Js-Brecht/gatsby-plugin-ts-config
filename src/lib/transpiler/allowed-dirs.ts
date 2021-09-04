@@ -12,7 +12,7 @@ export class AllowedDirs {
     }
 
     public static add(dir: string) {
-        AllowedDirs.allowedDirs.push(dir);
+        AllowedDirs.allowedDirs.push(slash(dir));
     }
     public static remove(dir: string) {
         const len = AllowedDirs.len;
@@ -25,9 +25,9 @@ export class AllowedDirs {
         });
     }
 
-    public static allowed(dir: string) {
+    public static allowed(filePath: string) {
         return AllowedDirs.allowedDirs.some((cur) => (
-            dir.startsWith(slash(cur))
+            filePath.startsWith(cur)
         ));
     }
 }
