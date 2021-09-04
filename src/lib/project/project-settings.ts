@@ -4,7 +4,7 @@ import set from "lodash/set";
 import pick from "lodash/pick";
 import isEqual from "lodash/isEqual";
 
-import { merge } from "@util/objects";
+import { Serializer } from "@lib/serializer";
 import { getProject, ProjectMeta } from "@util/project-meta";
 import { getPropBag } from "@settings/prop-bag";
 
@@ -78,7 +78,7 @@ export class ProjectSettings {
              * The settings haven't changed.
              * Don't need a separate ProjectSettings instance
              */
-            if (isEqual(configOptions, options)) {
+            if (Serializer.isEqual(configOptions, options)) {
                 return {
                     changed: false,
                     settings: existing.merge(newSettings),

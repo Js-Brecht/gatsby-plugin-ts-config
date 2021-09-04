@@ -1,6 +1,6 @@
 import { Project } from "@lib/project";
+import { Serializer } from "@lib/serializer";
 import { Module } from "@util/node";
-import { Serializer } from "./serializer";
 
 import type {
     TranspilerArgs,

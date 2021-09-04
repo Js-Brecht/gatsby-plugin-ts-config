@@ -3,7 +3,7 @@ import omit from "lodash/omit";
 
 import { preferDefault } from "@util/node";
 import { resolveFilePath } from "@util/fs-tools";
-import { Serializer } from "./serializer";
+import { Serializer } from "../serializer";
 import { setTranspiler } from "./set-transpiler";
 
 import type { Project } from "@lib/project";
