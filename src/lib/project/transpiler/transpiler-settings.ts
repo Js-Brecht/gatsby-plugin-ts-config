@@ -17,22 +17,26 @@ type CachedTranspilerSettings = {
 }
 
 const settingsCache = new Map<string, CachedTranspilerSettings>();
-const previousSettings = [] as string[];
+const previousSettings: [string, string][] = [];
+
 let currentSettings: CachedTranspilerSettings;
 
-const getCacheKey = (optKey: string, project: Project) => [
+const getSettingsKey = (optKey: string, project: Project) => [
     optKey,
+    project.options.hooks,
+].map(Serializer.serialize).filter(Boolean).join(":");
+const getCacheKey = (optKey: string, project: Project) => [
+    getSettingsKey(optKey, project),
+    project.apiType,
     project.options.hooks,
 ].map(Serializer.serialize).filter(Boolean).join(":");
 
 class TranspilerSettingsImpl {
-    private project!: Project;
-
     public get importHandler() {
-        return ImportHandler.getCurrent(this.project);
+        return ImportHandler.getCurrent(currentSettings.project);
     }
     public get ignoreHooks() {
-        return this.project.options.hooks?.ignore;
+        return currentSettings.project.options.hooks?.ignore;
     }
 
     public push(
@@ -41,12 +45,14 @@ class TranspilerSettingsImpl {
         project: Project,
     ) {
         const cacheKey = getCacheKey(optKey, project);
-        this.project = project;
+        const settingsKey = getSettingsKey(optKey, project);
+        let sameSettings = false;
 
         if (settingsCache.has(cacheKey)) {
             const prevLen = previousSettings.length - 1;
-            const latestKey = previousSettings[prevLen];
-            if (latestKey === cacheKey) return false;
+            const latestSettingsKey = previousSettings[prevLen][1];
+
+            sameSettings = latestSettingsKey === settingsKey;
             currentSettings = settingsCache.get(cacheKey)!;
         } else {
             currentSettings = {
@@ -59,7 +65,9 @@ class TranspilerSettingsImpl {
             );
         }
 
-        previousSettings.push(cacheKey);
+        previousSettings.push([cacheKey, settingsKey]);
+
+        if (sameSettings) return false;
         return currentSettings;
     }
 
@@ -73,13 +81,12 @@ class TranspilerSettingsImpl {
 
         previousSettings.pop();
         prevLen--;
-        const prevKey = previousSettings[prevLen];
+        const prevKey = previousSettings[prevLen][0];
 
         const restoreSettings = settingsCache.get(prevKey);
         if (!restoreSettings) return false;
 
-        this.project = restoreSettings.project;
-        return restoreSettings;
+        return currentSettings = restoreSettings;
     }
 
     public saveExtensions() {
