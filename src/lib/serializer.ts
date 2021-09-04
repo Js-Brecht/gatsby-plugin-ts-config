@@ -12,8 +12,8 @@ const serializeObject = (obj: any) => (
     )
 );
 
-export class Serializer {
-    public static serialize(input: any) {
+class SerializerImpl {
+    public serialize(input: any) {
         if (!input) return;
         if (typeof input === "string") return input;
         if (serializerCache.has(input)) {
@@ -25,9 +25,11 @@ export class Serializer {
         return serialized;
     }
 
-    public static isEqual(obj1: any, obj2: any) {
-        obj1 = Serializer.serialize(obj1);
-        obj2 = Serializer.serialize(obj2);
+    public isEqual(obj1: any, obj2: any) {
+        obj1 = this.serialize(obj1);
+        obj2 = this.serialize(obj2);
         return obj1 === obj2;
     }
 }
+
+export const Serializer = new SerializerImpl();

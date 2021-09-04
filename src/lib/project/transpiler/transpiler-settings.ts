@@ -25,23 +25,23 @@ const getCacheKey = (optKey: string, project: Project) => [
     project.options.hooks,
 ].map(Serializer.serialize).filter(Boolean).join(":");
 
-export class TranspilerSettings {
-    private static project: Project;
+class TranspilerSettingsImpl {
+    private project!: Project;
 
-    public static get importHandler() {
-        return ImportHandler.getCurrent(TranspilerSettings.project);
+    public get importHandler() {
+        return ImportHandler.getCurrent(this.project);
     }
-    public static get ignoreHooks() {
-        return TranspilerSettings.project.options.hooks?.ignore;
+    public get ignoreHooks() {
+        return this.project.options.hooks?.ignore;
     }
 
-    public static push(
+    public push(
         optKey: string,
         args: GenericArgs,
         project: Project,
     ) {
         const cacheKey = getCacheKey(optKey, project);
-        TranspilerSettings.project = project;
+        this.project = project;
 
         if (settingsCache.has(cacheKey)) {
             const prevLen = previousSettings.length - 1;
@@ -63,7 +63,7 @@ export class TranspilerSettings {
         return currentSettings;
     }
 
-    public static pop() {
+    public pop() {
         let prevLen = previousSettings.length - 1;
 
         // No previously cached settings???
@@ -78,13 +78,15 @@ export class TranspilerSettings {
         const restoreSettings = settingsCache.get(prevKey);
         if (!restoreSettings) return false;
 
-        TranspilerSettings.project = restoreSettings.project;
+        this.project = restoreSettings.project;
         return restoreSettings;
     }
 
-    public static saveExtensions() {
+    public saveExtensions() {
         if (currentSettings) {
             currentSettings.extensions = { ...Module._extensions };
         }
     }
 }
+
+export const TranspilerSettings = new TranspilerSettingsImpl();

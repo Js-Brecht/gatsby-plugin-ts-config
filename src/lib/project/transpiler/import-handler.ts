@@ -38,34 +38,16 @@ const getProjectInfo = (project: Project) => ({
     projectName: project.projectName,
 });
 
-export class ImportHandler {
-    public static getProjectImports(projectName: string): RootPluginImports {
+class ImportHandlerImpl {
+    public getProjectImports(projectName: string): RootPluginImports {
         return importsCache[projectName] || (
             importsCache[projectName] = {}
         );
     }
 
-    public static getImportHandler(project: Project) {
-        const { apiType, projectName } = getProjectInfo(project);
-
-        const cacheKey = `${apiType}:${projectName}`;
-        if (importHandlers[cacheKey]) {
-            return importHandlers[cacheKey];
-        }
-
-        const projectImports = ImportHandler.getProjectImports(projectName);
-        const apiImports = projectImports[apiType] || (
-            projectImports[apiType] = []
-        );
-
-        return importHandlers[cacheKey] = (filename: string) => {
-            apiImports.push(filename);
-        };
-    }
-
-    public static linkProjectPlugin(projectName: string, pluginName: string): void {
-        const rootProject = ImportHandler.getProjectImports(projectName);
-        const pluginProject = ImportHandler.getProjectImports(pluginName);
+    public linkProjectPlugin(projectName: string, pluginName: string): void {
+        const rootProject = this.getProjectImports(projectName);
+        const pluginProject = this.getProjectImports(pluginName);
 
         const pluginLinks = rootProject.plugins || (
             rootProject.plugins = {}
@@ -81,7 +63,7 @@ export class ImportHandler {
         pluginLinks[pluginName] = pluginProject;
     }
 
-    private static pushPrev(handlerMeta: HandlerCacheMeta) {
+    private pushPrev(handlerMeta: HandlerCacheMeta) {
         const key = getPrevKey(handlerMeta.type, handlerMeta.plugin);
         const prev = handlerCache.prevIndex[key] = (
             handlerCache.prevIndex[key] || []
@@ -89,22 +71,22 @@ export class ImportHandler {
         prev.push(handlerMeta);
         handlerCache.previous.push(handlerMeta);
     }
-    private static getPrev(apiType: ApiType, pluginName: string) {
+    private getPrev(apiType: ApiType, pluginName: string) {
         const key = getPrevKey(apiType, pluginName);
         return handlerCache.prevIndex[key] || [];
     }
-    private static popPrev() {
+    private popPrev() {
         const last = handlerCache.previous.pop();
         if (!last) return;
 
         const { type, plugin } = last;
-        const index = ImportHandler.getPrev(type, plugin);
+        const index = this.getPrev(type, plugin);
         popArray(index, last);
 
         return last;
     }
 
-    public static getCurrent(project: Project) {
+    public getCurrent(project: Project) {
         const { apiType, projectName } = getProjectInfo(project);
         const current = handlerCache.current;
         if (current) {
@@ -113,17 +95,35 @@ export class ImportHandler {
             }
         }
 
-        const prev = ImportHandler.getPrev(apiType, projectName);
+        const prev = this.getPrev(apiType, projectName);
         return prev[prev.length - 1]?.handler;
     }
 
-    public static push(project: Project) {
+
+    private getImportHandler(project: Project) {
         const { apiType, projectName } = getProjectInfo(project);
-        const newHandler = ImportHandler.getImportHandler(project);
+
+        const cacheKey = `${apiType}:${projectName}`;
+        if (importHandlers[cacheKey]) {
+            return importHandlers[cacheKey];
+        }
+
+        const projectImports = this.getProjectImports(projectName);
+        const apiImports = projectImports[apiType] || (
+            projectImports[apiType] = []
+        );
+
+        return importHandlers[cacheKey] = (filename: string) => {
+            apiImports.push(filename);
+        };
+    }
+    public push(project: Project) {
+        const { apiType, projectName } = getProjectInfo(project);
+        const newHandler = this.getImportHandler(project);
         const current = handlerCache.current;
 
         if (current && current.handler !== newHandler) {
-            ImportHandler.pushPrev(current);
+            this.pushPrev(current);
         }
 
         const myMeta: HandlerCacheMeta = {
@@ -135,22 +135,24 @@ export class ImportHandler {
         handlerCache.current = myMeta;
         return () => {
             if (handlerCache.current === myMeta) {
-                ImportHandler.pop();
+                this.pop();
                 return;
             }
 
-            const index = ImportHandler.getPrev(apiType, projectName);
+            const index = this.getPrev(apiType, projectName);
             popArray(index, myMeta);
             popArray(handlerCache.previous, myMeta);
         };
     }
 
-    public static pop() {
-        handlerCache.current = ImportHandler.popPrev();
+    public pop() {
+        handlerCache.current = this.popPrev();
     }
 
-    public static addImport: ImportHandlerFn = (filename) => {
+    public addImport: ImportHandlerFn = (filename) => {
         if (!handlerCache.current) return;
         return handlerCache.current.handler(filename);
     }
 }
+
+export const ImportHandler = new ImportHandlerImpl();
