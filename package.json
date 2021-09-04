@@ -1,6 +1,6 @@
 {
-	"name": "gatsby-plugin-ts-config",
-	"version": "2.1.0-hooks.1",
+	"name": "gatsby-ts",
+	"version": "0.0.1",
 	"description": "Configure Gatsby to use Typescript configuration files",
 	"main": "./index.js",
 	"types": "./dist/index",
@@ -14,11 +14,11 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Js-Brecht/gatsby-plugin-ts-config"
+		"url": "https://github.com/Js-Brecht/gatsby-ts"
 	},
-	"homepage": "https://github.com/Js-Brecht/gatsby-plugin-ts-config",
+	"homepage": "https://github.com/Js-Brecht/gatsby-ts",
 	"bugs": {
-		"url": "https://github.com/Js-Brecht/gatsby-plugin-ts-config/issues"
+		"url": "https://github.com/Js-Brecht/gatsby-ts/issues"
 	},
 	"files": [
 		"dist",
