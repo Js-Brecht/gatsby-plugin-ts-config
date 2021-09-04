@@ -1,5 +1,9 @@
 import path from "path";
 
+const slash = (p: string) => (
+    p.endsWith(path.sep) ? p : p + path.sep
+);
+
 export class AllowedDirs {
     private static allowedDirs: string[] = [];
 
@@ -20,9 +24,10 @@ export class AllowedDirs {
             }
         });
     }
+
     public static allowed(dir: string) {
         return AllowedDirs.allowedDirs.some((cur) => (
-            dir.startsWith(cur + path.sep)
+            dir.startsWith(slash(cur))
         ));
     }
 }
