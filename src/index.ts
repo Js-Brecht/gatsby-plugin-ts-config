@@ -38,7 +38,7 @@ const useGatsbyPluginModule = (
             project,
             unwrapApi: true,
         });
-    } catch (err) {
+    } catch (err: any) {
         throw new PluginError(err);
     }
 };

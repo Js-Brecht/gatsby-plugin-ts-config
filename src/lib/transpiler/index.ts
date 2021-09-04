@@ -58,14 +58,14 @@ export const getTranspiler = <TProject extends Project<any>>(
             } else {
                 const requirePath = resolveFilePath(
                     projectRoot,
-                    path.resolve(projectRoot, init)
+                    path.resolve(projectRoot, init),
                 );
 
                 if (!requirePath) {
                     throw new Error([
                         `Unable to resolve module '${init}' from`,
-                        `Path: ${projectRoot}`
-                    ].join("\n"))
+                        `Path: ${projectRoot}`,
+                    ].join("\n"));
                 }
 
                 const mod = require(requirePath);

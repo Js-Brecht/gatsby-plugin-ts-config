@@ -19,6 +19,7 @@ const getDefaultOptions = (
                 sourceMaps: "inline",
                 sourceRoot: projectRoot,
                 cwd: projectRoot,
+                babelrc: false,
                 presets: [
                     // require.resolve("@babel/preset-typescript"),
                     require.resolve("./babel/preset"),
