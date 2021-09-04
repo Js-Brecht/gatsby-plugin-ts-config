@@ -2,7 +2,8 @@ import babelRegister from "@babel/register";
 import { register as tsNodeRegister } from "ts-node";
 
 import { Project } from "@lib/project";
-import { AllowedDirs } from "./allowed-dirs";
+import { AllowedFiles } from "./allowed-files";
+import { ImportHandler } from "./import-handler";
 import { TranspilerSettings, GenericArgs } from "./transpiler-settings";
 
 import type {
@@ -29,7 +30,7 @@ const getIgnore = (
     rules: (IgnoreFn | IgnoreHookFn)[],
     orig: boolean,
 ) => (
-    AllowedDirs.allowed(filename)
+    AllowedFiles.allowed(filename)
         ? false
         : rules.some((rule) => rule(filename, !!orig))
 );
@@ -88,16 +89,14 @@ export const setTranspiler = (
     transpileArgs: TranspilerArgs<TranspileType>,
     project: Project,
 ) => {
-    const transpileRoot = project.projectRoot;
+    AllowedFiles.addDir(project.projectRoot);
 
+    const restoreImportHandler = ImportHandler.push(project);
     const initialSettings = TranspilerSettings.push(
         optKey,
         transpileArgs,
         project,
     );
-
-    AllowedDirs.add(transpileRoot);
-    const removeImportHandler = project.pushImportHandler();
 
     if (initialSettings) {
         const {
@@ -108,10 +107,9 @@ export const setTranspiler = (
     }
 
     return () => {
-        AllowedDirs.remove(transpileRoot);
-        removeImportHandler();
+        AllowedFiles.removeDir(project.projectRoot);
+        restoreImportHandler();
 
-        if (!initialSettings) return;
         const restoreSettings = TranspilerSettings.pop();
 
         // No prior transpiler set.  Just restore the original
@@ -140,7 +138,7 @@ export const setTranspiler = (
                 break;
             }
             /**
-             * ts-node should just be able to restore the prior set o
+             * ts-node should just be able to restore the prior set of
              * module extensions
              */
             case "ts-node": {

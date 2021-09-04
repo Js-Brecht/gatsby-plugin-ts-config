@@ -1,5 +1,6 @@
 import { PluginError } from "@util/output";
 import { popArray } from "@util/objects";
+import type { Project } from "@lib/project";
 import type {
     ApiType,
     ImportsCache,
@@ -32,6 +33,11 @@ const getPrevKey = (apiType: ApiType, pluginName: string) => (
 
 const importsCache: ImportsCache = {};
 
+const getProjectInfo = (project: Project) => ({
+    apiType: project.apiType,
+    projectName: project.projectName,
+});
+
 export class ImportHandler {
     public static getProjectImports(projectName: string): RootPluginImports {
         return importsCache[projectName] || (
@@ -39,10 +45,9 @@ export class ImportHandler {
         );
     }
 
-    public static getImportHandler(
-        apiType: ApiType,
-        projectName: string,
-    ) {
+    public static getImportHandler(project: Project) {
+        const { apiType, projectName } = getProjectInfo(project);
+
         const cacheKey = `${apiType}:${projectName}`;
         if (importHandlers[cacheKey]) {
             return importHandlers[cacheKey];
@@ -99,20 +104,22 @@ export class ImportHandler {
         return last;
     }
 
-    public static getCurrent(apiType: ApiType, pluginName: string) {
+    public static getCurrent(project: Project) {
+        const { apiType, projectName } = getProjectInfo(project);
         const current = handlerCache.current;
         if (current) {
-            if (current.type === apiType && current.plugin === pluginName) {
+            if (current.type === apiType && current.plugin === projectName) {
                 return current.handler;
             }
         }
 
-        const prev = ImportHandler.getPrev(apiType, pluginName);
+        const prev = ImportHandler.getPrev(apiType, projectName);
         return prev[prev.length - 1]?.handler;
     }
 
-    public static push(apiType: ApiType, pluginName: string) {
-        const newHandler = ImportHandler.getImportHandler(apiType, pluginName);
+    public static push(project: Project) {
+        const { apiType, projectName } = getProjectInfo(project);
+        const newHandler = ImportHandler.getImportHandler(project);
         const current = handlerCache.current;
 
         if (current && current.handler !== newHandler) {
@@ -121,7 +128,7 @@ export class ImportHandler {
 
         const myMeta: HandlerCacheMeta = {
             type: apiType,
-            plugin: pluginName,
+            plugin: projectName,
             handler: newHandler,
         };
 
@@ -132,7 +139,7 @@ export class ImportHandler {
                 return;
             }
 
-            const index = ImportHandler.getPrev(apiType, pluginName);
+            const index = ImportHandler.getPrev(apiType, projectName);
             popArray(index, myMeta);
             popArray(handlerCache.previous, myMeta);
         };

@@ -3,7 +3,8 @@ import omit from "lodash/omit";
 
 import { preferDefault } from "@util/node";
 import { resolveFilePath } from "@util/fs-tools";
-import { Serializer } from "../serializer";
+
+import { Serializer } from "@lib/serializer";
 import { setTranspiler } from "./set-transpiler";
 
 import type { Project } from "@lib/project";
@@ -15,6 +16,8 @@ import type {
     TSConfigFn,
 } from "@typeDefs";
 
+export { ImportHandler } from "./import-handler";
+export type { ImportHandlerFn } from "./import-handler";
 
 export type Transpiler<TProject extends Project<any> = Project> = <
     T extends TranspileType = "babel"

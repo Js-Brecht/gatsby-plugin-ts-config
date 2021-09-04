@@ -1,9 +1,13 @@
 import get from "lodash/get";
 import set from "lodash/set";
 
-import { getTranspiler, Transpiler } from "@lib/transpiler";
+import {
+    getTranspiler,
+    Transpiler,
+    ImportHandler,
+    ImportHandlerFn,
+} from "./transpiler";
 
-import { ImportHandler, ImportHandlerFn } from "@settings/import-handler";
 import { getRegisterOptions } from "@settings/register";
 
 import {
@@ -196,13 +200,6 @@ export class Project<TApiType extends ApiType = ApiType> {
         option: K,
     ): IModuleOptions[K] {
         return get(apiOptionsCache, [this.projectRoot, apiType, option]);
-    }
-
-    public get importHandler(): ImportHandlerFn {
-        return ImportHandler.getCurrent(this.apiType, this.projectName);
-    }
-    public pushImportHandler() {
-        return ImportHandler.push(this.apiType, this.projectName);
     }
 
     public linkPluginImports(pluginName: string) {

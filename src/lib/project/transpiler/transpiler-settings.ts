@@ -1,6 +1,7 @@
 import { Project } from "@lib/project";
 import { Serializer } from "@lib/serializer";
 import { Module } from "@util/node";
+import { ImportHandler } from "./import-handler";
 
 import type {
     TranspilerArgs,
@@ -12,7 +13,7 @@ export type GenericArgs = TranspilerArgs<TranspileType>;
 type CachedTranspilerSettings = {
     project: Project;
     args: GenericArgs;
-    extensions?: NodeJS.RequireExtensions
+    extensions?: NodeJS.RequireExtensions;
 }
 
 const settingsCache = new Map<string, CachedTranspilerSettings>();
@@ -25,17 +26,13 @@ const getCacheKey = (optKey: string, project: Project) => [
 ].map(Serializer.serialize).filter(Boolean).join(":");
 
 export class TranspilerSettings {
-    public static get project() {
-        return currentSettings.project;
-    }
+    private static project: Project;
+
     public static get importHandler() {
-        return currentSettings.project.importHandler;
+        return ImportHandler.getCurrent(TranspilerSettings.project);
     }
     public static get ignoreHooks() {
-        return currentSettings.project.options.hooks?.ignore;
-    }
-    public static get current() {
-        return currentSettings;
+        return TranspilerSettings.project.options.hooks?.ignore;
     }
 
     public static push(
@@ -44,11 +41,12 @@ export class TranspilerSettings {
         project: Project,
     ) {
         const cacheKey = getCacheKey(optKey, project);
+        TranspilerSettings.project = project;
+
         if (settingsCache.has(cacheKey)) {
             const prevLen = previousSettings.length - 1;
             const latestKey = previousSettings[prevLen];
             if (latestKey === cacheKey) return false;
-
             currentSettings = settingsCache.get(cacheKey)!;
         } else {
             currentSettings = {
@@ -77,11 +75,16 @@ export class TranspilerSettings {
         prevLen--;
         const prevKey = previousSettings[prevLen];
 
-        if (!settingsCache.has(prevKey)) return false;
-        return settingsCache.get(prevKey)!;
+        const restoreSettings = settingsCache.get(prevKey);
+        if (!restoreSettings) return false;
+
+        TranspilerSettings.project = restoreSettings.project;
+        return restoreSettings;
     }
 
     public static saveExtensions() {
-        currentSettings.extensions = { ...Module._extensions };
+        if (currentSettings) {
+            currentSettings.extensions = { ...Module._extensions };
+        }
     }
 }
