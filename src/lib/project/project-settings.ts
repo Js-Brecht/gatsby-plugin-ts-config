@@ -2,7 +2,6 @@ import { keys } from "ts-transformer-keys";
 import get from "lodash/get";
 import set from "lodash/set";
 import pick from "lodash/pick";
-import isEqual from "lodash/isEqual";
 
 import { Serializer } from "@lib/serializer";
 import { getProject, ProjectMeta } from "@util/project-meta";
