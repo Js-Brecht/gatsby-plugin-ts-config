@@ -10,6 +10,6 @@ export const isTsNodeType = (type: TranspileType): type is "ts-node" => (
 export const isGatsbyConfig = (
     type: ApiType,
     mod: PluginModule<any>,
-): mod is PluginModule<"config"> => (
+): mod is PluginModule<"config", true> => (
     type === "config"
 );

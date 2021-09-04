@@ -13,7 +13,10 @@ export const getCallSite = () => (
     ))
 );
 
-type PackageJsonDetails = [string, PackageJson];
+type PackageJsonDetails = {
+    projectRoot: string,
+    pkgJson: PackageJson
+};
 
 const pkgJsonStartCache: Record<string, PackageJsonDetails | null> = {};
 const pkgJsonCache: Record<string, PackageJsonDetails | null> = {};
@@ -24,14 +27,15 @@ export const getProjectPkgJson = (start = process.cwd()): PackageJsonDetails | n
     const pkgJsonPath = findUp.sync("package.json", {
         cwd: start,
     });
+
     return pkgJsonStartCache[start] = (
         !pkgJsonPath
             ? null
             : pkgJsonCache[pkgJsonPath] = (
-                pkgJsonCache[pkgJsonPath] || [
-                    path.dirname(pkgJsonPath),
-                    require(pkgJsonPath) as PackageJson,
-                ]
+                pkgJsonCache[pkgJsonPath] || {
+                    projectRoot: path.dirname(pkgJsonPath),
+                    pkgJson: require(pkgJsonPath) as PackageJson,
+                }
             )
     );
 };
@@ -46,7 +50,7 @@ export const getProject = () => {
     }
 
     const callDir = path.dirname(callFile);
-    const [projectRoot, pkgJson] = getProjectPkgJson(callDir) || [];
+    const { projectRoot, pkgJson } = getProjectPkgJson(callDir) || {};
     if (!pkgJson || !projectRoot) {
         throw new PluginError("Unable to locate project root");
     }
@@ -60,5 +64,6 @@ export const getProject = () => {
         projectRoot,
         projectName,
         pkgJson,
+        callSite,
     };
 };

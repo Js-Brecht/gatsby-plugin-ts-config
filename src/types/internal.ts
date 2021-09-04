@@ -78,14 +78,19 @@ export type RootPluginImports = ApiImports & {
 };
 export type ImportsCache = PluginImports<RootPluginImports>;
 
-export type PluginModule<T extends ApiType> =
+export type PluginModule<T extends ApiType, TTheme = true> =
     T extends "config"
-        ? GatsbyConfig
+        ? TTheme extends false
+            ? GatsbyConfig
+            : GatsbyConfig | ((args: Record<string, any>) => GatsbyConfig)
         : T extends "node"
             ? GatsbyNode
             : unknown;
-export type ProjectPluginModule<T extends Project> = (
-    PluginModule<ProjectApiType<T>>
+export type ProjectPluginModule<
+    T extends Project,
+    TTheme = true,
+> = (
+    PluginModule<ProjectApiType<T>, TTheme>
 )
 
 export interface IPluginDetailsCallback<

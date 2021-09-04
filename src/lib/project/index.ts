@@ -21,6 +21,7 @@ import type {
     ApiType,
     TSConfigFn,
     PropertyBag,
+    PluginModule,
 } from "@typeDefs";
 
 interface IGetProjectSettings extends IInitSettings {
@@ -101,6 +102,7 @@ export class Project<TApiType extends ApiType = ApiType> {
 
     private _transpiler!: Transpiler;
     private _registerOptions!: TranspilerOptions<TranspileType>;
+    private _module?: PluginModule<TApiType>;
 
     private constructor(
         public readonly apiType: TApiType,
@@ -112,6 +114,8 @@ export class Project<TApiType extends ApiType = ApiType> {
     public get options() { return this.settings.options; }
     public get projectMeta() { return this.settings.projectMeta; }
     public get propBag() { return this.settings.propBag; }
+
+    public get module() { return this._module; }
 
     /**
      * Creates & stores a transpiler function instance.
@@ -206,13 +210,18 @@ export class Project<TApiType extends ApiType = ApiType> {
         return ImportHandler.linkProjectPlugin(this.projectName, pluginName);
     }
 
+    public finalizeProject(mod: PluginModule<TApiType> | unknown) {
+        this._module = mod as PluginModule<TApiType>;
+    }
     public resolveConfigFn<
         C extends TSConfigFn<any>
-    >(cb: C) {
+    >(cb: C, project?: Project) {
         return cb(
             {
                 projectRoot: this.projectRoot,
-                imports: ImportHandler.getProjectImports(this.projectName),
+                imports: ImportHandler.getProjectImports(
+                    project?.projectName || this.projectName,
+                ),
             },
             this.propBag,
         );

@@ -1,13 +1,12 @@
+import { Project } from "@lib/project";
 import { isGatsbyConfig } from "@util/type-util";
 import { preferDefault } from "@util/node";
 import { resolveFilePath } from "@util/fs-tools";
 
 import { processPluginCache } from "./process-plugins";
 
-import type { Project } from "@lib/project";
 import type {
     InitValue,
-    PluginModule,
     ProjectPluginModule,
     TSConfigFn,
     TranspilerReturn,
@@ -29,6 +28,8 @@ export const processApiModule = <T extends Project>({
     const projectRoot = project.projectRoot;
     const apiType = project.apiType;
 
+    if (project.module) return project.module;
+
     const {
         resolveImmediate = true,
     } = project.getApiOptions(apiType);
@@ -41,6 +42,7 @@ export const processApiModule = <T extends Project>({
     ) as TranspilerReturn<T>;
 
     let gatsbyNode: TSConfigFn<"node"> | undefined = undefined;
+    let gatsbyNodeProject: Project<"node"> | undefined = undefined;
 
     if (apiType === "config") {
         const gatsbyNodePath = resolveFilePath(projectRoot, "./gatsby-node");
@@ -54,11 +56,15 @@ export const processApiModule = <T extends Project>({
          */
         if (gatsbyNodePath) {
             project.setApiOption("node", "resolveImmediate", false);
+            gatsbyNodeProject = project.clone("node");
             gatsbyNode = processApiModule({
                 init: gatsbyNodePath,
-                project: project.clone("node"),
+                project: gatsbyNodeProject,
                 unwrapApi: true,
             }) as TSConfigFn<"node">;
+            gatsbyNodeProject = Project.getProject({
+                apiType: "node",
+            }, false);
             project.setApiOption("node", "resolveImmediate", true);
         }
     }
@@ -67,8 +73,12 @@ export const processApiModule = <T extends Project>({
         apiModule = project.resolveConfigFn(apiModule) as ProjectPluginModule<T>;
     }
 
-    if (typeof gatsbyNode === "function") {
-        project.resolveConfigFn(gatsbyNode);
+    if (gatsbyNodeProject) {
+        if (typeof gatsbyNode === "function") {
+            project.resolveConfigFn(gatsbyNode, gatsbyNodeProject);
+        } else if (gatsbyNode) {
+            gatsbyNodeProject?.finalizeProject(gatsbyNode);
+        }
     }
 
     if (!apiModule) apiModule = {};
@@ -77,12 +87,15 @@ export const processApiModule = <T extends Project>({
      * Time to transpile/process local plugins
      */
     if (isGatsbyConfig(apiType, apiModule) && typeof apiModule === "object") {
-        const gatsbyConfig = apiModule as PluginModule<"config">;
-        gatsbyConfig.plugins = processPluginCache(
+        apiModule.plugins = processPluginCache(
             project,
             processApiModule,
-            gatsbyConfig.plugins,
+            apiModule.plugins,
         );
+    }
+
+    if (resolveImmediate) {
+        project.finalizeProject(apiModule);
     }
 
     return apiModule as ProjectPluginModule<T>;
