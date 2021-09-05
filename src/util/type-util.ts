@@ -1,4 +1,8 @@
-import type { TranspileType, PluginModule, ApiType } from "@typeDefs/internal";
+import type {
+    TranspileType,
+    PluginModule,
+    ApiType,
+} from "@typeDefs";
 
 export const isBabelType = (type: TranspileType): type is "babel" => (
     type === "babel"

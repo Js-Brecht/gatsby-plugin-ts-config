@@ -2,6 +2,7 @@ import { Project } from "@lib/project";
 import { isGatsbyConfig } from "@util/type-util";
 import { preferDefault } from "@util/node";
 import { resolveFilePath } from "@util/fs-tools";
+import { isGatsbyTsMetaFn } from "@util/gatsby-ts-meta";
 
 import { processPluginCache } from "./process-plugins";
 
@@ -15,7 +16,6 @@ import type {
 interface IProcessApiModuleOptions<T extends Project> {
     init: InitValue;
     project: T;
-    unwrapApi: boolean;
 }
 
 export type ApiModuleProcessor = typeof processApiModule;
@@ -23,22 +23,18 @@ export type ApiModuleProcessor = typeof processApiModule;
 export const processApiModule = <T extends Project>({
     init,
     project,
-    unwrapApi,
-}: IProcessApiModuleOptions<T>) => {
+}: IProcessApiModuleOptions<T>): ProjectPluginModule<T> => {
     const projectRoot = project.projectRoot;
     const apiType = project.apiType;
 
-    if (project.module) return project.module;
+    if (project.finalized) return project.module as ProjectPluginModule<T>;
 
     const {
         resolveImmediate = true,
     } = project.getApiOptions(apiType);
 
     let apiModule = preferDefault(
-        project.transpiler(
-            init,
-            unwrapApi,
-        ),
+        project.transpiler(init),
     ) as TranspilerReturn<T>;
 
     let gatsbyNode: TSConfigFn<"node"> | undefined = undefined;
@@ -57,11 +53,12 @@ export const processApiModule = <T extends Project>({
         if (gatsbyNodePath) {
             project.setApiOption("node", "resolveImmediate", false);
             gatsbyNodeProject = project.clone("node");
+
             gatsbyNode = processApiModule({
                 init: gatsbyNodePath,
                 project: gatsbyNodeProject,
-                unwrapApi: true,
             }) as TSConfigFn<"node">;
+
             gatsbyNodeProject = Project.getProject({
                 apiType: "node",
             }, false);
@@ -69,16 +66,12 @@ export const processApiModule = <T extends Project>({
         }
     }
 
-    if (typeof apiModule === "function" && resolveImmediate) {
+    if (isGatsbyTsMetaFn(project, apiModule) && resolveImmediate) {
         apiModule = project.resolveConfigFn(apiModule) as ProjectPluginModule<T>;
     }
 
-    if (gatsbyNodeProject) {
-        if (typeof gatsbyNode === "function") {
-            project.resolveConfigFn(gatsbyNode, gatsbyNodeProject);
-        } else if (gatsbyNode) {
-            gatsbyNodeProject?.finalizeProject(gatsbyNode);
-        }
+    if (gatsbyNodeProject && gatsbyNode && isGatsbyTsMetaFn(project, gatsbyNode)) {
+        gatsbyNodeProject.resolveConfigFn(gatsbyNode);
     }
 
     if (!apiModule) apiModule = {};

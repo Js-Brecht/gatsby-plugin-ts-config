@@ -63,12 +63,6 @@ const getProjectCache = (
     get(projectCache, [projectRoot, apiType])
 );
 
-export type ProjectApiType<T extends Project> = (
-    T extends Project<infer TApiType>
-        ? TApiType
-        : never
-)
-
 export class Project<TApiType extends ApiType = ApiType> {
     public static getProject<T extends ApiType = "config">(
         input: Partial<IGetProjectSettings>,
@@ -99,6 +93,8 @@ export class Project<TApiType extends ApiType = ApiType> {
 
         return useProject as Project<T>;
     }
+
+    public requirePath?: string | false;
 
     private _transpiler!: Transpiler;
     private _registerOptions!: TranspilerOptions<TranspileType>;
@@ -210,11 +206,18 @@ export class Project<TApiType extends ApiType = ApiType> {
         return ImportHandler.linkProjectPlugin(this.projectName, pluginName);
     }
 
+    public get finalized(): boolean {
+        // Gatsby deletes the `require.cache` instance in dev sometimes...
+        // in that case, we need to re-transpile.
+        if (this.requirePath && !require.cache[this.requirePath]) return false;
+        if (this._module) return true;
+        return false;
+    }
     public finalizeProject(mod: PluginModule<TApiType> | unknown) {
         this._module = mod as PluginModule<TApiType>;
     }
     public resolveConfigFn<
-        C extends TSConfigFn<any>
+        C extends TSConfigFn<ApiType>
     >(cb: C, project?: Project) {
         return cb(
             {

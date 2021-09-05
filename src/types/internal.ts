@@ -4,7 +4,7 @@ import type { RegisterOptions as TSNodeOptions } from "ts-node";
 import type { JsonObject } from "type-fest";
 
 import type { apiTypeKeys } from "@util/constants";
-import type { Project, ProjectApiType } from "@lib/project";
+import type { Project } from "@lib/project";
 import type { PublicOpts, GatsbyPlugin, TSConfigFn } from "./public";
 
 export type IgnoreFn = (filename: string) => boolean;
@@ -18,6 +18,12 @@ export type Hooks = {
 
 export type PropertyBag = JsonObject;
 export type ApiType = typeof apiTypeKeys[number];
+export type ProjectApiType<T extends Project> = (
+    T extends Project<infer TApiType>
+        ? TApiType
+        : never
+)
+
 export type TranspileType = "babel" | "ts-node";
 export type TranspilerArgs<
     T extends TranspileType = "babel"
@@ -46,15 +52,14 @@ export type TsConfigPluginOptions = (
 );
 export type PluginOptionDiff = Omit<TsConfigPluginOptions, "props">;
 
-export type InitValue = string | (() => Record<string, unknown>);
+export type InitValue<T extends ApiType = ApiType> = string | (() => PluginModule<T> | TSConfigFn<T>);
 export type NoFirstParameter<T> = (
     T extends (first: any, ...args: infer U) => infer R
         ? (...args: U) => R
         : T
 );
 
-
-export type BaseModuleType<T extends ApiType> = PluginModule<T> | {
+export type BaseModuleType<T extends ApiType> = PluginModule<T> | TSConfigFn<T> | {
     default: TSConfigFn<T>;
 }
 
@@ -107,3 +112,11 @@ export interface IGatsbyPluginWithOpts<
     resolve: TName;
     options?: TOptions;
 }
+
+export type GetApiType<T extends PluginModule<ApiType> | TSConfigFn<ApiType>> = (
+    T extends PluginModule<infer U> ? U : (
+        T extends TSConfigFn<infer U> ? U : (
+            never
+        )
+    )
+)

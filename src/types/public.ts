@@ -5,6 +5,7 @@ import type {
     PluginModule,
     IGatsbyPluginWithOpts,
 } from "./internal";
+import type { gatsbyTsMeta } from "@util/gatsby-ts-meta";
 
 /**
  * Options passed in the first parameter of a `gatsby-*` default export,
@@ -13,6 +14,17 @@ import type {
 export interface PublicOpts {
     imports: RootPluginImports;
     projectRoot: string;
+}
+
+/**
+ * Needs to be an interface, otherwise Typescript can't figure out that it is a function...
+ */
+interface ITSConfigFn<
+    TConfigType extends ApiType,
+    TProps extends PropertyBag = PropertyBag
+> {
+    (args: PublicOpts, props: TProps): PluginModule<TConfigType>
+    [gatsbyTsMeta]?: true;
 }
 
 /**
@@ -51,9 +63,7 @@ export interface PublicOpts {
 export type TSConfigFn<
     TConfigType extends ApiType,
     TProps extends PropertyBag = PropertyBag
-> = {
-    (args: PublicOpts, props: TProps): PluginModule<TConfigType>;
-}
+> = ITSConfigFn<TConfigType, TProps>;
 
 /**
  * This interface can be used with the `includePlugins` utility function

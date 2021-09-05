@@ -9,6 +9,7 @@ import { processApiModule } from "@lib/api-module";
 
 import { getProject } from "@util/project-meta";
 import { arrayify } from "@util/objects";
+import { PluginError } from "@util/output";
 
 import type {
     PropertyBag,
@@ -164,9 +165,13 @@ export function getPlugins<
     plugins: T[] | IPluginDetailsCallback<T, P>,
     opts?: GetPluginOpts,
 ): IGatsbyPluginWithOpts[] {
-    return doProcessPlugins(
-        "all",
-        plugins,
-        opts,
-    );
+    try {
+        return doProcessPlugins(
+            "all",
+            plugins,
+            opts,
+        );
+    } catch (err: any) {
+        throw new PluginError(err);
+    }
 }

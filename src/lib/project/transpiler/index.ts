@@ -1,6 +1,7 @@
 import path from "path";
 import omit from "lodash/omit";
 
+import { createGatsbyTsMetaFn, isGatsbyTsMetaFn } from "@util/gatsby-ts-meta";
 import { preferDefault } from "@util/node";
 import { resolveFilePath } from "@util/fs-tools";
 
@@ -23,7 +24,6 @@ export type Transpiler<TProject extends Project<any> = Project> = <
     T extends TranspileType = "babel"
 >(
     init: InitValue,
-    unwrapApi: boolean,
     overrideArgs?: TranspilerArgs<T>,
 ) => TranspilerReturn<TProject>;
 
@@ -33,7 +33,7 @@ export const getTranspiler = <TProject extends Project<any>>(
 ): Transpiler<TProject> => {
     const rootKey = Serializer.serialize(rootArgs)!;
 
-    return function transpile(init, unwrapApi, overrideArgs) {
+    return function transpile(init, overrideArgs) {
         const projectRoot = project.projectRoot;
 
         const overrideKey = (
@@ -59,9 +59,11 @@ export const getTranspiler = <TProject extends Project<any>>(
             if (typeof init === "function") {
                 return omit(init(), ["__esModule"]) as TranspilerReturn<TProject>;
             } else {
-                const requirePath = resolveFilePath(
-                    projectRoot,
-                    path.resolve(projectRoot, init),
+                const requirePath = project.requirePath || (
+                    project.requirePath = resolveFilePath(
+                        projectRoot,
+                        path.resolve(projectRoot, init),
+                    )
                 );
 
                 if (!requirePath) {
@@ -72,37 +74,51 @@ export const getTranspiler = <TProject extends Project<any>>(
                 }
 
                 const mod = require(requirePath);
+                let resolvedMod = preferDefault(mod);
 
-                const resolveFn: TSConfigFn<any> = (opts, props) => {
-                    let resolvedMod = preferDefault(mod);
-                    const exports = require.cache[requirePath]?.exports;
+                if (!require.cache[requirePath]) {
+                    throw new Error([
+                        `Unable to retrieve require cache for module '${requirePath}'.`,
+                        "This may indicate a serious issue",
+                    ].join("\n"));
+                }
 
-                    if (!exports) {
-                        throw new Error([
-                            `Unable to retrieve require cache for module '${requirePath}'.`,
-                            "This may indicate a serious issue",
-                        ].join("\n"));
+                const updateExports = () => {
+                    let newObj: Record<string, unknown> | Function = {};
+                    let initialObj: Record<string, unknown> = {};
+                    let extendObj: Record<string, unknown> = {};
+
+                    if (typeof mod === "function") {
+                        newObj = (...args: any) => mod(...args);
+                    } else if (typeof resolvedMod === "function") {
+                        newObj = (...args: any) => (resolvedMod as Function)(...args);
+                    } else {
+                        if (typeof mod === "object") {
+                            initialObj = mod;
+                        }
+                        if (typeof resolvedMod === "object") {
+                            extendObj = resolvedMod as Record<string, unknown>;
+                        }
                     }
 
-                    if (!unwrapApi) {
-                        return (
-                            require.cache[requirePath]!.exports = omit(mod, ["__esModule"])
-                        );
-                    }
-
-                    if (resolvedMod && typeof resolvedMod === "function") {
-                        resolvedMod = resolvedMod(opts, props);
-                    }
-
-                    return (
-                        require.cache[requirePath]!.exports = omit(
-                            Object.assign({}, exports, resolvedMod),
-                            ["__esModule", "default"],
-                        )
+                    return require.cache[requirePath].exports = omit(
+                        Object.assign(newObj, initialObj, extendObj),
+                        ["__esModule", "default"],
                     );
                 };
 
-                return resolveFn as TranspilerReturn<TProject>;
+
+                if (isGatsbyTsMetaFn(project, resolvedMod)) {
+                    return createGatsbyTsMetaFn((opts, props) => {
+                        if (isGatsbyTsMetaFn(project, resolvedMod)) {
+                            resolvedMod = resolvedMod(opts, props);
+                        }
+
+                        return updateExports();
+                    });
+                }
+
+                return updateExports() as TranspilerReturn<TProject>;
             }
         } finally {
             if (restore) restore();

@@ -94,7 +94,6 @@ export const transpilePlugins = (
                     },
                     true,
                 ),
-                unwrapApi: type === "node",
             });
         });
     });

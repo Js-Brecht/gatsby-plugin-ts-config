@@ -7,7 +7,6 @@ import type {
     InitValue,
     ApiType,
     TsConfigPluginOptions,
-    NoFirstParameter,
     PluginModule,
 } from "@typeDefs/internal";
 
@@ -15,10 +14,13 @@ export * from "./types/public";
 
 export { includePlugins, getPlugins } from "@lib/include-plugins";
 
-type UsePluginModule = NoFirstParameter<typeof useGatsbyPluginModule>;
+type UsePluginModule<T extends ApiType> = (
+    init: InitValue<T>,
+    options?: TsConfigPluginOptions,
+) => PluginModule<T>
 
-const useGatsbyPluginModule = (
-    apiType: ApiType,
+const useGatsbyPluginModule = <T extends ApiType>(
+    apiType: T,
     init: InitValue,
     options = {} as TsConfigPluginOptions,
 ): PluginModule<ApiType> => {
@@ -36,7 +38,6 @@ const useGatsbyPluginModule = (
         return processApiModule({
             init,
             project,
-            unwrapApi: true,
         });
     } catch (err: any) {
         throw new PluginError(err);
@@ -69,8 +70,8 @@ const useGatsbyPluginModule = (
  * throughout this instance.  These options will be shared with `useGatsbyNode` for
  * the current project or local plugin.
  */
-export const useGatsbyConfig: UsePluginModule = (...args) => (
-    useGatsbyPluginModule("config", ...args)
+export const useGatsbyConfig: UsePluginModule<"config"> = (...args) => (
+    useGatsbyPluginModule("config", ...args) as PluginModule<"config">
 );
 
 /**
@@ -93,6 +94,6 @@ export const useGatsbyConfig: UsePluginModule = (...args) => (
  * throughout this instance.  The same options defined in `useGatsbyConfig` will
  * be passed to `useGatsbyNode`, and additional options defined here will extend them.
  */
-export const useGatsbyNode: UsePluginModule = (...args) => (
-    useGatsbyPluginModule("node", ...args)
+export const useGatsbyNode: UsePluginModule<"node"> = (...args) => (
+    useGatsbyPluginModule("node", ...args) as PluginModule<"node">
 );
