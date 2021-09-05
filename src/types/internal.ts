@@ -5,7 +5,7 @@ import type { JsonObject } from "type-fest";
 
 import type { apiTypeKeys } from "@util/constants";
 import type { Project } from "@lib/project";
-import type { PublicOpts, GatsbyPlugin, TSConfigFn } from "./public";
+import type { PublicOpts, GatsbyPlugin, ProjectMetaFn } from "./public";
 
 export type IgnoreFn = (filename: string) => boolean;
 export type IgnoreHookFn = (filename: string, original: boolean) => (
@@ -52,15 +52,15 @@ export type TsConfigPluginOptions = (
 );
 export type PluginOptionDiff = Omit<TsConfigPluginOptions, "props">;
 
-export type InitValue<T extends ApiType = ApiType> = string | (() => PluginModule<T> | TSConfigFn<T>);
+export type InitValue<T extends ApiType = ApiType> = string | (() => PluginModule<T> | ProjectMetaFn<T>);
 export type NoFirstParameter<T> = (
     T extends (first: any, ...args: infer U) => infer R
         ? (...args: U) => R
         : T
 );
 
-export type BaseModuleType<T extends ApiType> = PluginModule<T> | TSConfigFn<T> | {
-    default: TSConfigFn<T>;
+export type BaseModuleType<T extends ApiType> = PluginModule<T> | ProjectMetaFn<T> | {
+    default: ProjectMetaFn<T>;
 }
 
 export type TranspilerOptions<T extends TranspileType> =
@@ -113,9 +113,9 @@ export interface IGatsbyPluginWithOpts<
     options?: TOptions;
 }
 
-export type GetApiType<T extends PluginModule<ApiType> | TSConfigFn<ApiType>> = (
+export type GetApiType<T extends PluginModule<ApiType> | ProjectMetaFn<ApiType>> = (
     T extends PluginModule<infer U> ? U : (
-        T extends TSConfigFn<infer U> ? U : (
+        T extends ProjectMetaFn<infer U> ? U : (
             never
         )
     )

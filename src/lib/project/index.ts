@@ -5,7 +5,6 @@ import {
     getTranspiler,
     Transpiler,
     ImportHandler,
-    ImportHandlerFn,
 } from "./transpiler";
 
 import { getRegisterOptions } from "@settings/register";
@@ -14,12 +13,13 @@ import {
     ProjectSettings,
     IInitSettings,
 } from "./project-settings";
+import { ProjectModule } from "./project-module";
 
 import type {
     TranspileType,
     TranspilerOptions,
     ApiType,
-    TSConfigFn,
+    ProjectMetaFn,
     PropertyBag,
     PluginModule,
 } from "@typeDefs";
@@ -77,9 +77,14 @@ export class Project<TApiType extends ApiType = ApiType> {
         } = ProjectSettings.getInstance(apiType, input, setCache);
         const { projectRoot } = settings.projectMeta;
 
+        const projectModule = ProjectModule.getModule(
+            apiType,
+            projectRoot,
+        );
+
         const cachedProject = getProjectCache(apiType, projectRoot);
         const useProject = settingsChanged || !cachedProject
-            ? new Project(apiType, settings)
+            ? new Project(apiType, settings, projectModule)
             : cachedProject!;
 
         // Only cache the first requested one.
@@ -94,15 +99,13 @@ export class Project<TApiType extends ApiType = ApiType> {
         return useProject as Project<T>;
     }
 
-    public requirePath?: string | false;
-
     private _transpiler!: Transpiler;
     private _registerOptions!: TranspilerOptions<TranspileType>;
-    private _module?: PluginModule<TApiType>;
 
     private constructor(
         public readonly apiType: TApiType,
         protected readonly settings: ProjectSettings,
+        private projectModule: ProjectModule<TApiType>,
     ) {}
 
     public get projectName() { return this.projectMeta.projectName; }
@@ -111,7 +114,19 @@ export class Project<TApiType extends ApiType = ApiType> {
     public get projectMeta() { return this.settings.projectMeta; }
     public get propBag() { return this.settings.propBag; }
 
-    public get module() { return this._module; }
+    public get module() { return this.projectModule.module; }
+
+    public get requirePath() { return this.projectModule.requirePath; }
+    public set requirePath(val) {
+        this.projectModule.requirePath = val;
+    }
+
+    public get finalized() {
+        return this.projectModule.finalized;
+    }
+    public finalizeProject(mod: PluginModule<TApiType> | unknown) {
+        this.projectModule.finalize(mod);
+    }
 
     /**
      * Creates & stores a transpiler function instance.
@@ -206,18 +221,8 @@ export class Project<TApiType extends ApiType = ApiType> {
         return ImportHandler.linkProjectPlugin(this.projectName, pluginName);
     }
 
-    public get finalized(): boolean {
-        // Gatsby deletes the `require.cache` instance in dev sometimes...
-        // in that case, we need to re-transpile.
-        if (this.requirePath && !require.cache[this.requirePath]) return false;
-        if (this._module) return true;
-        return false;
-    }
-    public finalizeProject(mod: PluginModule<TApiType> | unknown) {
-        this._module = mod as PluginModule<TApiType>;
-    }
     public resolveConfigFn<
-        C extends TSConfigFn<ApiType>
+        C extends ProjectMetaFn<ApiType>
     >(cb: C, project?: Project) {
         return cb(
             {

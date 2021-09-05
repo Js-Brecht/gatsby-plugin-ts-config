@@ -12,6 +12,7 @@ export const logger = new Logger({
 
 export class PluginError extends Error {
     constructor(err: string | Error) {
+        if (err instanceof PluginError) return err;
         super(`[${pluginName}]: ${err}`);
 
         if (err instanceof Error) {

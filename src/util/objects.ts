@@ -1,5 +1,11 @@
+import loOmit from "lodash/omit";
 import loMergeWith from "lodash/mergeWith";
 import loMerge from "lodash/merge";
+
+export const omit: typeof loOmit = (obj: any, keys: any) => {
+    if (typeof obj === "function") return obj;
+    return loOmit(obj, keys);
+};
 
 export const merge: typeof loMerge = <T extends any[]>(
     ...objects: T

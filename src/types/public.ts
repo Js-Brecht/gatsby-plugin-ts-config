@@ -5,7 +5,7 @@ import type {
     PluginModule,
     IGatsbyPluginWithOpts,
 } from "./internal";
-import type { gatsbyTsMeta } from "@util/gatsby-ts-meta";
+import type { projectMetaSymbol } from "@util/project-meta";
 
 /**
  * Options passed in the first parameter of a `gatsby-*` default export,
@@ -19,12 +19,12 @@ export interface PublicOpts {
 /**
  * Needs to be an interface, otherwise Typescript can't figure out that it is a function...
  */
-interface ITSConfigFn<
+interface IProjectMetaFn<
     TConfigType extends ApiType,
     TProps extends PropertyBag = PropertyBag
 > {
     (args: PublicOpts, props: TProps): PluginModule<TConfigType>
-    [gatsbyTsMeta]?: true;
+    [projectMetaSymbol]?: true;
 }
 
 /**
@@ -42,7 +42,7 @@ interface ITSConfigFn<
  *
  * @example
  * ```ts
- * const gatsbyNode: ITSConfigFn<'node'> = (args) => ({
+ * const gatsbyNode: ProjectMetaFn<'node'> = (args) => ({
  *      sourceNodes: ({ actions }) => {
  *         ...
  *      }
@@ -52,7 +52,7 @@ interface ITSConfigFn<
  *
  * @example
  * ```ts
- * const gatsbyConfig: ITSConfigFn<'config', {}> = (args, props) => ({
+ * const gatsbyConfig: ProjectMetaFn<'config', {}> = (args, props) => ({
  *      plugins: [
  *          ...
  *      ]
@@ -60,10 +60,10 @@ interface ITSConfigFn<
  * export default gatsbyConfig;
  * ```
  */
-export type TSConfigFn<
+export type ProjectMetaFn<
     TConfigType extends ApiType,
     TProps extends PropertyBag = PropertyBag
-> = ITSConfigFn<TConfigType, TProps>;
+> = IProjectMetaFn<TConfigType, TProps>;
 
 /**
  * This interface can be used with the `includePlugins` utility function

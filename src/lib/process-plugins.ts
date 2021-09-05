@@ -7,7 +7,7 @@ import type {
     GatsbyPlugin,
     IPluginDetailsCallback,
     IGatsbyPluginWithOpts,
-    TSConfigFn,
+    ProjectMetaFn,
 } from "@typeDefs";
 
 export type { PluginTranspileType };
@@ -57,7 +57,7 @@ export const processPlugins = <
         if (typeof pluginSet === "function") {
             return arr.concat(
                 project.resolveConfigFn(
-                    pluginSet as TSConfigFn<any>,
+                    pluginSet as ProjectMetaFn<any>,
                 ) as GatsbyPlugin[],
             );
         }

@@ -1,7 +1,8 @@
 import path from "path";
-import omit from "lodash/omit";
 
-import { createGatsbyTsMetaFn, isGatsbyTsMetaFn } from "@util/gatsby-ts-meta";
+import { createProjectMetaFn } from "@util/project-meta";
+import { omit } from "@util/objects";
+import { isProjectMetaFn } from "@util/type-util";
 import { preferDefault } from "@util/node";
 import { resolveFilePath } from "@util/fs-tools";
 
@@ -10,24 +11,24 @@ import { setTranspiler } from "./set-transpiler";
 
 import type { Project } from "@lib/project";
 import type {
+    ApiType,
     TranspilerArgs,
     TranspileType,
     InitValue,
     TranspilerReturn,
-    TSConfigFn,
 } from "@typeDefs";
 
 export { ImportHandler } from "./import-handler";
 export type { ImportHandlerFn } from "./import-handler";
 
-export type Transpiler<TProject extends Project<any> = Project> = <
+export type Transpiler<TProject extends Project<ApiType> = Project> = <
     T extends TranspileType = "babel"
 >(
     init: InitValue,
     overrideArgs?: TranspilerArgs<T>,
 ) => TranspilerReturn<TProject>;
 
-export const getTranspiler = <TProject extends Project<any>>(
+export const getTranspiler = <TProject extends Project<ApiType>>(
     project: TProject,
     rootArgs: TranspilerArgs<TranspileType>,
 ): Transpiler<TProject> => {
@@ -92,25 +93,28 @@ export const getTranspiler = <TProject extends Project<any>>(
                         newObj = (...args: any) => mod(...args);
                     } else if (typeof resolvedMod === "function") {
                         newObj = (...args: any) => (resolvedMod as Function)(...args);
-                    } else {
-                        if (typeof mod === "object") {
-                            initialObj = mod;
-                        }
-                        if (typeof resolvedMod === "object") {
-                            extendObj = resolvedMod as Record<string, unknown>;
-                        }
                     }
 
-                    return require.cache[requirePath].exports = omit(
+                    if (typeof mod === "object") {
+                        initialObj = mod;
+                    }
+                    if (typeof resolvedMod === "object") {
+                        extendObj = resolvedMod as Record<string, unknown>;
+                    }
+
+                    return require.cache[requirePath]!.exports = omit(
                         Object.assign(newObj, initialObj, extendObj),
                         ["__esModule", "default"],
                     );
                 };
 
+                const isNodeFunction = project.apiType === "node";
 
-                if (isGatsbyTsMetaFn(project, resolvedMod)) {
-                    return createGatsbyTsMetaFn((opts, props) => {
-                        if (isGatsbyTsMetaFn(project, resolvedMod)) {
+                if (isProjectMetaFn(project, resolvedMod, isNodeFunction)) {
+                    return createProjectMetaFn((opts, props) => {
+
+                        // So much for TS 4.4.2 contextual flow analysis
+                        if (isProjectMetaFn(project, resolvedMod, isNodeFunction)) {
                             resolvedMod = resolvedMod(opts, props);
                         }
 
