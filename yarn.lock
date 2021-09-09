@@ -9519,8 +9519,6 @@ fsevents@~2.3.2:
     type-fest: ^0.12.0
     typescript: 4.4.2
   peerDependencies:
-    "@babel/core": ^7.9.0
-    "@babel/runtime": ^7.8.7
     gatsby: ~2.x.x || ~3.x.x
     typescript: ~4.x.x
   dependenciesMeta:
