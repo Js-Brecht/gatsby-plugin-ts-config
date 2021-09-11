@@ -46,11 +46,11 @@ interface IInternalTsNodeOptions extends IInternalOptions {
     transpilerOptions?: TSNodeOptions;
 }
 
-export type TsConfigPluginOptions = (
+export type GatsbyTsOptions = (
     | IInternalBabelOptions
     | IInternalTsNodeOptions
 );
-export type PluginOptionDiff = Omit<TsConfigPluginOptions, "props">;
+export type PluginOptionDiff = Omit<GatsbyTsOptions, "props">;
 
 export type InitValue<T extends ApiType = ApiType> = string | (() => PluginModule<T> | ProjectMetaFn<T>);
 export type NoFirstParameter<T> = (

@@ -6,26 +6,26 @@ import { Project } from "@lib/project";
 import type {
     InitValue,
     ApiType,
-    TsConfigPluginOptions,
+    // TsConfigPluginOptions,
     PluginModule,
 } from "@typeDefs/internal";
 
 type UsePluginModule<T extends ApiType> = (
     init: InitValue<T>,
-    options?: TsConfigPluginOptions,
+    // options?: TsConfigPluginOptions,
 ) => PluginModule<T>
 
 export const useGatsbyPluginModule = <T extends ApiType>(
     apiType: T,
     init: InitValue,
-    options = {} as TsConfigPluginOptions,
+    // options = {} as TsConfigPluginOptions,
 ): PluginModule<ApiType> => {
     const debug = getDebugLogger(`useGatsbyPlugin:${apiType}`);
     const project = Project.getProject(
         {
             apiType,
-            options,
-            propBag: options.props,
+            // options,
+            // propBag: options.props,
         },
         true,
         true,

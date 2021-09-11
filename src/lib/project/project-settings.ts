@@ -12,13 +12,13 @@ import { merge } from "@util/objects";
 import { preferDefault } from "@util/node";
 
 import type {
-    TsConfigPluginOptions,
+    GatsbyTsOptions,
     PluginOptionDiff,
     PropertyBag,
     ApiType,
 } from "@typeDefs";
 
-export type ProjectOptions = Omit<TsConfigPluginOptions, "props">;
+export type ProjectOptions = Omit<GatsbyTsOptions, "props">;
 
 export interface IInitSettings {
     projectMeta: ProjectMeta;
@@ -53,11 +53,11 @@ const getCachedSettings = (
         if (val) return val;
     }
 };
-const getGlobalProjectSettings = (projectRoot: string): TsConfigPluginOptions | void => {
+const getGlobalProjectSettings = (projectRoot: string): GatsbyTsOptions | void => {
     try {
         return preferDefault(
             require(`${projectRoot}/${settingsFile}`),
-        ) as TsConfigPluginOptions;
+        ) as GatsbyTsOptions;
     } catch (err) {
         return;
     }
@@ -170,7 +170,7 @@ export class ProjectSettings {
 
     protected merge(input = {} as Partial<IInitSettings>) {
         const inputProps = input.propBag || (
-            (input.options as TsConfigPluginOptions)?.props
+            (input.options as GatsbyTsOptions)?.props
         );
 
         this._propBag = getPropBag(this.projectMeta.projectRoot, inputProps);

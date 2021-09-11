@@ -1,13 +1,13 @@
 import { Project } from "@lib/project";
 import {
-    expandPlugins,
-    getPluginsCache,
+    // expandPlugins,
+    // getPluginsCache,
     processPlugins,
     PluginTranspileType,
 } from "@lib/process-plugins";
 import { processApiModule } from "@lib/api-module";
 
-import { getProject } from "@util/project-meta";
+// import { getProject } from "@util/project-meta";
 import { arrayify } from "@util/objects";
 import { PluginError, Debugger, getDebugLogger } from "@util/output";
 
@@ -16,7 +16,7 @@ import type {
     GatsbyPlugin,
     IPluginDetailsCallback,
     IGatsbyPluginWithOpts,
-    TsConfigPluginOptions,
+    // GatsbyTsOptions,
 } from "@typeDefs";
 
 export interface IResolvePlugins<TReturn = void> {
@@ -101,39 +101,39 @@ export interface IResolvePlugins<TReturn = void> {
  *   2. Normal `gatsby-config` plugin array
  *   3. Plugins returned from the callback function parameter(s) in this function
  */
-export const includePlugins: IResolvePlugins<void> = <
-    T extends GatsbyPlugin = GatsbyPlugin,
-    P extends PropertyBag = PropertyBag,
->(
-    plugins: T[] | IPluginDetailsCallback<T>,
-    pluginsCb?: IPluginDetailsCallback<T, P>,
-) => {
-    const { projectRoot } = getProject();
-    const cache = getPluginsCache(projectRoot);
+// export const includePlugins: IResolvePlugins<void> = <
+//     T extends GatsbyPlugin = GatsbyPlugin,
+//     P extends PropertyBag = PropertyBag,
+// >(
+//     plugins: T[] | IPluginDetailsCallback<T>,
+//     pluginsCb?: IPluginDetailsCallback<T, P>,
+// ) => {
+//     const { projectRoot } = getProject();
+//     const cache = getPluginsCache(projectRoot);
 
-    if (plugins instanceof Array) {
-        cache.normal.push(...expandPlugins(plugins));
-    } else {
-        pluginsCb = plugins;
-    }
+//     if (plugins instanceof Array) {
+//         cache.normal.push(...expandPlugins(plugins));
+//     } else {
+//         pluginsCb = plugins;
+//     }
 
-    if (pluginsCb) {
-        cache.resolver.push(
-            pluginsCb as unknown as IPluginDetailsCallback,
-        );
-    }
-};
+//     if (pluginsCb) {
+//         cache.resolver.push(
+//             pluginsCb as unknown as IPluginDetailsCallback,
+//         );
+//     }
+// };
 
 const doProcessPlugins = (
     type: PluginTranspileType,
     plugins: GatsbyPlugin[] | IPluginDetailsCallback<any, any>,
     debug: Debugger,
-    opts?: GetPluginOpts,
+    // opts?: GetPluginOpts,
 ): IGatsbyPluginWithOpts[] => {
     const project = Project.getProject(
         {
             apiType: "config",
-            options: opts,
+            // options: opts,
         },
         false,
         undefined,
@@ -153,7 +153,7 @@ const doProcessPlugins = (
     );
 };
 
-type GetPluginOpts = TsConfigPluginOptions;
+// type GetPluginOpts = TsConfigPluginOptions;
 
 /**
  * Immediately processes and returns a collection of plugins, or a
@@ -166,14 +166,14 @@ export function getPlugins<
     P extends PropertyBag = PropertyBag,
 >(
     plugins: T[] | IPluginDetailsCallback<T, P>,
-    opts?: GetPluginOpts,
+    // opts?: GetPluginOpts,
 ): IGatsbyPluginWithOpts[] {
     try {
         return doProcessPlugins(
             "all",
             plugins,
             getDebugLogger("getPlugins"),
-            opts,
+            // opts,
         );
     } catch (err: any) {
         throw new PluginError(err);

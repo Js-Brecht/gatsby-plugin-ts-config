@@ -1,4 +1,4 @@
-import { TsConfigPluginOptions } from "@typeDefs";
+import { GatsbyTsOptions } from "@typeDefs";
 export * from "./types/public";
 
 export {
@@ -10,8 +10,8 @@ export {
     withProjectMetaNode,
 } from "./with-project-meta";
 export {
-    includePlugins,
+    // includePlugins,
     getPlugins,
 } from "./include-plugins";
 
-export const createOptions = (options: TsConfigPluginOptions) => options;
+export const createOptions = (options: GatsbyTsOptions) => options;
