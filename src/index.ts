@@ -1,3 +1,4 @@
+import { TsConfigPluginOptions } from "@typeDefs";
 export * from "./types/public";
 
 export {
@@ -12,3 +13,5 @@ export {
     includePlugins,
     getPlugins,
 } from "./include-plugins";
+
+export const createOptions = (options: TsConfigPluginOptions) => options;

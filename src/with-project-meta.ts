@@ -1,5 +1,5 @@
 import { createProjectMetaFn } from "@util/project-meta";
-import { PluginError } from "@util/output";
+import { PluginError, getDebugLogger } from "@util/output";
 
 import { processApiModule } from "./lib/api-module";
 import { Project } from "./lib/project";
@@ -13,10 +13,12 @@ const withProjectMeta = <T extends ApiType, TProps extends PropertyBag>(
     apiType: T,
     cb: ProjectMetaFn<T, TProps>,
 ): PluginModule<T> => {
+    const debug = getDebugLogger(`withProjectMeta:${apiType}`);
     const project = Project.getProject(
         { apiType },
         true,
         false,
+        debug,
     );
 
     try {

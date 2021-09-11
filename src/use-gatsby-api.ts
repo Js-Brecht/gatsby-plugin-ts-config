@@ -1,4 +1,4 @@
-import { PluginError } from "@util/output";
+import { PluginError, getDebugLogger } from "@util/output";
 import { processApiModule } from "@lib/api-module";
 
 import { Project } from "@lib/project";
@@ -15,11 +15,12 @@ type UsePluginModule<T extends ApiType> = (
     options?: TsConfigPluginOptions,
 ) => PluginModule<T>
 
-const useGatsbyPluginModule = <T extends ApiType>(
+export const useGatsbyPluginModule = <T extends ApiType>(
     apiType: T,
     init: InitValue,
     options = {} as TsConfigPluginOptions,
 ): PluginModule<ApiType> => {
+    const debug = getDebugLogger(`useGatsbyPlugin:${apiType}`);
     const project = Project.getProject(
         {
             apiType,
@@ -28,6 +29,7 @@ const useGatsbyPluginModule = <T extends ApiType>(
         },
         true,
         true,
+        debug,
     );
 
     try {

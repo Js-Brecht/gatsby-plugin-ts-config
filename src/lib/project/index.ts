@@ -8,6 +8,7 @@ import {
 } from "./transpiler";
 
 import { getRegisterOptions } from "@settings/register";
+import { getDebugLogger, Debugger } from "@util/output";
 
 import {
     ProjectSettings,
@@ -68,23 +69,37 @@ export class Project<TApiType extends ApiType = ApiType> {
         input: Partial<IGetProjectSettings>,
         setCache: boolean,
         forceCache = false,
+        debug?: Debugger,
     ): Project<T> {
         const { apiType = "config" } = input;
+
+        const useDebug = (
+            debug?.new("Project") ||
+            getDebugLogger(`Project:${apiType}`)
+        );
 
         const {
             changed: settingsChanged,
             settings,
         } = ProjectSettings.getInstance(apiType, input, setCache);
         const { projectRoot } = settings.projectMeta;
+        const cachedProject = getProjectCache(apiType, projectRoot);
+
+        if (cachedProject) useDebug(`Found cached project:`, apiType, projectRoot);
 
         const projectModule = ProjectModule.getModule(
             apiType,
             projectRoot,
+            cachedProject?.debug.new("Project") || useDebug,
         );
 
-        const cachedProject = getProjectCache(apiType, projectRoot);
         const useProject = settingsChanged || !cachedProject
-            ? new Project(apiType, settings, projectModule)
+            ? new Project(
+                apiType,
+                settings,
+                projectModule,
+                debug || useDebug,
+            )
             : cachedProject!;
 
         // Only cache the first requested one.
@@ -106,6 +121,7 @@ export class Project<TApiType extends ApiType = ApiType> {
         public readonly apiType: TApiType,
         protected readonly settings: ProjectSettings,
         private projectModule: ProjectModule<TApiType>,
+        public debug: Debugger,
     ) {}
 
     public get projectName() { return this.projectMeta.projectName; }
@@ -184,6 +200,7 @@ export class Project<TApiType extends ApiType = ApiType> {
             },
             false,
             false,
+            this.debug.new(`clone:${newApiType}`),
         );
     }
 

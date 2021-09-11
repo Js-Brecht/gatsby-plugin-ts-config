@@ -15,6 +15,7 @@ import type {
 interface IProcessApiModuleOptions<T extends Project> {
     init: InitValue;
     project: T;
+    recurse?: boolean;
 }
 
 export type ApiModuleProcessor = typeof processApiModule;
@@ -22,12 +23,19 @@ export type ApiModuleProcessor = typeof processApiModule;
 export const processApiModule = <T extends Project>({
     init,
     project,
+    recurse = true,
 }: IProcessApiModuleOptions<T>): ProjectPluginModule<T> => {
     const projectRoot = project.projectRoot;
     const apiType = project.apiType;
 
+    const apiDebug = project.debug.new("processApiModule");
+
+    /**
+     * This api module has already been processed once. No need to do it again.
+     * Just return the last result.
+     */
     if (project.finalized) {
-        console.log("project finalized:", project.projectName, project.apiType);
+        apiDebug("project already finalized:", project.projectName, project.apiType);
         return project.module as ProjectPluginModule<T>;
     }
 
@@ -36,8 +44,17 @@ export const processApiModule = <T extends Project>({
     } = project.getApiOptions(apiType);
 
     let apiModule = preferDefault(
-        project.transpiler(init),
+        project.transpiler.transpile(init),
     ) as TranspilerReturn<T>;
+
+    /**
+     * If the module we're transpiling is using `useGatsbyConfig` or `useGatsbyNode`, then
+     * it will already be doing the transpilation itself.  Just return that result.
+     */
+    if (project.finalized) {
+        apiDebug("project finalized after transpile:", project.projectName, project.apiType);
+        return project.module as ProjectPluginModule<T>;
+    }
 
     let gatsbyNode: ProjectMetaFn<"node"> | undefined = undefined;
     let gatsbyNodeProject: Project<"node"> | undefined = undefined;
@@ -64,27 +81,38 @@ export const processApiModule = <T extends Project>({
             gatsbyNodeProject = Project.getProject({
                 apiType: "node",
                 projectMeta: project.projectMeta,
-            }, false);
+            }, false, undefined, gatsbyNodeProject.debug);
             project.setApiOption("node", "resolveImmediate", true);
         }
     }
+
+    if (!apiModule) apiModule = {};
 
     if (isProjectMetaFn(project, apiModule) && resolveImmediate) {
         apiModule = project.resolveConfigFn(apiModule) as ProjectPluginModule<T>;
     }
 
-    if (gatsbyNodeProject && gatsbyNode && isProjectMetaFn(project, gatsbyNode)) {
+    if (
+        gatsbyNodeProject &&
+        !gatsbyNodeProject.finalized &&
+        gatsbyNode &&
+        isProjectMetaFn(project, gatsbyNode)
+    ) {
+        apiDebug("Finalize gatsby-node", gatsbyNodeProject.requirePath);
         gatsbyNodeProject.finalizeProject(
             gatsbyNodeProject.resolveConfigFn(gatsbyNode),
         );
     }
 
-    if (!apiModule) apiModule = {};
-
     /**
      * Time to transpile/process local plugins
      */
-    if (isGatsbyConfig(apiType, apiModule) && typeof apiModule === "object" && !project.finalized) {
+    if (
+        isGatsbyConfig(apiType, apiModule) &&
+        typeof apiModule === "object" &&
+        recurse
+    ) {
+        apiDebug("Resolving plugins");
         apiModule.plugins = processPluginCache(
             project,
             processApiModule,
@@ -93,6 +121,7 @@ export const processApiModule = <T extends Project>({
     }
 
     if (resolveImmediate) {
+        apiDebug("Finalizing project:", project.requirePath, apiModule);
         project.finalizeProject(apiModule);
     }
 

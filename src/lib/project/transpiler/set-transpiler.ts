@@ -5,13 +5,13 @@ import { Project } from "@lib/project";
 import { AllowedFiles } from "./allowed-files";
 import { ImportHandler } from "./import-handler";
 import { TranspilerSettings, GenericArgs } from "./transpiler-settings";
+import { restoreExtensions } from "./restore-extensions";
 
 import type {
     TranspilerArgs,
     TranspileType,
     TranspilerOptions,
     IgnoreFn,
-    IgnoreHookFn,
 } from "@typeDefs";
 import { Module } from "@util/node";
 
@@ -19,21 +19,6 @@ const extensions = [".ts", ".tsx", ".js", ".jsx"];
 const origModuleExtensions = {
     ...Module._extensions,
 };
-
-const ignoreRules: IgnoreFn[] = [
-    // Module must not be a node_modules dependency
-    (fname) => /node_modules/.test(fname),
-];
-
-const getIgnore = (
-    filename: string,
-    rules: (IgnoreFn | IgnoreHookFn)[],
-    orig: boolean,
-) => (
-    AllowedFiles.allowed(filename)
-        ? false
-        : rules.some((rule) => rule(filename, !!orig))
-);
 
 const ignore: IgnoreFn = (filename) => {
     if (filename.endsWith(".pnp.js")) return true;
@@ -44,11 +29,7 @@ const ignore: IgnoreFn = (filename) => {
         importHandler(filename);
     }
 
-    const origIgnore = getIgnore(filename, ignoreRules, false);
-    const ignoreFile = hooks
-        ? getIgnore(filename, hooks, origIgnore)
-        : origIgnore;
-    return !!ignoreFile;
+    return AllowedFiles.ignored(filename, hooks);
 };
 
 const only: IgnoreFn = (filename) => {
@@ -61,7 +42,7 @@ const register = (args: GenericArgs) => {
         options: transpilerOpts,
     } = args;
 
-    Module._extensions = { ...origModuleExtensions };
+    restoreExtensions(origModuleExtensions);
 
     switch (transpileType) {
         case "ts-node": {
@@ -81,7 +62,7 @@ const register = (args: GenericArgs) => {
         }
     }
 
-    TranspilerSettings.saveExtensions();
+    TranspilerSettings.saveExtensions(require.extensions);
 };
 
 export const setTranspiler = (
@@ -115,9 +96,7 @@ export const setTranspiler = (
         // No prior transpiler set.  Just restore the original
         // module extensions
         if (restoreSettings === -1) {
-            Module._extensions = {
-                ...origModuleExtensions,
-            };
+            restoreExtensions(origModuleExtensions);
             return;
         }
 
@@ -125,7 +104,7 @@ export const setTranspiler = (
         if (!restoreSettings) return;
         const {
             args: restoreArgs,
-            extensions: restoreExtensions = origModuleExtensions,
+            extensions: restoreExt = origModuleExtensions,
         } = restoreSettings;
 
         switch (restoreArgs.type) {
@@ -142,9 +121,7 @@ export const setTranspiler = (
              * module extensions
              */
             case "ts-node": {
-                Module._extensions = {
-                    ...restoreExtensions,
-                };
+                restoreExtensions(restoreExt);
                 break;
             }
         }

@@ -4,8 +4,12 @@ import set from "lodash/set";
 import pick from "lodash/pick";
 
 import { Serializer } from "@lib/serializer";
-import { getProject, ProjectMeta } from "@util/project-meta";
 import { getPropBag } from "@settings/prop-bag";
+
+import { settingsFile } from "@util/constants";
+import { getProject, ProjectMeta } from "@util/project-meta";
+import { merge } from "@util/objects";
+import { preferDefault } from "@util/node";
 
 import type {
     TsConfigPluginOptions,
@@ -49,6 +53,15 @@ const getCachedSettings = (
         if (val) return val;
     }
 };
+const getGlobalProjectSettings = (projectRoot: string): TsConfigPluginOptions | void => {
+    try {
+        return preferDefault(
+            require(`${projectRoot}/${settingsFile}`),
+        ) as TsConfigPluginOptions;
+    } catch (err) {
+        return;
+    }
+};
 
 const optionDiffKeys = keys<PluginOptionDiff>();
 
@@ -60,6 +73,40 @@ export class ProjectSettings {
     ) {
         const projectMeta = newSettings.projectMeta || getProject();
         const { projectRoot } = projectMeta;
+
+        const globalOptions = getGlobalProjectSettings(projectRoot);
+
+        if (globalOptions) {
+            const newOptions = newSettings.options = (
+                newSettings.options || {}
+            );
+
+            newSettings.propBag = getPropBag(projectRoot, globalOptions.props);
+
+            if (
+                // Merge transpiler options if the transpiler types are the same
+                (newOptions.type && globalOptions.type === newOptions.type) ||
+                // Or merge them if no new ones are defined, but there are global ones
+                (globalOptions.type || globalOptions.transpilerOptions)
+            ) {
+                newOptions.type = globalOptions.type;
+                newOptions.transpilerOptions = merge(
+                    {},
+                    globalOptions.transpilerOptions,
+                    newOptions.transpilerOptions,
+                );
+            }
+
+            if (globalOptions.hooks) {
+                if (newOptions.hooks) {
+                    newOptions.hooks = merge(
+                        {},
+                        globalOptions.hooks,
+                        newOptions.hooks,
+                    );
+                }
+            }
+        }
 
         const existing = getCachedSettings(
             [

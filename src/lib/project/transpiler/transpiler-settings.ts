@@ -46,13 +46,12 @@ class TranspilerSettingsImpl {
     ) {
         const cacheKey = getCacheKey(optKey, project);
         const settingsKey = getSettingsKey(optKey, project);
-        let sameSettings = false;
+
+        const prevLen = previousSettings.length - 1;
+        const latestSettingsKey = prevLen >= 0 && previousSettings[prevLen][1];
+        const sameSettings = latestSettingsKey && latestSettingsKey === settingsKey;
 
         if (settingsCache.has(cacheKey)) {
-            const prevLen = previousSettings.length - 1;
-            const latestSettingsKey = previousSettings[prevLen][1];
-
-            sameSettings = latestSettingsKey === settingsKey;
             currentSettings = settingsCache.get(cacheKey)!;
         } else {
             currentSettings = {
@@ -89,9 +88,9 @@ class TranspilerSettingsImpl {
         return currentSettings = restoreSettings;
     }
 
-    public saveExtensions() {
+    public saveExtensions(newExtensions: NodeJS.RequireExtensions) {
         if (currentSettings) {
-            currentSettings.extensions = { ...Module._extensions };
+            currentSettings.extensions = { ...newExtensions };
         }
     }
 }

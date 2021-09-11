@@ -1,6 +1,8 @@
 import get from "lodash/get";
 import set from "lodash/set";
 
+import { Debugger } from "@util/output";
+
 import {
     ApiType,
     PluginModule,
@@ -18,14 +20,22 @@ export class ProjectModule<TApiType extends ApiType> {
     public static getModule<T extends ApiType>(
         apiType: ApiType,
         projectRoot: string,
+        debug: Debugger,
     ): ProjectModule<T> {
+        const projectModuleDebug = debug.new(`ProjectModule`);
         let projectModule = get(projectModuleCache, [projectRoot, apiType]);
-        if (projectModule) return projectModule;
+        if (projectModule) {
+            projectModuleDebug("Found module instance:", apiType, projectRoot);
+            return projectModule;
+        }
+
         set(
             projectModuleCache,
             [projectRoot, apiType],
             projectModule = new ProjectModule(),
         );
+
+        projectModuleDebug("Creating new module instance", apiType, projectRoot);
 
         return projectModule;
     }

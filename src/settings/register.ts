@@ -1,5 +1,3 @@
-import path from "path";
-
 import { merge } from "@util/objects";
 
 import type { TransformOptions as BabelOptions } from "@babel/core";
@@ -28,11 +26,12 @@ const getDefaultOptions = (
         }
         case "ts-node": {
             return {
-                project: path.join(projectRoot, "tsconfig.json"),
+                skipProject: true,
                 files: true,
+                transpileOnly: false,
                 compilerOptions: {
-                    module: "commonjs",
-                    target: "es2015",
+                    module: "CommonJS",
+                    target: "ES2015",
                     allowJs: true,
                     noEmit: true,
                     declaration: false,

@@ -16,17 +16,23 @@ import type {
     TranspileType,
     InitValue,
     TranspilerReturn,
+    ProjectPluginModule,
 } from "@typeDefs";
 
 export { ImportHandler } from "./import-handler";
 export type { ImportHandlerFn } from "./import-handler";
 
-export type Transpiler<TProject extends Project<ApiType> = Project> = <
-    T extends TranspileType = "babel"
->(
-    init: InitValue,
-    overrideArgs?: TranspilerArgs<T>,
-) => TranspilerReturn<TProject>;
+export type Transpiler<TProject extends Project<ApiType> = Project> = {
+    enable: (key?: string | undefined, args?: TranspilerArgs<TranspileType> | undefined) => (
+        ReturnType<typeof setTranspiler>
+    );
+    transpile: <
+        T extends TranspileType = "babel"
+    >(
+        init: InitValue,
+        overrideArgs?: TranspilerArgs<T>,
+    ) => TranspilerReturn<TProject>;
+}
 
 export const getTranspiler = <TProject extends Project<ApiType>>(
     project: TProject,
@@ -34,98 +40,110 @@ export const getTranspiler = <TProject extends Project<ApiType>>(
 ): Transpiler<TProject> => {
     const rootKey = Serializer.serialize(rootArgs)!;
 
-    return function transpile(init, overrideArgs) {
-        const projectRoot = project.projectRoot;
-
-        const overrideKey = (
-            overrideArgs && Serializer.serialize(overrideArgs)
-        );
-
-        const newTranspiler = !!(
-            overrideKey &&
-            overrideKey !== rootKey
-        );
-
-        const [transpilerKey, transpilerArgs] = newTranspiler
-            ? [overrideKey!, overrideArgs!] as const
-            : [rootKey, rootArgs] as const;
-
-        const restore = setTranspiler(
-            transpilerKey,
-            transpilerArgs,
+    const doSetTranspiler = (key?: string, args?: TranspilerArgs<TranspileType>) => (
+        setTranspiler(
+            key || rootKey,
+            args || rootArgs,
             project,
-        );
+        )
+    );
 
-        try {
-            if (typeof init === "function") {
-                return omit(init(), ["__esModule"]) as TranspilerReturn<TProject>;
-            } else {
-                const requirePath = project.requirePath || (
-                    project.requirePath = resolveFilePath(
-                        projectRoot,
-                        path.resolve(projectRoot, init),
-                    )
-                );
+    return {
+        enable: doSetTranspiler,
+        transpile: function transpile(init, overrideArgs) {
+            const projectRoot = project.projectRoot;
 
-                if (!requirePath) {
-                    throw new Error([
-                        `Unable to resolve module '${init}' from`,
-                        `Path: ${projectRoot}`,
-                    ].join("\n"));
-                }
+            const overrideKey = (
+                overrideArgs && Serializer.serialize(overrideArgs)
+            );
 
-                const mod = require(requirePath);
-                let resolvedMod = preferDefault(mod);
+            const newTranspiler = !!(
+                overrideKey &&
+                overrideKey !== rootKey
+            );
 
-                if (!require.cache[requirePath]) {
-                    throw new Error([
-                        `Unable to retrieve require cache for module '${requirePath}'.`,
-                        "This may indicate a serious issue",
-                    ].join("\n"));
-                }
+            const [transpilerKey, transpilerArgs] = newTranspiler
+                ? [overrideKey!, overrideArgs!] as const
+                : [rootKey, rootArgs] as const;
 
-                const updateExports = () => {
-                    let newObj: Record<string, unknown> | Function = {};
-                    let initialObj: Record<string, unknown> = {};
-                    let extendObj: Record<string, unknown> = {};
+            const restore = doSetTranspiler(transpilerKey, transpilerArgs);
 
-                    if (typeof mod === "function") {
-                        newObj = (...args: any) => mod(...args);
-                    } else if (typeof resolvedMod === "function") {
-                        newObj = (...args: any) => (resolvedMod as Function)(...args);
-                    }
-
-                    if (typeof mod === "object") {
-                        initialObj = mod;
-                    }
-                    if (typeof resolvedMod === "object") {
-                        extendObj = resolvedMod as Record<string, unknown>;
-                    }
-
-                    return require.cache[requirePath]!.exports = omit(
-                        Object.assign(newObj, initialObj, extendObj),
-                        ["__esModule", "default"],
+            try {
+                if (typeof init === "function") {
+                    return omit(init(), ["__esModule"]) as TranspilerReturn<TProject>;
+                } else {
+                    const requirePath = project.requirePath || (
+                        project.requirePath = resolveFilePath(
+                            projectRoot,
+                            path.resolve(projectRoot, init),
+                        )
                     );
-                };
 
-                const isNodeFunction = project.apiType === "node";
+                    if (!requirePath) {
+                        throw new Error([
+                            `Unable to resolve module '${init}' from`,
+                            `Path: ${projectRoot}`,
+                        ].join("\n"));
+                    }
 
-                if (isProjectMetaFn(project, resolvedMod, isNodeFunction)) {
-                    return createProjectMetaFn((opts, props) => {
+                    const mod = require(requirePath);
+                    let resolvedMod = preferDefault(mod);
 
-                        // So much for TS 4.4.2 contextual flow analysis
-                        if (isProjectMetaFn(project, resolvedMod, isNodeFunction)) {
-                            resolvedMod = resolvedMod(opts, props);
+                    if (!require.cache[requirePath]) {
+                        throw new Error([
+                            `Unable to retrieve require cache for module '${requirePath}'.`,
+                            "This may indicate a serious issue",
+                        ].join("\n"));
+                    }
+
+                    const removeUnwanted = (mod: any) => (
+                        omit(mod, ["__esModule", "default"])
+                    );
+
+                    const updateExports = () => {
+                        let newObj: Record<string, unknown> | Function = {};
+                        let initialObj: Record<string, unknown> = {};
+                        let extendObj: Record<string, unknown> = {};
+
+                        if (typeof mod === "function") {
+                            newObj = (...args: any) => mod(...args);
+                        } else if (typeof resolvedMod === "function") {
+                            newObj = (...args: any) => (resolvedMod as Function)(...args);
                         }
 
-                        return updateExports();
-                    });
-                }
+                        if (typeof mod === "object") {
+                            initialObj = removeUnwanted(mod);
+                        }
+                        if (typeof resolvedMod === "object") {
+                            extendObj = removeUnwanted(resolvedMod) as Record<string, unknown>;
+                        }
 
-                return updateExports() as TranspilerReturn<TProject>;
+                        return require.cache[requirePath]!.exports = Object.assign(
+                            newObj,
+                            initialObj,
+                            extendObj,
+                        );
+                    };
+
+                    const isNodeFunction = project.apiType === "node";
+
+                    if (isProjectMetaFn(project, resolvedMod, isNodeFunction)) {
+                        return createProjectMetaFn((opts, props) => {
+
+                            // So much for TS 4.4.2 contextual flow analysis
+                            if (isProjectMetaFn(project, resolvedMod, isNodeFunction)) {
+                                resolvedMod = resolvedMod(opts, props);
+                            }
+
+                            return updateExports() as ProjectPluginModule<TProject>;
+                        });
+                    }
+
+                    return updateExports() as TranspilerReturn<TProject>;
+                }
+            } finally {
+                if (restore) restore();
             }
-        } finally {
-            if (restore) restore();
-        }
+        },
     };
 };

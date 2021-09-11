@@ -2,6 +2,7 @@ import path from "path";
 import { getFile, resolveFilePath } from "@util/fs-tools";
 import { createRequire } from "@util/node";
 import { apiTypeKeys } from "@util/constants";
+import { Debugger } from "@util/output";
 
 import { Project } from "@lib/project";
 
@@ -72,7 +73,9 @@ export const transpilePlugins = (
             pkgJson,
         } = pluginDetails;
 
-        project.linkPluginImports(pluginName);
+        const newLink = project.linkPluginImports(pluginName);
+        // We've been here before, no need to do it again.
+        if (!newLink) return;
 
         apiTypeKeys.forEach((type) => {
             const gatsbyModuleName = `./gatsby-${type}`;
@@ -93,6 +96,8 @@ export const transpilePlugins = (
                         propBag: project.propBag,
                     },
                     true,
+                    undefined,
+                    project.debug.new("plugin"),
                 ),
             });
         });

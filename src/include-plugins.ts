@@ -9,7 +9,7 @@ import { processApiModule } from "@lib/api-module";
 
 import { getProject } from "@util/project-meta";
 import { arrayify } from "@util/objects";
-import { PluginError } from "@util/output";
+import { PluginError, Debugger, getDebugLogger } from "@util/output";
 
 import type {
     PropertyBag,
@@ -127,6 +127,7 @@ export const includePlugins: IResolvePlugins<void> = <
 const doProcessPlugins = (
     type: PluginTranspileType,
     plugins: GatsbyPlugin[] | IPluginDetailsCallback<any, any>,
+    debug: Debugger,
     opts?: GetPluginOpts,
 ): IGatsbyPluginWithOpts[] => {
     const project = Project.getProject(
@@ -135,6 +136,8 @@ const doProcessPlugins = (
             options: opts,
         },
         false,
+        undefined,
+        debug,
     );
 
     const usePlugins = (
@@ -169,6 +172,7 @@ export function getPlugins<
         return doProcessPlugins(
             "all",
             plugins,
+            getDebugLogger("getPlugins"),
             opts,
         );
     } catch (err: any) {

@@ -45,7 +45,7 @@ class ImportHandlerImpl {
         );
     }
 
-    public linkProjectPlugin(projectName: string, pluginName: string): void {
+    public linkProjectPlugin(projectName: string, pluginName: string): boolean {
         const rootProject = this.getProjectImports(projectName);
         const pluginProject = this.getProjectImports(pluginName);
 
@@ -54,13 +54,11 @@ class ImportHandlerImpl {
         );
 
         if (pluginLinks.hasOwnProperty(pluginName)) {
-            throw new PluginError([
-                `Attempting to link plugin ${pluginName} to project ${projectName} failed.`,
-                `Plugin ${pluginName} has already been linked!`,
-            ].join("\n"));
+            return false;
         }
 
         pluginLinks[pluginName] = pluginProject;
+        return true;
     }
 
     private pushPrev(handlerMeta: HandlerCacheMeta) {
