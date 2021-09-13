@@ -5,6 +5,7 @@ import { Project } from "@lib/project";
 import { AllowedFiles } from "./allowed-files";
 import { ImportHandler } from "./import-handler";
 import { TranspilerSettings, GenericArgs } from "./transpiler-settings";
+import { restoreExtensions } from "./restore-extensions";
 
 import type {
     TranspilerArgs,
@@ -61,7 +62,7 @@ const register = (args: GenericArgs) => {
         options: transpilerOpts,
     } = args;
 
-    Module._extensions = { ...origModuleExtensions };
+    restoreExtensions(origModuleExtensions);
 
     switch (transpileType) {
         case "ts-node": {
@@ -81,7 +82,7 @@ const register = (args: GenericArgs) => {
         }
     }
 
-    TranspilerSettings.saveExtensions();
+    TranspilerSettings.saveExtensions(require.extensions);
 };
 
 export const setTranspiler = (
@@ -115,9 +116,7 @@ export const setTranspiler = (
         // No prior transpiler set.  Just restore the original
         // module extensions
         if (restoreSettings === -1) {
-            Module._extensions = {
-                ...origModuleExtensions,
-            };
+            restoreExtensions(origModuleExtensions);
             return;
         }
 
@@ -125,7 +124,7 @@ export const setTranspiler = (
         if (!restoreSettings) return;
         const {
             args: restoreArgs,
-            extensions: restoreExtensions = origModuleExtensions,
+            extensions: restoreExt = origModuleExtensions,
         } = restoreSettings;
 
         switch (restoreArgs.type) {
@@ -142,9 +141,7 @@ export const setTranspiler = (
              * module extensions
              */
             case "ts-node": {
-                Module._extensions = {
-                    ...restoreExtensions,
-                };
+                restoreExtensions(restoreExt);
                 break;
             }
         }

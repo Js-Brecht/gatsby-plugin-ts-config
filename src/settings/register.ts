@@ -28,7 +28,8 @@ const getDefaultOptions = (
         }
         case "ts-node": {
             return {
-                project: path.join(projectRoot, "tsconfig.json"),
+                // project: path.join(projectRoot, "tsconfig.json"),
+                skipProject: true,
                 files: true,
                 compilerOptions: {
                     module: "commonjs",
@@ -38,6 +39,7 @@ const getDefaultOptions = (
                     declaration: false,
                     importHelpers: true,
                     resolveJsonModule: true,
+                    esModuleInterop: true,
                     jsx: "preserve",
                     // sourceMap: true,
                 },
