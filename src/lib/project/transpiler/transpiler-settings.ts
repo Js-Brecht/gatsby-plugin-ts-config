@@ -89,9 +89,9 @@ class TranspilerSettingsImpl {
         return currentSettings = restoreSettings;
     }
 
-    public saveExtensions() {
+    public saveExtensions(newExtensions: NodeJS.RequireExtensions) {
         if (currentSettings) {
-            currentSettings.extensions = { ...Module._extensions };
+            currentSettings.extensions = { ...newExtensions };
         }
     }
 }
