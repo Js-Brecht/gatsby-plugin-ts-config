@@ -1,4 +1,4 @@
-import { PluginError } from "@util/output";
+// import { PluginError } from "@util/output";
 import { popArray } from "@util/objects";
 import type { Project } from "@lib/project";
 import type {
@@ -53,12 +53,12 @@ class ImportHandlerImpl {
             rootProject.plugins = {}
         );
 
-        if (pluginLinks.hasOwnProperty(pluginName)) {
-            throw new PluginError([
-                `Attempting to link plugin ${pluginName} to project ${projectName} failed.`,
-                `Plugin ${pluginName} has already been linked!`,
-            ].join("\n"));
-        }
+        // if (pluginLinks.hasOwnProperty(pluginName)) {
+        //     throw new PluginError([
+        //         `Attempting to link plugin ${pluginName} to project ${projectName} failed.`,
+        //         `Plugin ${pluginName} has already been linked!`,
+        //     ].join("\n"));
+        // }
 
         pluginLinks[pluginName] = pluginProject;
     }
