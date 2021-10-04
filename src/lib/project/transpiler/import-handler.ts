@@ -1,4 +1,4 @@
-import { PluginError } from "@util/output";
+// import { PluginError } from "@util/output";
 import { popArray } from "@util/objects";
 import type { Project } from "@lib/project";
 import type {
