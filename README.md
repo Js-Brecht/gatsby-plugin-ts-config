@@ -9,17 +9,89 @@
 
 ---
 
-> For v1 documentation, see the [old docs](./old/README.md)
-
 ### Installation
 
 * Install using your package manager
 
   ```shell
-  npm install -D gatsby-plugin-ts-config
+  npm install -D gatsby-ts
   ```
 
+* Use `gatsby-ts` in place of `gatsby`
+
+  _package.json_
+
+  ```json
+  {
+    "scripts": {
+      "build": "gatsby-ts build",
+      "develop": "gatsby-ts develop"
+    }
+  }
+  ```
+
+  > All of the flags & options provided to `gatsby-ts` will be passed through to `gatsby`.
+
+* Write your `gatsby-config` and `gatsby-node` in Typescript
+
+### Configuration
+
+Each project that employs this utility may define their own configurations.  This primarily serves the
+purpose of configuring what transpiler to use and _its_ options, but also allows you to define a "property
+bag" that will be passed around to the meta functions described later.
+
+* Create the file `.gatsby-ts.js` in the root of the project using this utiltiy.
+
+  ```js
+  // This function will give you intellisense for the object structure
+  const { createOptions } = require("gatsby-ts");
+
+  module.exports = createOptions({
+    type: "babel", // | "ts-node"
+    transpilerOptions: {
+      // ... any transpiler options applicable to the chosen transpiler
+    },
+    props: {
+      // ... Put any object you wish here.  It will be passed around to gatsby-ts meta functions
+    }
+  })
+  ```
+
+#### Option Descriptions
+
+1. `type`: `"babel" | "ts-node"`
+    * Tells `gatsby-ts` what transpiler to use.  For `ts-node`, `typescript` **_must_** be installed.
+
+2. `transpilerOptions`: `Object`
+    * If you chose `babel` as your `type`, see the [babel docs](babel-docs) for configuration details
+    * if you chose `ts-node` as your `type`, see the [ts-node docs](tsnode-docs) for configuration details
+
+3. `props`: `Object`
+    * This can be any object you choose.  It will be passed around as-is to each "meta" function that you
+      define.  Any of those functions may mutate the `props`, and the affect will be passed along.
+
+4. `hooks`: `HooksObject`
+    * See [Defining Hooks](#defining-hooks)
+
+### Defining Hooks
+
+You may hook into some of the internal processes of `gatsby-ts` by defining the `hooks` property on
+your configuration object.
+
+Hooks that are available:
+
+1. `ignore`: `Array<(filename: string, original: boolean) => boolean | void>`
+    * This hook allows you to define an array of functions that will be treated as ignore rules for the
+      transpiler.  The file currently being processed will be passed in the first parameter, and whatever
+      ignore value `gatsby-ts` would have used originally will be the second parameter.
+
+    * The first function to return `true` (or a truthy value) will cause the file to be ignored.
+
 ---
+
+### Using "Meta" Functions
+
+
 
 ### Usage
 
