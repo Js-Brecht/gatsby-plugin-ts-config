@@ -29,28 +29,6 @@ export type PublicOpts<TApiType extends ApiType, TProps extends PropertyBag> = {
 } & ApiSpecificOpts<TProps>[TApiType];
 
 /**
- * Needs to be an interface, otherwise Typescript can't figure out that it is a function...
- */
-interface IProjectMetaFn<
-    TConfigType extends ApiType,
-    TProps extends PropertyBag = PropertyBag
-> {
-    (args: PublicOpts<ApiType, TProps>, props: TProps): PluginModule<TConfigType>
-    [projectMetaSymbol]?: true;
-}
-
-export type ProjectMetaFn<
-    TConfigType extends ApiType,
-    TProps extends PropertyBag = PropertyBag
-> = ((args: PublicOpts<ApiType, TProps>, props: TProps) => PluginModule<TConfigType>) & {
-    [projectMetaSymbol]?: true;
-}
-
-// const c: ProjectMetaFn<ApiType.Config> = ({
-//     getPlugins,
-// }) => ({});
-
-/**
  * This interface can be used to define the function-style default
  * export of `gatsby-config` or `gatsby-node`
  *
@@ -83,10 +61,12 @@ export type ProjectMetaFn<
  * export default gatsbyConfig;
  * ```
  */
-// export type ProjectMetaFn<
-//     TConfigType extends ApiType,
-//     TProps extends PropertyBag = PropertyBag
-// > = IProjectMetaFn<TConfigType, TProps>;
+export type ProjectMetaFn<
+    TConfigType extends ApiType,
+    TProps extends PropertyBag = PropertyBag
+> = ((args: PublicOpts<TConfigType, TProps>, props: TProps) => PluginModule<TConfigType>) & {
+    [projectMetaSymbol]?: true;
+}
 
 /**
  * This interface can be used with the `includePlugins` utility function
