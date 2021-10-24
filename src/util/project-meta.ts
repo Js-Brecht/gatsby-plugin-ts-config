@@ -4,7 +4,7 @@ import callsites from "callsites";
 import { thisRoot } from "./constants";
 import { PluginError } from "./output";
 
-import type { ProjectMetaFn } from "@typeDefs";
+import type { ApiType, ProjectMetaFn } from "@typeDefs";
 
 import type { PackageJson } from "type-fest";
 
@@ -79,7 +79,7 @@ export const projectMetaSymbol = Symbol("project_meta_function");
 
 export const createProjectMetaFn = <
     T extends ProjectMetaFn<any, any>
->(cb: T): ProjectMetaFn<any, any> => {
+>(cb: T): ProjectMetaFn<ApiType, any> => {
     cb[projectMetaSymbol] = true;
-    return cb;
+    return cb as ProjectMetaFn<ApiType, any>;
 };

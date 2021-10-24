@@ -7,7 +7,6 @@ import {
 import { getProject } from "@util/project-meta";
 import { PluginError, getDebugLogger } from "@util/output";
 
-import { ApiType } from "@util/constants";
 import type {
     PropertyBag,
     GatsbyPlugin,
@@ -145,7 +144,7 @@ export const getPlugins: GetPluginFn = (
 ) => {
     const project = Project.getProject(
         {
-            apiType: ApiType.Config,
+            apiType: "config",
             // options: opts,
         },
         false,

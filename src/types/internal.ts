@@ -3,7 +3,7 @@ import type { TransformOptions as BabelOptions } from "@babel/core";
 import type { RegisterOptions as TSNodeOptions } from "ts-node";
 import type { JsonObject } from "type-fest";
 
-import { ApiType } from "@util/constants";
+import { apiTypeKeys } from "@util/constants";
 import type { Project } from "@lib/project";
 import type { PublicOpts, GatsbyPlugin, ProjectMetaFn } from "./public";
 
@@ -16,6 +16,7 @@ export type Hooks = {
     ignore?: IgnoreHookFn[];
 }
 
+export type ApiType = typeof apiTypeKeys[number];
 export type PropertyBag = JsonObject;
 export type ProjectApiType<T extends Project> = (
     T extends Project<infer TApiType>
@@ -83,11 +84,11 @@ export type RootPluginImports = ApiImports & {
 export type ImportsCache = PluginImports<RootPluginImports>;
 
 export type PluginModule<T extends ApiType, TTheme = true> =
-    T extends ApiType.Config
+    T extends "config"
         ? TTheme extends false
             ? GatsbyConfig
             : GatsbyConfig | ((args: Record<string, any>) => GatsbyConfig)
-        : T extends ApiType.Node
+        : T extends "node"
             ? GatsbyNode
             : unknown;
 export type ProjectPluginModule<
@@ -101,7 +102,7 @@ export interface IPluginDetailsCallback<
     TReturn extends GatsbyPlugin = GatsbyPlugin,
     TProps extends PropertyBag = PropertyBag,
 > {
-    (args: PublicOpts<ApiType.Config, TProps>, props: TProps): TReturn[];
+    (args: PublicOpts<"config", TProps>, props: TProps): TReturn[];
 }
 
 export interface IGatsbyPluginWithOpts<

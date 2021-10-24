@@ -1,7 +1,6 @@
 import { isGatsbyConfig, isProjectMetaFn } from "@util/type-util";
 import { preferDefault } from "@util/node";
 import { resolveFilePath } from "@util/fs-tools";
-import { ApiType } from "@util/constants";
 
 import { processPluginCache } from "./process-plugins";
 
@@ -12,6 +11,7 @@ import type {
     ProjectPluginModule,
     ProjectMetaFn,
     TranspilerReturn,
+    ApiType,
 } from "@typeDefs";
 
 interface IProcessApiModuleOptions<T extends Project> {
@@ -58,8 +58,8 @@ export const processApiModule = <T extends Project>({
         return project.module as ProjectPluginModule<T>;
     }
 
-    let gatsbyNode: ProjectMetaFn<ApiType.Node> | undefined = undefined;
-    let gatsbyNodeProject: Project<ApiType.Node> | undefined = undefined;
+    let gatsbyNode: ProjectMetaFn<"node"> | undefined = undefined;
+    let gatsbyNodeProject: Project<"node"> | undefined = undefined;
 
     if (apiType === "config") {
         const gatsbyNodePath = resolveFilePath(projectRoot, "./gatsby-node");
@@ -72,26 +72,28 @@ export const processApiModule = <T extends Project>({
          *    can consume it.
          */
         if (gatsbyNodePath) {
-            project.setApiOption(ApiType.Node, "resolveImmediate", false);
-            gatsbyNodeProject = project.clone(ApiType.Node);
+            project.setApiOption("node", "resolveImmediate", false);
+            gatsbyNodeProject = project.clone("node");
 
             gatsbyNode = processApiModule({
                 init: gatsbyNodePath,
                 project: gatsbyNodeProject,
-            }) as ProjectMetaFn<ApiType.Node>;
+            }) as ProjectMetaFn<"node">;
 
             gatsbyNodeProject = project.getProject({
-                apiType: ApiType.Node,
+                apiType: "node",
                 projectMeta: project.projectMeta,
             }, false, undefined, gatsbyNodeProject.debug);
-            project.setApiOption(ApiType.Node, "resolveImmediate", true);
+            project.setApiOption("node", "resolveImmediate", true);
         }
     }
 
     if (!apiModule) apiModule = {};
 
     if (isProjectMetaFn(project, apiModule) && resolveImmediate) {
-        apiModule = project.resolveConfigFn(apiModule) as ProjectPluginModule<T>;
+        apiModule = project.resolveConfigFn(
+            apiModule as ProjectMetaFn<ApiType>,
+        ) as ProjectPluginModule<T>;
     }
 
     if (

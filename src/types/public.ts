@@ -1,6 +1,5 @@
-import { ApiType } from "@util/constants";
 import type {
-    // ApiType,
+    ApiType,
     RootPluginImports,
     PropertyBag,
     PluginModule,
@@ -13,10 +12,10 @@ type ApiOptStruct<T extends {
     [K in ApiType]: Record<string, any>;
 }> = T;
 type ApiSpecificOpts<TProps extends PropertyBag> = ApiOptStruct<{
-    [ApiType.Config]: {
+    ["config"]: {
         getPlugins: GetPluginFn<TProps>;
     }
-    [ApiType.Node]: {}
+    ["node"]: {}
 }>
 
 /**

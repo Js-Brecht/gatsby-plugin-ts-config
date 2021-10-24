@@ -11,8 +11,8 @@ import { getProject, ProjectMeta } from "@util/project-meta";
 import { merge } from "@util/objects";
 import { preferDefault } from "@util/node";
 
-import { ApiType } from "@util/constants";
 import type {
+    ApiType,
     GatsbyTsOptions,
     PluginOptionDiff,
     PropertyBag,
@@ -111,7 +111,7 @@ export class ProjectSettings {
         const existing = getCachedSettings(
             [
                 apiType,
-                apiType === ApiType.Config ? ApiType.Node : ApiType.Config,
+                apiType === "config" ? "node" : "config",
             ],
             projectRoot,
         );

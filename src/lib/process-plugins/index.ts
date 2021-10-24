@@ -1,11 +1,11 @@
 import { transpilePlugins, PluginTranspileType } from "./plugin-transpiler";
 
 import type { ApiModuleProcessor } from "@lib/api-module";
-import { ApiType } from "@util/constants";
 
 // @lib/project imports this module, so this needs to stay `type`
 import type { Project } from "@lib/project";
 import type {
+    ApiType,
     PropertyBag,
     GatsbyPlugin,
     IPluginDetailsCallback,
@@ -60,7 +60,7 @@ export const processPlugins = <
         if (typeof pluginSet === "function") {
             return arr.concat(
                 project.resolveConfigFn(
-                    pluginSet as ProjectMetaFn<any>,
+                    pluginSet as unknown as ProjectMetaFn<ApiType>,
                 ) as GatsbyPlugin[],
             );
         }
