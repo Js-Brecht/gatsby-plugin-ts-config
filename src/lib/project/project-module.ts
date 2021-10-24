@@ -3,10 +3,8 @@ import set from "lodash/set";
 
 import { Debugger } from "@util/output";
 
-import {
-    ApiType,
-    PluginModule,
-} from "@typeDefs";
+import { ApiType } from "@util/constants";
+import { PluginModule } from "@typeDefs";
 
 type ProjectModuleCache = {
     [projectRoot: string]: {

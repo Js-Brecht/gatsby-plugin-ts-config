@@ -1,6 +1,7 @@
 import { isGatsbyConfig, isProjectMetaFn } from "@util/type-util";
 import { preferDefault } from "@util/node";
 import { resolveFilePath } from "@util/fs-tools";
+import { ApiType } from "@util/constants";
 
 import { processPluginCache } from "./process-plugins";
 
@@ -57,8 +58,8 @@ export const processApiModule = <T extends Project>({
         return project.module as ProjectPluginModule<T>;
     }
 
-    let gatsbyNode: ProjectMetaFn<"node"> | undefined = undefined;
-    let gatsbyNodeProject: Project<"node"> | undefined = undefined;
+    let gatsbyNode: ProjectMetaFn<ApiType.Node> | undefined = undefined;
+    let gatsbyNodeProject: Project<ApiType.Node> | undefined = undefined;
 
     if (apiType === "config") {
         const gatsbyNodePath = resolveFilePath(projectRoot, "./gatsby-node");
@@ -71,19 +72,19 @@ export const processApiModule = <T extends Project>({
          *    can consume it.
          */
         if (gatsbyNodePath) {
-            project.setApiOption("node", "resolveImmediate", false);
-            gatsbyNodeProject = project.clone("node");
+            project.setApiOption(ApiType.Node, "resolveImmediate", false);
+            gatsbyNodeProject = project.clone(ApiType.Node);
 
             gatsbyNode = processApiModule({
                 init: gatsbyNodePath,
                 project: gatsbyNodeProject,
-            }) as ProjectMetaFn<"node">;
+            }) as ProjectMetaFn<ApiType.Node>;
 
             gatsbyNodeProject = project.getProject({
-                apiType: "node",
+                apiType: ApiType.Node,
                 projectMeta: project.projectMeta,
             }, false, undefined, gatsbyNodeProject.debug);
-            project.setApiOption("node", "resolveImmediate", true);
+            project.setApiOption(ApiType.Node, "resolveImmediate", true);
         }
     }
 

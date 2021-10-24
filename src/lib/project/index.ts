@@ -4,6 +4,7 @@ import set from "lodash/set";
 import { getRegisterOptions } from "@settings/register";
 import { getDebugLogger, Debugger } from "@util/output";
 import { arrayify } from "@util/objects";
+import { ApiType } from "@util/constants";
 
 import {
     processPlugins,
@@ -25,7 +26,6 @@ import { ProjectModule } from "./project-module";
 import type {
     TranspileType,
     TranspilerOptions,
-    ApiType,
     ProjectMetaFn,
     PropertyBag,
     PluginModule,
@@ -74,13 +74,13 @@ const getProjectCache = (
 );
 
 export class Project<TApiType extends ApiType = ApiType> {
-    public static getProject<T extends ApiType = "config">(
+    public static getProject<T extends ApiType = ApiType.Config>(
         input: Partial<IGetProjectSettings>,
         setCache: boolean,
         forceCache = false,
         debug?: Debugger,
     ): Project<T> {
-        const { apiType = "config" } = input;
+        const { apiType = ApiType.Config } = input;
 
         const useDebug = (
             debug?.new("Project") ||
@@ -251,7 +251,7 @@ export class Project<TApiType extends ApiType = ApiType> {
     }
 
     public resolveConfigFn<
-        C extends ProjectMetaFn<ApiType>
+        C extends ProjectMetaFn<any>
     >(cb: C, project?: Project) {
         return cb(
             {

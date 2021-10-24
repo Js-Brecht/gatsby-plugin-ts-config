@@ -3,7 +3,8 @@ import { PluginError, getDebugLogger } from "@util/output";
 
 import { processApiModule } from "./lib/api-module";
 import { Project } from "./lib/project";
-import type { ApiType, ProjectMetaFn, PluginModule, PropertyBag } from "@typeDefs";
+import { ApiType } from "@util/constants";
+import type { ProjectMetaFn, PluginModule, PropertyBag, GatsbyPlugin } from "@typeDefs";
 
 type WithGatsbyTsMeta<T extends ApiType> = <TProps extends PropertyBag>(
     cb: ProjectMetaFn<T, TProps>,
@@ -20,6 +21,8 @@ const withProjectMeta = <T extends ApiType, TProps extends PropertyBag>(
         false,
         debug,
     );
+
+    const c = createProjectMetaFn(cb);
 
     try {
         return processApiModule({
@@ -49,7 +52,7 @@ const wrapProjectMeta = <
  * 1. Metadata for the current project
  * 2. The property bag for the current project
  */
-export const withProjectMetaConfig = wrapProjectMeta("config");
+export const withProjectMetaConfig = wrapProjectMeta(ApiType.Config);
 
 /**
  * Passes metadata collected on the current project to the
@@ -62,4 +65,4 @@ export const withProjectMetaConfig = wrapProjectMeta("config");
  * 1. Metadata for the current project
  * 2. The property bag for the current project
  */
-export const withProjectMetaNode = wrapProjectMeta("node");
+export const withProjectMetaNode = wrapProjectMeta(ApiType.Node);

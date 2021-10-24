@@ -1,8 +1,7 @@
 import path from "path";
 import { getFile, resolveFilePath } from "@util/fs-tools";
 import { createRequire } from "@util/node";
-import { apiTypeKeys } from "@util/constants";
-import { Debugger } from "@util/output";
+import { apiTypeKeys, ApiType } from "@util/constants";
 
 import { Project } from "@lib/project";
 
@@ -86,7 +85,7 @@ export const transpilePlugins = (
                 init: apiPath,
                 project: Project.getProject(
                     {
-                        apiType: type,
+                        apiType: type as ApiType,
                         projectMeta: {
                             projectRoot: pluginPath,
                             projectName: pluginName,

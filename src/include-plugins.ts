@@ -7,6 +7,7 @@ import {
 import { getProject } from "@util/project-meta";
 import { PluginError, getDebugLogger } from "@util/output";
 
+import { ApiType } from "@util/constants";
 import type {
     PropertyBag,
     GatsbyPlugin,
@@ -122,22 +123,29 @@ export const includePlugins: IResolvePlugins<void> = <
 
 // type GetPluginOpts = TsConfigPluginOptions;
 
+export type GetPluginFn<
+    P1 extends PropertyBag = PropertyBag,
+> = <
+    T2 extends GatsbyPlugin = GatsbyPlugin,
+    P2 extends PropertyBag = P1,
+>(
+    plugins: T2[] | IPluginDetailsCallback<T2, P2>,
+    // opts?: GetPluginOpts,
+) => IGatsbyPluginWithOpts[]
+
 /**
  * Immediately processes and returns a collection of plugins, or a
  * plugin resolver function.
  *
  * All plugins passed to this function will be transpiled immediately.
  */
-export function getPlugins<
-    T extends GatsbyPlugin = GatsbyPlugin,
-    P extends PropertyBag = PropertyBag,
->(
-    plugins: T[] | IPluginDetailsCallback<T, P>,
-    // opts?: GetPluginOpts,
-): IGatsbyPluginWithOpts[] {
+export const getPlugins: GetPluginFn = (
+    plugins,
+    // opts,
+) => {
     const project = Project.getProject(
         {
-            apiType: "config",
+            apiType: ApiType.Config,
             // options: opts,
         },
         false,
@@ -153,6 +161,4 @@ export function getPlugins<
     } catch (err: any) {
         throw new PluginError(err);
     }
-}
-
-export type GetPluginFn = typeof getPlugins;
+};

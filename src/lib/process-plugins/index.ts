@@ -1,6 +1,7 @@
 import { transpilePlugins, PluginTranspileType } from "./plugin-transpiler";
 
 import type { ApiModuleProcessor } from "@lib/api-module";
+import { ApiType } from "@util/constants";
 
 // @lib/project imports this module, so this needs to stay `type`
 import type { Project } from "@lib/project";

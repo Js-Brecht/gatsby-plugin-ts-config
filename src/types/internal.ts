@@ -3,7 +3,7 @@ import type { TransformOptions as BabelOptions } from "@babel/core";
 import type { RegisterOptions as TSNodeOptions } from "ts-node";
 import type { JsonObject } from "type-fest";
 
-import type { apiTypeKeys } from "@util/constants";
+import { ApiType } from "@util/constants";
 import type { Project } from "@lib/project";
 import type { PublicOpts, GatsbyPlugin, ProjectMetaFn } from "./public";
 
@@ -17,7 +17,6 @@ export type Hooks = {
 }
 
 export type PropertyBag = JsonObject;
-export type ApiType = typeof apiTypeKeys[number];
 export type ProjectApiType<T extends Project> = (
     T extends Project<infer TApiType>
         ? TApiType
@@ -84,11 +83,11 @@ export type RootPluginImports = ApiImports & {
 export type ImportsCache = PluginImports<RootPluginImports>;
 
 export type PluginModule<T extends ApiType, TTheme = true> =
-    T extends "config"
+    T extends ApiType.Config
         ? TTheme extends false
             ? GatsbyConfig
             : GatsbyConfig | ((args: Record<string, any>) => GatsbyConfig)
-        : T extends "node"
+        : T extends ApiType.Node
             ? GatsbyNode
             : unknown;
 export type ProjectPluginModule<
@@ -102,7 +101,7 @@ export interface IPluginDetailsCallback<
     TReturn extends GatsbyPlugin = GatsbyPlugin,
     TProps extends PropertyBag = PropertyBag,
 > {
-    (args: PublicOpts, props: TProps): TReturn[];
+    (args: PublicOpts<ApiType.Config, TProps>, props: TProps): TReturn[];
 }
 
 export interface IGatsbyPluginWithOpts<
@@ -113,7 +112,7 @@ export interface IGatsbyPluginWithOpts<
     options?: TOptions;
 }
 
-export type GetApiType<T extends PluginModule<ApiType> | ProjectMetaFn<ApiType>> = (
+export type GetApiType<T extends PluginModule<ApiType> | ProjectMetaFn<any>> = (
     T extends PluginModule<infer U> ? U : (
         T extends ProjectMetaFn<infer U> ? U : (
             never

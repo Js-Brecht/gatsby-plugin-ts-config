@@ -14,4 +14,8 @@ export const pkgJson: PackageJson = require(
 );
 export const pluginName = pkgJson.name;
 
+export enum ApiType {
+    Config = "config",
+    Node = "node",
+}
 export const apiTypeKeys = ["config", "node"] as const;

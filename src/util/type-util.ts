@@ -2,11 +2,11 @@ import { preferDefault } from "./node";
 
 import type { Project } from "@lib/project";
 import { projectMetaSymbol } from "./project-meta";
+import { ApiType } from "./constants";
 
 import type {
     TranspileType,
     PluginModule,
-    ApiType,
     ProjectMetaFn,
     TranspilerReturn,
     ProjectApiType,
@@ -23,7 +23,7 @@ export const isTsNodeType = (type: TranspileType): type is "ts-node" => (
 export const isGatsbyConfig = (
     type: ApiType,
     mod: PluginModule<any>,
-): mod is PluginModule<"config", true> => (
+): mod is PluginModule<ApiType.Config, true> => (
     type === "config"
 );
 

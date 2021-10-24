@@ -5,13 +5,13 @@ import { omit } from "@util/objects";
 import { isProjectMetaFn } from "@util/type-util";
 import { preferDefault } from "@util/node";
 import { resolveFilePath } from "@util/fs-tools";
+import { ApiType } from "@util/constants";
 
 import { Serializer } from "@lib/serializer";
 import { setTranspiler } from "./set-transpiler";
 
 import type { Project } from "@lib/project";
 import type {
-    ApiType,
     TranspilerArgs,
     TranspileType,
     InitValue,
@@ -136,7 +136,7 @@ export const getTranspiler = <TProject extends Project<ApiType>>(
                             }
 
                             return updateExports() as ProjectPluginModule<TProject>;
-                        });
+                        }) as TranspilerReturn<TProject>;
                     }
 
                     return updateExports() as TranspilerReturn<TProject>;

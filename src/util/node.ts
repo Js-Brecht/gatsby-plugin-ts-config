@@ -3,7 +3,8 @@ import {
     createRequireFromPath as nodeCreateRequireFromPath,
 } from "module";
 import BuiltinModule from "module";
-import type { PluginModule, ApiType, BaseModuleType } from "@typeDefs/internal";
+import { ApiType } from "@util/constants";
+import type { PluginModule, BaseModuleType } from "@typeDefs/internal";
 import type { ProjectMetaFn } from "@typeDefs/public";
 
 export const preferDefault = <T extends ApiType>(mod: BaseModuleType<T>) => (

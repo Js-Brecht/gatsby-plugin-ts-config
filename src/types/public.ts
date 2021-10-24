@@ -1,20 +1,32 @@
+import { ApiType } from "@util/constants";
 import type {
-    ApiType,
+    // ApiType,
     RootPluginImports,
     PropertyBag,
     PluginModule,
     IGatsbyPluginWithOpts,
 } from "./internal";
 import type { projectMetaSymbol } from "@util/project-meta";
+import type { GetPluginFn } from "@/include-plugins";
+
+type ApiOptStruct<T extends {
+    [K in ApiType]: Record<string, any>;
+}> = T;
+type ApiSpecificOpts<TProps extends PropertyBag> = ApiOptStruct<{
+    [ApiType.Config]: {
+        getPlugins: GetPluginFn<TProps>;
+    }
+    [ApiType.Node]: {}
+}>
 
 /**
  * Options passed in the first parameter of a `gatsby-*` default export,
  * if one is defined and it is a function.
  */
-export interface PublicOpts {
+export type PublicOpts<TApiType extends ApiType, TProps extends PropertyBag> = {
     imports: RootPluginImports;
     projectRoot: string;
-}
+} & ApiSpecificOpts<TProps>[TApiType];
 
 /**
  * Needs to be an interface, otherwise Typescript can't figure out that it is a function...
@@ -23,9 +35,20 @@ interface IProjectMetaFn<
     TConfigType extends ApiType,
     TProps extends PropertyBag = PropertyBag
 > {
-    (args: PublicOpts, props: TProps): PluginModule<TConfigType>
+    (args: PublicOpts<ApiType, TProps>, props: TProps): PluginModule<TConfigType>
     [projectMetaSymbol]?: true;
 }
+
+export type ProjectMetaFn<
+    TConfigType extends ApiType,
+    TProps extends PropertyBag = PropertyBag
+> = ((args: PublicOpts<ApiType, TProps>, props: TProps) => PluginModule<TConfigType>) & {
+    [projectMetaSymbol]?: true;
+}
+
+// const c: ProjectMetaFn<ApiType.Config> = ({
+//     getPlugins,
+// }) => ({});
 
 /**
  * This interface can be used to define the function-style default
@@ -60,10 +83,10 @@ interface IProjectMetaFn<
  * export default gatsbyConfig;
  * ```
  */
-export type ProjectMetaFn<
-    TConfigType extends ApiType,
-    TProps extends PropertyBag = PropertyBag
-> = IProjectMetaFn<TConfigType, TProps>;
+// export type ProjectMetaFn<
+//     TConfigType extends ApiType,
+//     TProps extends PropertyBag = PropertyBag
+// > = IProjectMetaFn<TConfigType, TProps>;
 
 /**
  * This interface can be used with the `includePlugins` utility function
