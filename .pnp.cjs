@@ -48,6 +48,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@babel/register", "virtual:738355777df1a1ffb69e19e30352f83664494f7296a1343e6b82bdfc549767511b434aa36887592c1dcf43b0c53812f18736a2f233683d8d892d282c056f73b7#npm:7.8.6"],
             ["@babel/runtime", "npm:7.8.7"],
             ["@types/babel__core", "npm:7.1.6"],
+            ["@types/debug", "npm:4.1.7"],
             ["@types/fs-extra", "npm:8.1.0"],
             ["@types/lodash", "npm:4.14.172"],
             ["@types/node", "npm:13.7.6"],
@@ -7385,6 +7386,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/debug", "npm:0.0.30"]
           ],
           "linkType": "HARD",
+        }],
+        ["npm:4.1.7", {
+          "packageLocation": "../../../.yarn/berry/cache/@types-debug-npm-4.1.7-f54c81f8db-8.zip/node_modules/@types/debug/",
+          "packageDependencies": [
+            ["@types/debug", "npm:4.1.7"],
+            ["@types/ms", "npm:0.7.31"]
+          ],
+          "linkType": "HARD",
         }]
       ]],
       ["@types/emscripten", [
@@ -7586,6 +7595,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["@types/mkdirp", "npm:0.5.2"],
             ["@types/node", "npm:13.7.6"]
+          ],
+          "linkType": "HARD",
+        }]
+      ]],
+      ["@types/ms", [
+        ["npm:0.7.31", {
+          "packageLocation": "../../../.yarn/berry/cache/@types-ms-npm-0.7.31-ea3b89342b-8.zip/node_modules/@types/ms/",
+          "packageDependencies": [
+            ["@types/ms", "npm:0.7.31"]
           ],
           "linkType": "HARD",
         }]
@@ -14472,6 +14490,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@babel/register", "virtual:738355777df1a1ffb69e19e30352f83664494f7296a1343e6b82bdfc549767511b434aa36887592c1dcf43b0c53812f18736a2f233683d8d892d282c056f73b7#npm:7.8.6"],
             ["@babel/runtime", "npm:7.8.7"],
             ["@types/babel__core", "npm:7.1.6"],
+            ["@types/debug", "npm:4.1.7"],
             ["@types/fs-extra", "npm:8.1.0"],
             ["@types/lodash", "npm:4.14.172"],
             ["@types/node", "npm:13.7.6"],

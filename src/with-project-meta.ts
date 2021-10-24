@@ -49,7 +49,7 @@ const wrapProjectMeta = <
  * 1. Metadata for the current project
  * 2. The property bag for the current project
  */
-export const withProjectMetaConfig = wrapProjectMeta("config");
+export const withMetaConfig = wrapProjectMeta("config");
 
 /**
  * Passes metadata collected on the current project to the
@@ -62,4 +62,4 @@ export const withProjectMetaConfig = wrapProjectMeta("config");
  * 1. Metadata for the current project
  * 2. The property bag for the current project
  */
-export const withProjectMetaNode = wrapProjectMeta("node");
+export const withMetaNode = wrapProjectMeta("node");
