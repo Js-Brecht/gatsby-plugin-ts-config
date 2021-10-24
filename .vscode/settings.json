@@ -1,5 +1,6 @@
 {
   "eslint.nodePath": ".yarn/sdks",
+  // "eslint.nodePath": "node_modules/eslint",
   "typescript.tsdk": ".yarn/sdks/typescript/lib",
   "search.exclude": {
     "**/.yarn": true,
