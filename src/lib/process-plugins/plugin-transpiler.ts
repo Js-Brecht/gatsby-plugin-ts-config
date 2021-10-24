@@ -10,7 +10,7 @@ import type { PackageJson } from "type-fest";
 import type {
     IGatsbyPluginWithOpts,
 } from "@typeDefs";
-import type { ApiModuleProcessor } from "./api-module";
+import type { ApiModuleProcessor } from "../api-module";
 
 type ResolvePluginResult = {
     path: string;

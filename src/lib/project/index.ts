@@ -1,15 +1,21 @@
 import get from "lodash/get";
 import set from "lodash/set";
 
+import { getRegisterOptions } from "@settings/register";
+import { getDebugLogger, Debugger } from "@util/output";
+import { arrayify } from "@util/objects";
+
+import {
+    processPlugins,
+    PluginTranspileType,
+} from "@lib/process-plugins";
+import { processApiModule } from "@lib/api-module";
+
 import {
     getTranspiler,
     Transpiler,
     ImportHandler,
 } from "./transpiler";
-
-import { getRegisterOptions } from "@settings/register";
-import { getDebugLogger, Debugger } from "@util/output";
-
 import {
     ProjectSettings,
     IInitSettings,
@@ -23,6 +29,9 @@ import type {
     ProjectMetaFn,
     PropertyBag,
     PluginModule,
+    GatsbyPlugin,
+    IPluginDetailsCallback,
+    IGatsbyPluginWithOpts,
 } from "@typeDefs";
 
 interface IGetProjectSettings extends IInitSettings {
@@ -113,6 +122,9 @@ export class Project<TApiType extends ApiType = ApiType> {
 
         return useProject as Project<T>;
     }
+    public getProject: typeof Project["getProject"] = (...args) => (
+        Project.getProject(...args)
+    )
 
     private _transpiler!: Transpiler;
     private _registerOptions!: TranspilerOptions<TranspileType>;
@@ -250,5 +262,17 @@ export class Project<TApiType extends ApiType = ApiType> {
             },
             this.propBag,
         );
+    }
+
+    public processPlugins(
+        type: PluginTranspileType,
+        plugins: GatsbyPlugin[] | IPluginDetailsCallback<any, any>,
+    ): IGatsbyPluginWithOpts[] {
+        const usePlugins = (
+            Array.isArray(plugins) ||
+            typeof plugins === "function"
+        ) && arrayify(plugins) || [];
+
+        return processPlugins(usePlugins, this, processApiModule, type);
     }
 }

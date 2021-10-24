@@ -1,10 +1,11 @@
-import { Project } from "@lib/project";
 import { isGatsbyConfig, isProjectMetaFn } from "@util/type-util";
 import { preferDefault } from "@util/node";
 import { resolveFilePath } from "@util/fs-tools";
 
 import { processPluginCache } from "./process-plugins";
 
+// @lib/project imports this module, so this needs to stay `type`
+import type { Project } from "@lib/project";
 import type {
     InitValue,
     ProjectPluginModule,
@@ -78,7 +79,7 @@ export const processApiModule = <T extends Project>({
                 project: gatsbyNodeProject,
             }) as ProjectMetaFn<"node">;
 
-            gatsbyNodeProject = Project.getProject({
+            gatsbyNodeProject = project.getProject({
                 apiType: "node",
                 projectMeta: project.projectMeta,
             }, false, undefined, gatsbyNodeProject.debug);

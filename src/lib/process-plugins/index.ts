@@ -1,7 +1,9 @@
-import { Project } from "@lib/project";
 import { transpilePlugins, PluginTranspileType } from "./plugin-transpiler";
 
-import type { ApiModuleProcessor } from "./api-module";
+import type { ApiModuleProcessor } from "@lib/api-module";
+
+// @lib/project imports this module, so this needs to stay `type`
+import type { Project } from "@lib/project";
 import type {
     PropertyBag,
     GatsbyPlugin,
@@ -99,7 +101,6 @@ export const processPluginCache = (
         ...doProcessPlugins(pluginCache.resolver, true),
     ];
 };
-
 
 export const getPluginsCache = (projectRoot: string) => (
     pluginCache[projectRoot] = (
