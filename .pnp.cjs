@@ -78,7 +78,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["tslog", "npm:3.2.0"],
             ["ttypescript", "virtual:738355777df1a1ffb69e19e30352f83664494f7296a1343e6b82bdfc549767511b434aa36887592c1dcf43b0c53812f18736a2f233683d8d892d282c056f73b7#npm:1.5.10"],
             ["type-fest", "npm:0.12.0"],
-            ["typescript", "patch:typescript@npm%3A4.4.2#~builtin<compat/typescript>::version=4.4.2&hash=32657b"]
+            ["typescript", "patch:typescript@npm%3A4.4.2#~builtin<compat/typescript>::version=4.4.2&hash=32657b"],
+            ["webpack", "virtual:738355777df1a1ffb69e19e30352f83664494f7296a1343e6b82bdfc549767511b434aa36887592c1dcf43b0c53812f18736a2f233683d8d892d282c056f73b7#npm:5.59.1"]
           ],
           "linkType": "SOFT",
         }]
@@ -12196,6 +12197,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["tapable", "npm:2.2.0"]
           ],
           "linkType": "HARD",
+        }],
+        ["npm:5.8.3", {
+          "packageLocation": "../../../.yarn/berry/cache/enhanced-resolve-npm-5.8.3-24a728966e-8.zip/node_modules/enhanced-resolve/",
+          "packageDependencies": [
+            ["enhanced-resolve", "npm:5.8.3"],
+            ["graceful-fs", "npm:4.2.6"],
+            ["tapable", "npm:2.2.0"]
+          ],
+          "linkType": "HARD",
         }]
       ]],
       ["enquirer", [
@@ -12353,6 +12363,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "../../../.yarn/berry/cache/es-module-lexer-npm-0.7.1-ab2b333e55-8.zip/node_modules/es-module-lexer/",
           "packageDependencies": [
             ["es-module-lexer", "npm:0.7.1"]
+          ],
+          "linkType": "HARD",
+        }],
+        ["npm:0.9.3", {
+          "packageLocation": "../../../.yarn/berry/cache/es-module-lexer-npm-0.9.3-ff6236dadb-8.zip/node_modules/es-module-lexer/",
+          "packageDependencies": [
+            ["es-module-lexer", "npm:0.9.3"]
           ],
           "linkType": "HARD",
         }]
@@ -14520,7 +14537,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["tslog", "npm:3.2.0"],
             ["ttypescript", "virtual:738355777df1a1ffb69e19e30352f83664494f7296a1343e6b82bdfc549767511b434aa36887592c1dcf43b0c53812f18736a2f233683d8d892d282c056f73b7#npm:1.5.10"],
             ["type-fest", "npm:0.12.0"],
-            ["typescript", "patch:typescript@npm%3A4.4.2#~builtin<compat/typescript>::version=4.4.2&hash=32657b"]
+            ["typescript", "patch:typescript@npm%3A4.4.2#~builtin<compat/typescript>::version=4.4.2&hash=32657b"],
+            ["webpack", "virtual:738355777df1a1ffb69e19e30352f83664494f7296a1343e6b82bdfc549767511b434aa36887592c1dcf43b0c53812f18736a2f233683d8d892d282c056f73b7#npm:5.59.1"]
           ],
           "linkType": "SOFT",
         }]
@@ -23197,6 +23215,25 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             "webpack"
           ],
           "linkType": "HARD",
+        }],
+        ["virtual:fb55d5cf7c732c217038a70cec3b2a31ccb5d4abd185983d9fd03ad5517b30f72fdb6632880d0a139498b64e28d6cef395c8c9f7ae8b445b9b98dafc72d5b27a#npm:5.1.4", {
+          "packageLocation": "./.yarn/__virtual__/terser-webpack-plugin-virtual-285146bdfa/4/.yarn/berry/cache/terser-webpack-plugin-npm-5.1.4-1c3135d8c0-8.zip/node_modules/terser-webpack-plugin/",
+          "packageDependencies": [
+            ["terser-webpack-plugin", "virtual:fb55d5cf7c732c217038a70cec3b2a31ccb5d4abd185983d9fd03ad5517b30f72fdb6632880d0a139498b64e28d6cef395c8c9f7ae8b445b9b98dafc72d5b27a#npm:5.1.4"],
+            ["@types/webpack", null],
+            ["jest-worker", "npm:27.0.6"],
+            ["p-limit", "npm:3.1.0"],
+            ["schema-utils", "npm:3.1.1"],
+            ["serialize-javascript", "npm:6.0.0"],
+            ["source-map", "npm:0.6.1"],
+            ["terser", "npm:5.7.1"],
+            ["webpack", "virtual:738355777df1a1ffb69e19e30352f83664494f7296a1343e6b82bdfc549767511b434aa36887592c1dcf43b0c53812f18736a2f233683d8d892d282c056f73b7#npm:5.59.1"]
+          ],
+          "packagePeers": [
+            "@types/webpack",
+            "webpack"
+          ],
+          "linkType": "HARD",
         }]
       ]],
       ["text-table", [
@@ -24397,6 +24434,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "linkType": "SOFT",
         }],
+        ["npm:5.59.1", {
+          "packageLocation": "../../../.yarn/berry/cache/webpack-npm-5.59.1-4496e1cd5a-8.zip/node_modules/webpack/",
+          "packageDependencies": [
+            ["webpack", "npm:5.59.1"]
+          ],
+          "linkType": "SOFT",
+        }],
         ["virtual:633cd692b0c11f4f9762968d3bbc11cb4cf8fb612b10a4cc1180f8d2e3b778776122f4c5c828efd238b8dadf4dc011c7d0e42f1562a315ab99d38c1efc7b8b99#npm:5.50.0", {
           "packageLocation": "./.yarn/__virtual__/webpack-virtual-619d544bf3/4/.yarn/berry/cache/webpack-npm-5.50.0-7f0fb85b9f-8.zip/node_modules/webpack/",
           "packageDependencies": [
@@ -24423,6 +24467,41 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["schema-utils", "npm:3.1.1"],
             ["tapable", "npm:2.2.0"],
             ["terser-webpack-plugin", "virtual:633cd692b0c11f4f9762968d3bbc11cb4cf8fb612b10a4cc1180f8d2e3b778776122f4c5c828efd238b8dadf4dc011c7d0e42f1562a315ab99d38c1efc7b8b99#npm:5.1.4"],
+            ["watchpack", "npm:2.2.0"],
+            ["webpack-cli", null],
+            ["webpack-sources", "npm:3.2.0"]
+          ],
+          "packagePeers": [
+            "webpack-cli"
+          ],
+          "linkType": "HARD",
+        }],
+        ["virtual:738355777df1a1ffb69e19e30352f83664494f7296a1343e6b82bdfc549767511b434aa36887592c1dcf43b0c53812f18736a2f233683d8d892d282c056f73b7#npm:5.59.1", {
+          "packageLocation": "./.yarn/__virtual__/webpack-virtual-fb55d5cf7c/4/.yarn/berry/cache/webpack-npm-5.59.1-4496e1cd5a-8.zip/node_modules/webpack/",
+          "packageDependencies": [
+            ["webpack", "virtual:738355777df1a1ffb69e19e30352f83664494f7296a1343e6b82bdfc549767511b434aa36887592c1dcf43b0c53812f18736a2f233683d8d892d282c056f73b7#npm:5.59.1"],
+            ["@types/eslint-scope", "npm:3.7.1"],
+            ["@types/estree", "npm:0.0.50"],
+            ["@webassemblyjs/ast", "npm:1.11.1"],
+            ["@webassemblyjs/wasm-edit", "npm:1.11.1"],
+            ["@webassemblyjs/wasm-parser", "npm:1.11.1"],
+            ["acorn", "npm:8.4.1"],
+            ["acorn-import-assertions", "virtual:619d544bf3d25b89828ab8894d8dcaa413bf80a274508328e8fd9ac3bc1fab1ff896954385b18938dc00bb1e50982846e7f05e9e5e5ff98bf8cad50c4d64991d#npm:1.7.6"],
+            ["browserslist", "npm:4.16.3"],
+            ["chrome-trace-event", "npm:1.0.2"],
+            ["enhanced-resolve", "npm:5.8.3"],
+            ["es-module-lexer", "npm:0.9.3"],
+            ["eslint-scope", "npm:5.1.1"],
+            ["events", "npm:3.3.0"],
+            ["glob-to-regexp", "npm:0.4.1"],
+            ["graceful-fs", "npm:4.2.6"],
+            ["json-parse-better-errors", "npm:1.0.2"],
+            ["loader-runner", "npm:4.2.0"],
+            ["mime-types", "npm:2.1.32"],
+            ["neo-async", "npm:2.6.2"],
+            ["schema-utils", "npm:3.1.1"],
+            ["tapable", "npm:2.2.0"],
+            ["terser-webpack-plugin", "virtual:fb55d5cf7c732c217038a70cec3b2a31ccb5d4abd185983d9fd03ad5517b30f72fdb6632880d0a139498b64e28d6cef395c8c9f7ae8b445b9b98dafc72d5b27a#npm:5.1.4"],
             ["watchpack", "npm:2.2.0"],
             ["webpack-cli", null],
             ["webpack-sources", "npm:3.2.0"]
