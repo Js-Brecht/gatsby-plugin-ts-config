@@ -15,11 +15,11 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Js-Brecht/gatsby-ts"
+		"url": "https://github.com/Js-Brecht/gatsby-plugin-ts-config/tree/gatsby-ts"
 	},
-	"homepage": "https://github.com/Js-Brecht/gatsby-ts",
+	"homepage": "https://github.com/Js-Brecht/gatsby-plugin-ts-config/tree/gatsby-ts",
 	"bugs": {
-		"url": "https://github.com/Js-Brecht/gatsby-ts/issues"
+		"url": "https://github.com/Js-Brecht/gatsby-plugin-ts-config/issues"
 	},
 	"files": [
 		"dist",
