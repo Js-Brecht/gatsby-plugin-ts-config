@@ -1,3 +1,4 @@
+import path from "path";
 import { isGatsbyConfig, isProjectMetaFn } from "@util/type-util";
 import { preferDefault } from "@util/node";
 import { resolveFilePath } from "@util/fs-tools";
@@ -6,6 +7,7 @@ import { processPluginCache } from "./process-plugins";
 
 // @lib/project imports this module, so this needs to stay `type`
 import type { Project } from "@lib/project";
+import type { GatsbyTsPluginOptions } from "@/gatsby-plugin/types";
 import type {
     InitValue,
     ProjectPluginModule,
@@ -21,6 +23,8 @@ interface IProcessApiModuleOptions<T extends Project> {
 }
 
 export type ApiModuleProcessor = typeof processApiModule;
+
+let pluginInserted = false;
 
 export const processApiModule = <T extends Project>({
     init,
@@ -56,6 +60,11 @@ export const processApiModule = <T extends Project>({
     if (project.finalized) {
         apiDebug("project finalized after transpile:", project.projectName, project.apiType);
         return project.module as ProjectPluginModule<T>;
+    }
+
+    let insertPlugin = false;
+    if (apiType === "config" && !pluginInserted) {
+        insertPlugin = pluginInserted = true;
     }
 
     let gatsbyNode: ProjectMetaFn<"node"> | undefined = undefined;
@@ -112,16 +121,28 @@ export const processApiModule = <T extends Project>({
      * Time to transpile/process local plugins
      */
     if (
-        isGatsbyConfig(apiType, apiModule) &&
-        typeof apiModule === "object" &&
-        recurse
+        isGatsbyConfig(apiType, apiModule)
+        && typeof apiModule === "object"
     ) {
-        apiDebug("Resolving plugins");
-        apiModule.plugins = processPluginCache(
-            project,
-            processApiModule,
-            apiModule.plugins,
-        );
+        if (recurse) {
+            apiDebug("Resolving plugins");
+            apiModule.plugins = processPluginCache(
+                project,
+                processApiModule,
+                apiModule.plugins,
+            );
+        }
+        if (insertPlugin) {
+            const options: GatsbyTsPluginOptions = {
+                gatsbyNodePath: gatsbyNodeProject?.requirePath || "",
+            }
+            apiModule.plugins = (apiModule.plugins || []).concat([
+                {
+                    resolve: path.dirname(require.resolve("../gatsby-plugin")),
+                    options,
+                }
+            ])
+        }
     }
 
     if (resolveImmediate) {
