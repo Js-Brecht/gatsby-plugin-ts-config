@@ -10,9 +10,9 @@ export {
     withMetaNode,
 } from "./with-project-meta";
 export {
-    includePlugins,
-    getPlugins,
+    loadPluginsDeferred,
+    // loadPlugins,
 } from "./include-plugins";
-export type { GetPluginFn } from "./include-plugins";
+export type { LoadPluginFn } from "./include-plugins";
 
 export const createOptions = (options: GatsbyTsOptions) => options;

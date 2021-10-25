@@ -15,17 +15,6 @@ import type {
 
 export type { PluginTranspileType };
 
-export interface IResolvePlugins<TReturn = void> {
-    <
-        T extends GatsbyPlugin = GatsbyPlugin,
-        P extends PropertyBag = PropertyBag,
-    >(plugins: T[] | IPluginDetailsCallback<T, P>): TReturn;
-    <
-        T extends GatsbyPlugin = GatsbyPlugin,
-        P extends PropertyBag = PropertyBag,
-    >(plugins: T[], pluginsCb?: IPluginDetailsCallback<T, P>): TReturn;
-}
-
 type PluginCache = {
     [project: string]: {
         normal: IGatsbyPluginWithOpts[];

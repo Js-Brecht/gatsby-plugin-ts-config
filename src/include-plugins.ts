@@ -1,8 +1,5 @@
 import { Project } from "@lib/project";
-import {
-    expandPlugins,
-    getPluginsCache,
-} from "@lib/process-plugins";
+import { getPluginsCache } from "@lib/process-plugins";
 
 import { getProject } from "@util/project-meta";
 import { PluginError, getDebugLogger } from "@util/output";
@@ -15,103 +12,27 @@ import type {
     // GatsbyTsOptions,
 } from "@typeDefs";
 
-export interface IResolvePlugins<TReturn = void> {
-    <
-        T extends GatsbyPlugin = GatsbyPlugin,
-        P extends PropertyBag = PropertyBag,
-    >(plugins: T[] | IPluginDetailsCallback<T, P>): TReturn;
-    <
-        T extends GatsbyPlugin = GatsbyPlugin,
-        P extends PropertyBag = PropertyBag,
-    >(plugins: T[], pluginsCb?: IPluginDetailsCallback<T, P>): TReturn;
-}
-
 /**
- * Registers and processes plugins that will be provided to Gatsby when your site's
- * `gatsby-plugin` is read.
+ * Allows you to generate a strongly typed Gatsby plugin spec array, but defers the resolution of the
+ * callback until after the rest of the current project's modules have been processed completely.
  *
- * * Provides strong typing for plugin array/callback functions
+ * Since some of the properties passed to the meta functions depends on what modules have been transpiled
+ * and what plugins have already been loaded, the callback you define this way will be receiving the most
+ * up-to-date information.
  *
- * Can be used with two generic type parameters,
+ * Plugins defined this way will be appened to the array that is provided to Gatsby.
  *
- * * `PluginDefinitions` - Should be a union of various plugin declaration types,
- *   in the format:
- *
- *   ```
- *   string | {
- *     resolve: string;
- *     options: Record<string, any> | PluginOptions
- *   }
- *   ```
- *
- *  * `Props` - Defines the structure of the second parameter of the callback
- *    parameter type
- *
- * @example
- *
- * ```ts
- * type PluginDefinitions = (
- *   | GatsbyPlugin<'foo', IFooPluginOptions>
- *   | 'bar'
- *   | { resolve: 'bar'; options: { qux: number }; }
- * )
- *
- * type PropertyBag = {
- *   random: string;
- *   properties: number[];
- * }
- *
- * includePlugins<PluginDefinitions, PropertyBag>(
- *   arrayOfPlugins,
- *   ({ projectRoot }, {random, properties}) => {
- *     // Build plugin array
- *   })
- * );
- * ```
- *
- * @param {GatsbyPlugin[] | IPluginDetailsCallback} plugins - Can be either
- * a plugin array, or a callback function.  The callback function receives
- * the same parameters as the `gatsby-config` or `gatsby-node` default export
- * functions.  The plugin array must be in the same format that Gatsby itself
- * receives.
- *
- * @param {IPluginDetailsCallback} cb - (Optional) This second parameter can
- * only be a callback function.
- *
- * @remarks
- * * `cb`:
- *
- *   `(args: PublicOpts, props: PropertyBag) => GatsbyPlugin[]`
- *   * `PublicOpts` - A collection of options/parameters that provide context
- *     based on the runtime of this plugin
- *   * `PropertyBag` - A collection of properties passed down from props option in
- *     the original definition of this plugin.
- *
- * * Plugin ordering:
- *
- *   Plugins registered this way change the order that plugin's are included in the
- *   array fed to Gatsby.  This will effect the order they are called, so you must
- *   be aware of it.  They will be included in this order:
- *
- *   1. Array form of the first parameter of this function
- *   2. Normal `gatsby-config` plugin array
- *   3. Plugins returned from the callback function parameter(s) in this function
+ * @param {IPluginDetailsCallback} pluginsCb- The callback function receives the same parameters as the
+ * `ProjectMetaCb` functions.  It must return an array of plugins that Gatsby is able to comprehend.
  */
-export const includePlugins: IResolvePlugins<void> = <
+export const loadPluginsDeferred = <
     T extends GatsbyPlugin = GatsbyPlugin,
     P extends PropertyBag = PropertyBag,
 >(
-    plugins: T[] | IPluginDetailsCallback<T>,
-    pluginsCb?: IPluginDetailsCallback<T, P>,
+    pluginsCb: IPluginDetailsCallback<T, P>,
 ) => {
     const { projectRoot } = getProject();
     const cache = getPluginsCache(projectRoot);
-
-    if (plugins instanceof Array) {
-        cache.normal.push(...expandPlugins(plugins));
-    } else {
-        pluginsCb = plugins;
-    }
 
     if (pluginsCb) {
         cache.resolver.push(
@@ -122,23 +43,23 @@ export const includePlugins: IResolvePlugins<void> = <
 
 // type GetPluginOpts = TsConfigPluginOptions;
 
-export type GetPluginFn<
+export type LoadPluginFn<
     P1 extends PropertyBag = PropertyBag,
 > = <
-    T2 extends GatsbyPlugin = GatsbyPlugin,
+    TPlugins extends GatsbyPlugin = GatsbyPlugin,
     P2 extends PropertyBag = P1,
 >(
-    plugins: T2[] | IPluginDetailsCallback<T2, P2>,
+    plugins: TPlugins[] | IPluginDetailsCallback<TPlugins, P2>,
     // opts?: GetPluginOpts,
 ) => IGatsbyPluginWithOpts[]
 
 /**
- * Immediately processes and returns a collection of plugins, or a
- * plugin resolver function.
+ * Immediately processes a collection of plugins or a plugin resolver function, and returns the array for
+ * Gatsby's consumption
  *
  * All plugins passed to this function will be transpiled immediately.
  */
-export const getPlugins: GetPluginFn = (
+export const loadPlugins: LoadPluginFn = (
     plugins,
     // opts,
 ) => {
@@ -149,7 +70,7 @@ export const getPlugins: GetPluginFn = (
         },
         false,
         undefined,
-        getDebugLogger("getPlugins"),
+        getDebugLogger("loadPlugins"),
     );
 
     try {

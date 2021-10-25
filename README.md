@@ -1,5 +1,8 @@
 [babel-docs]: https://babeljs.io/docs/en/options#config-loading-options
 [tsnode-docs]: https://github.com/TypeStrong/ts-node#cli-and-programmatic-options
+[hooks]: #hooks
+[meta-fn]: #meta-functions
+[load-plugins]: #generating-plugin-arrays
 
 ## Configure Gatsby to use Typescript for configuration files
 
@@ -14,7 +17,7 @@
 * Install using your package manager
 
   ```shell
-  npm install -D gatsby-ts
+  npm install gatsby-ts
   ```
 
 * Use `gatsby-ts` in place of `gatsby`
@@ -34,11 +37,138 @@
 
 * Write your `gatsby-config` and `gatsby-node` in Typescript
 
+### Usage
+
+You may write your `gatsby-config` and `gatsby-node` files how you would normally, except you will be
+writing them in Typescript.
+
+Some examples:
+
+```js
+// .gatsby-ts.js
+const { createOptions } = require("gatsby-ts");
+
+module.exports = createOptions({
+  type: "babel",
+  props: {
+    test: "Hello",
+  },
+});
+```
+
+```ts
+// gatsby-config.ts
+import { loadPluginsDeferred, withMetaConfig, GatsbyPlugin } from "gatsby-ts";
+import type { PluginOptions as ITypegenPluginOptions } from 'gatsby-plugin-typegen/types';
+import type { IPluginOptions as IPnpmPluginOptions } from 'gatsby-plugin-pnpm';
+import type { FileSystemConfig } from 'gatsby-source-filesystem';
+
+type PluginDefs = (
+  | GatsbyPlugin<'gatsby-plugin-typegen', ITypegenPluginOptions>
+  | GatsbyPlugin<'gatsby-plugin-pnpm', IPnpmPluginOptions>
+  | FileSystemConfig
+)
+
+type PropertyBag = {
+  test: string;
+}
+
+loadPluginsDeferred<
+  PluginDefs,
+  PropertyBag
+>(() => ([
+  {
+    resolve: `gatsby-plugin-typegen`,
+    options: {
+      // These options will be typed
+    },
+  },
+]));
+
+export default withMetaConfig(({ loadPlugins }, props) => {
+  console.log(props.test) // Hello
+  props.test += " world"
+
+
+  const plugins = loadPlugins<PluginDefs, PropertyBag>([
+    // All of these will be typed
+    {
+      resolve: `gatsby-plugin-pnpm`,
+      options: {
+        strict: true,
+        projectPath: __dirname,
+      },
+    },
+    {
+      resolve: `gatsby-source-filesystem`,
+      options: {
+        name: `images`,
+        path: `${__dirname}/src/images`,
+      },
+    },
+  ]);
+
+  return {
+    siteMetadata: {
+      title: "Foo site",
+    },
+    plugins: [
+      ...plugins,
+
+      // These are not typed
+      {
+        resolve: "foo-plugin"
+      }
+    ]
+  }
+})
+```
+
+```ts
+// gatsby-node.ts
+import { withMetaNode } from "gatsby-ts";
+
+/**
+ * Can easily do this the normal way
+ *
+ * import { GatsbyNode } from "gatsby";
+ *
+ * export const sourceNodes: GatsbyNode["sourceNodes"] = ({ actions }) => {
+ *   // do something
+ * }
+ */
+
+export default withMetaNode((args, props) => {
+  console.log(props.test) // Hello world
+
+  return {
+    sourceNodes: async ({
+      actions,
+    }): Promise<void> => {
+      /**
+       * Create your nodes here
+       */
+
+      console.log("Hello from sourceNodes!!\n\n\n");
+      return;
+    },
+
+    onCreateWebpackConfig: ({
+      actions,
+      getConfig,
+    }) => {
+      const config = getConfig();
+      // Do something with the config
+    },
+  };
+});
+```
+
 ### Configuration
 
 Each project that employs this utility may define their own configurations.  This primarily serves the
 purpose of configuring what transpiler to use and _its_ options, but also allows you to define a "property
-bag" that will be passed around to the meta functions described later.
+bag" that will be passed around to the [meta functions][meta-fn] described later.
 
 * Create the file `.gatsby-ts.js` in the root of the project using this utiltiy.
 
@@ -63,17 +193,33 @@ bag" that will be passed around to the meta functions described later.
     * Tells `gatsby-ts` what transpiler to use.  For `ts-node`, `typescript` **_must_** be installed.
 
 2. `transpilerOptions`: `Object`
-    * If you chose `babel` as your `type`, see the [babel docs](babel-docs) for configuration details
-    * if you chose `ts-node` as your `type`, see the [ts-node docs](tsnode-docs) for configuration details
+    * If you chose `babel` as your `type`, see the [babel docs][babel-docs] for configuration details
+    * if you chose `ts-node` as your `type`, see the [ts-node docs][tsnode-docs] for configuration details
 
 3. `props`: `Object`
     * This can be any object you choose.  It will be passed around as-is to each "meta" function that you
       define.  Any of those functions may mutate the `props`, and the affect will be passed along.
 
 4. `hooks`: `HooksObject`
-    * See [Defining Hooks](#defining-hooks)
+    * See [Hooks][hooks] for more details
 
-### Defining Hooks
+### Property Bag
+
+This object may take any shape you want, and serve any purpose you want.  It is completely free-form.
+`gatsby-ts` itself doesn't care about it at all, and its sole purpose is to pass around values that you wish
+between `gatsby-config`, and `gatsby-node`.
+
+A couple of notes regarding the property bag:
+
+* One will be passed to the [meta functions][meta-fn] whether or not you define it in `.gatsby-ts.js`
+
+* The property bag is mutable, so you may make changes to it in one function, and those changes will be
+  passed over to the other.
+
+* When calling local plugins (ones you have designed yourself inside of the `/plugins` folder), the property
+  bag for the current project will be **_copied_** and passed to them.
+
+### Hooks
 
 You may hook into some of the internal processes of `gatsby-ts` by defining the `hooks` property on
 your configuration object.
@@ -87,148 +233,170 @@ Hooks that are available:
 
     * The first function to return `true` (or a truthy value) will cause the file to be ignored.
 
----
+### "Meta" Functions
 
-### Using "Meta" Functions
+These are functions that receive certain meta values / utilities from `gatsby-ts`.  Their use is completely
+optional, but may be useful in certain situations.  They receive in their parameters certain details about
+the project that's currently being transpiled, certain utility functions, as well as the "Property Bag" that
+gets passed around to all of the "Meta" functions for the current project.
 
+The function you'll use
+depends on the file you are setting up:
 
+|API Type|Meta Function Factory|
+|--------|---------------------|
+|`gatsby-config`|`withMetaConfig()`|
+|`gatsby-node`|`withMetaNode()`|
 
-### Usage
+Each meta function factory takes a single callback:
 
-The cleanest way to use this plugin is to use `gatsby-config.js` and `gatsby-node.js`
-as pointers to your `.ts` files that you keep in another directory.  This isn't required,
-though.  All you need initially is `gatsby-config.js`
-
-To point `gatsby-config.js` and/or `gatsby-node.js` to `.ts` files:
-
-```js
-// gatsby-config.js
-const { useGatsbyConfig } = require("gatsby-plugin-ts-config");
-
-// For static analysis purposes, you can use a callback with a require() statement
-module.exports = useGatsbyConfig(() => require("./config/gatsby-config"), opts);
-
-// A simpler method is to just use the filename
-module.exports = useGatsbyConfig("./config/gatsby-config", opts);
-
-// Or you can just return the `gatsby-config` object from the callback
-module.exports = useGatsbyConfig(
-  () => ({
-    siteMetadata: {
-      ...
-    },
-    plugins: [
-      {
-        resolve: ...,
-        options: ...,
-      }
-    ]
-  }),
-  opts
-)
+```ts
+type MetaCb = (args: MetaCbArgs, props: PropertyBag) => GatsbyConfig | GatsbyNode
 ```
 
-Once `useGatsbyConfig` is called from `gatsby-config`, `gatsby-node.ts` can exist in your site's
-root directory.  However, if you do not wish to have your `gatsby-config` in Typescript, `useGatsbyConfig` is
-not required.  You can use this plugin directly from `gatsby-node` if you wish.
+#### `MetaCbArgs`: `Object`
 
-```js
-// gatsby-node.js
-const { useGatsbyNode } = require("gatsby-plugin-ts-config");
+##### Common Properties
 
-// All of the same usage patterns for `useGatsbyConfig` are valid for `useGatsbyNode`
-// as well
-module.exports = useGatsbyNode(() => require("./config/gatsby-node"), opts);
-```
-
-### Options
-
-* `props`: `Object`
-
-  This "property bag" is an object that can take any shape you wish.  When a `gatsby-*` module is defined
-  with a function for a default export, these `props` will be passed in the second parameter.
-
-  The property bag is mutable, so any changes you make to it will be passed to the next module
-
-  * Each project gets its own property bag.  They do not mix, which means `props` defined by your default
-    site will not be passed down to plugins.
-    * One difference when using local plugins: The property bag will be **_copied_** and then passed to the
-      local plugin.
-  * If `props` is defined in both `useGatsbyConfig` and `useGatsbyNode`, the values in `useGatsbyNode` will be
-    **_merged_** into the property bag before being passed on to default export of the module.
-
-* `type`: `"babel" | "ts-node"`
-
-  Determines which transpiler to use.
-
-* `transpilerOptions`: `Object`
-
-  Any additional options you'd like to provide to the transpiler
-
-  * When `type === "babel"`: See the [babel options documentation][babel-docs]
-  * When `type === "ts-node"`: See the [ts-node options documentation][tsnode-docs]
-
-* `hooks`: `Object`
-
-  Allows you to hook into certain processes.
-
-  * `ignore`: `Array<IgnoreHookFn>`
-
-    `IgnoreHookFn = (filename: string, origIgnore: boolean) => boolean`
-
-    Override the rule set used to tell the transpiler to ignore files.
-
-    * Receives two parameters:
-
-      1. The file name to check (fully qualified)
-      2. The original ignore value
-
-    * Return a falsy or truthy value.  It will be converted to boolean.
-    * To use the value that would have been chosen by the internal process, return the second parameter.
-    * The first `true` or truthy value to be returned from your rule set will be used.  The rest of the rule
-      set will be ignored
-
-### Default exports
-
-The default export is supported for your `gatsby-*.ts` files.  This is important to note, because Typescript
-prefers that you use either the default export, or named exports.
-
-While named exports are absolutely supported as well, some people may prefer to build their module object
-and then export it all at once.  In that case, you may use the default export.
-
-In other cases, you may want to perform some more advanced actions during the module processing.  For this,
-you may export a function as the default export.  They will be called in order
-(`gatsby-config` -> `gatsby-node`), and used to set the module's exports so that Gatsby can read them.
-
-#### Default export function
-
-`gatsby-config.ts` or `gatsby-node.ts` may export a function as the default export.  This will be called with
-some details regarding the transpiling process, as well as some helpful information about the current project.
-
-These modules may export this function as the default export whether or not they are in the root of your
-site, as is the Gatsby standard.  However, since this plugin needs to get kicked off by one of the
-`useGatsby*` plugins, `gatsby-config` may not be accessible from the root.
-
-These functions should return the object that Gatsby generally expects.  For `gatsby-config`, it would be
-the same object you would define in `gatsby-config.js`.  For `gatsby-node`, it would be the `gatsby-node`
-APIs.
-
-#### Function parameters
-
-The default export function will receive two parameters:
-
-1. The transpiler & project information
-    * `projectRoot`: The absolute path to the current project.
-    * `imports`: All of the imports used by your `gatsby-*` modules.
-      * This is structured by API Type, and then by plugin + API Type
+* `projectRoot`: The absolute path to the current project.
+* `imports`: All of the imports used by your `gatsby-*` modules.
+  * This is structured by API Type, and then by plugin + API Type
+    * `config`: `string[]`
+    * `node`: `string[]`
+    * `plugins`: `Object`
+      * `[pluginName: string]`: `Object`
         * `config`: `string[]`
         * `node`: `string[]`
-        * `plugins`: `Object`
-          * `[pluginName: string]`: `Object`
-            * `config`: `string[]`
-            * `node`: `string[]`
 
-2. The property bag defined in the bootstrap (`useGatsby*`) functions.
+**`withMetaConfig()` Properties**
+
+* `loadPlugins`: `(input: GatsbyPlugin[] | MetaCb) => GatsbyPlugin[]`
+  * Use this function to generate a strongly typed array of gatsby plugin definitions.
+
+    It has a generic type parameter that you can use to define a union of accepted gatsby plugins & options.
+    This allows you to restrict the plugin definitions the types that are (hopefully) published by each
+    plugin.
+
+  * See more details in [Generating plugin arrays][load-plugins] (For details about this
+    function specifically, see [this section](#loadplugins))
+
+### Generating plugin arrays
+
+It may be desirable to apply types to the plugin array that you define for Gatsby's consumption.  Some plugins
+already publish types for their configurations, so `gatsby-ts` provides a method to make appyling those types easier.
+
+There are two APIs to facilitate this:
+
+* `loadPluginsDeferred`
+* `loadPlugins`
+
+These functions accept callbacks that behave exactly the same as the `ProjectMetaCb` described
+[earlier][meta-fn]
+
+#### Generic Type Parameters
+
+Each of these APIs can be used with two generic type parameters,
+
+* `PluginDefinitions` - Should be a union of various plugin declaration types, in the format:
+
+  ```ts
+  type PluginDef = string | {
+    resolve: string;
+    options: Record<string, any> | PluginOptions
+  }
+  ```
+
+  To make this easy, `gatsby-ts` provides a type utility called `GatsbyPlugin`.
+
+  ```ts
+  import { GatsbyPlugin } from "gatsby-ts";
+
+  type PluginDefs = (
+    | GatsbyPlugin<"gatsby-source-filesystem", {
+      // Options
+    }>
+    | GatsbyPlugins<"foo-plugin", {
+      // Options
+    }>
+  );
+  ```
+
+* `PropertyBag` - Defines the structure of the property bag passed to the
+  callback.
+
+#### `loadPluginsDeferred`
+
+Plugins defined with this API will not be included until all of the current project's
+modules are completed processing.  The reason for this is that the various properties passed
+to the callback are updated as the project is processed, so deferring the loading of the
+plugins until the end ensures that they get the most up to date information.
+
+Loading plugins this way causes them to be appended to the end of the plugin array that
+is passed to Gatsby.
+
+```ts
+import { loadPluginsDeferred, GatsbyPlugin } from "gatsby-ts";
+
+type PluginDefinitions = (
+  | GatsbyPlugin<'foo', IFooPluginOptions>
+  | 'bar'
+  | { resolve: 'bar'; options: { qux: number }; }
+)
+
+type PropertyBag = {
+  random: string;
+  properties: number[];
+}
+
+loadPluginsDeferred<PluginDefinitions, PropertyBag>(
+  ({ projectRoot, imports }, {random, properties}) => {
+    // Build plugin array
+  })
+);
+```
+
+#### `loadPlugins`
+
+This function is passed to [`ProjectMetaCb` functions][meta-fn] `withMetaConfig`.  It accepts
+either an array of plugins, or its own `ProjectMetaCb`.  This array/cb will be processed
+immediately.
+
+You may use the same generic type parameters for this function as well:
+
+```ts
+import { withMetaConfig, GatsbyPlugin } from "gatsby-ts";
+
+type PluginDefinitions = (
+  | GatsbyPlugin<'foo', IFooPluginOptions>
+  | GatsbyPlugin<"bar", { qux: number }>
+  | "baz"
+)
+
+type PropertyBag = {
+  random: string;
+  properties: number[];
+}
+
+export default withMetaConfig(({ loadPlugins }, { random, properties }) => {
+
+  const plugins = loadPlugins<PluginDefinitions, PropertyBag>([
+    {
+      resolve: "foo",
+      options: { ...opts }
+    },
+    {
+      resolve: "bar",
+      options: { qux: 1234 }
+    },
+    "baz" // Or `{ resolve: "baz" }` but there's no options
+  ])
+
+  return {
+    plugins,
+  }
+
+})
+```
 
 ### Contributing / Issues
 

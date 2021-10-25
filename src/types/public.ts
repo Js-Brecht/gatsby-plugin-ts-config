@@ -6,14 +6,14 @@ import type {
     IGatsbyPluginWithOpts,
 } from "./internal";
 import type { projectMetaSymbol } from "@util/project-meta";
-import type { GetPluginFn } from "@/include-plugins";
+import type { LoadPluginFn } from "@/include-plugins";
 
 type ApiOptStruct<T extends {
     [K in ApiType]: Record<string, any>;
 }> = T;
 type ApiSpecificOpts<TProps extends PropertyBag> = ApiOptStruct<{
     ["config"]: {
-        getPlugins: GetPluginFn<TProps>;
+        loadPlugins: LoadPluginFn<TProps>;
     }
     ["node"]: {}
 }>

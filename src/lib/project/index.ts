@@ -260,7 +260,7 @@ export class Project<TApiType extends ApiType = ApiType> {
                 imports: ImportHandler.getProjectImports(
                     project?.projectName || this.projectName,
                 ),
-                getPlugins: (plugins) => (
+                loadPlugins: (plugins) => (
                     this.processPlugins(
                         "all",
                         plugins,
