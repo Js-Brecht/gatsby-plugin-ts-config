@@ -6,8 +6,8 @@ export * from "./types/public";
 //     useGatsbyNode,
 // } from "./use-gatsby-api";
 export {
-    withConfigMeta,
-    withNodeMeta,
+    withMetaConfig,
+    withMetaNode,
 } from "./with-project-meta";
 export {
     includePlugins,
