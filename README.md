@@ -164,6 +164,36 @@ export default withMetaNode((args, props) => {
 });
 ```
 
+#### Debugging
+
+The [official guide for debugging](https://www.gatsbyjs.com/docs/debugging-the-build-process) applies. Don't forget to adjust the `launch.json` configuration to use the `gatsby-ts` executable, when debugging with Visual Studio Code:
+
+```
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Gatsby develop",
+      "type": "pwa-node",
+      "request": "launch",
+      "program": "${workspaceRoot}/node_modules/.bin/gatsby-ts",
+      "args": ["develop"],
+      "runtimeArgs": ["--nolazy"],
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Gatsby build",
+      "type": "pwa-node",
+      "request": "launch",
+      "program": "${workspaceRoot}/node_modules/.bin/gatsby-ts",
+      "args": ["build"],
+      "runtimeArgs": ["--nolazy"],
+      "console": "integratedTerminal"
+    }
+  ]
+}
+```
+
 ### Configuration
 
 Each project that employs this utility may define their own configurations.  This primarily serves the
